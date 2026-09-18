@@ -175,35 +175,37 @@ export default function DeveloperAppBuilderPage() {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <Button
-              type="button"
-              size="sm"
-              onClick={handleManualSave}
-              disabled={saveStatus === "saving"}
-              className={cn(
-                "h-9 px-4 gap-1.5 text-xs font-semibold cursor-pointer transition-all duration-200 shadow-xs",
-                saveStatus === "saved"
-                  ? "bg-emerald-600 hover:bg-emerald-700 text-white"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
-              )}
-            >
-              {saveStatus === "saving" ? (
-                <>
-                  <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Saving...</span>
-                </>
-              ) : saveStatus === "saved" ? (
-                <>
-                  <Check className="h-3.5 w-3.5" />
-                  <span>Saved!</span>
-                </>
-              ) : (
-                <>
-                  <Save className="h-3.5 w-3.5" />
-                  <span>Save Changes</span>
-                </>
-              )}
-            </Button>
+            {(activeTab === "overview" || activeTab === "auth") && (
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleManualSave}
+                disabled={saveStatus === "saving"}
+                className={cn(
+                  "h-9 px-4 gap-1.5 text-xs font-semibold cursor-pointer transition-all duration-200 shadow-xs animate-in fade-in duration-150",
+                  saveStatus === "saved"
+                    ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                )}
+              >
+                {saveStatus === "saving" ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : saveStatus === "saved" ? (
+                  <>
+                    <Check className="h-3.5 w-3.5" />
+                    <span>Saved!</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-3.5 w-3.5" />
+                    <span>Save Changes</span>
+                  </>
+                )}
+              </Button>
+            )}
 
             <Link href={`/workflows/editor?app=${app.id}`}>
               <Button
