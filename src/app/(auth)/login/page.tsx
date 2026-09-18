@@ -32,8 +32,8 @@ export default function LoginPage() {
     <div className="min-h-full flex items-center justify-center py-12 px-4 bg-slate-50 dark:bg-slate-950 transition-colors">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 dark:bg-blue-600/20 dark:border dark:border-blue-500/30 text-white shadow-md mb-2">
-            <Workflow className="h-6 w-6 text-blue-500" />
+          <div className="inline-flex items-center justify-center p-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs mb-2">
+            <img src="/logo.png" alt="Automate Business" className="h-10 w-auto object-contain" />
           </div>
           <h1 className="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100 tracking-tight">Log in to Automate Workflows</h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Access your automation canvas, workflows & connections</p>

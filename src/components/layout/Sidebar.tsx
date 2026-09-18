@@ -152,20 +152,20 @@ export function Sidebar() {
                 setIsSettingsSubSidebarOpen(false)
               }
             }}
-            className="flex items-center space-x-3 overflow-hidden group"
+            className="flex items-center overflow-hidden group py-1"
           >
-            <div className="h-9 w-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold shrink-0 shadow-xs group-hover:bg-blue-700 transition-colors">
-              <Workflow className="h-5 w-5 transition-transform duration-300 ease-out group-hover:scale-110 group-hover:rotate-6" />
-            </div>
-            {!isCollapsed && (
-              <div className="flex flex-col transition-opacity duration-200 truncate">
-                <span className="text-sm font-bold text-slate-900 dark:text-white tracking-tight leading-none">
-                  Automate
-                </span>
-                <span className="text-[11px] text-blue-600 dark:text-blue-400 font-bold mt-0.5 tracking-tight">
-                  Workflows
-                </span>
-              </div>
+            {isCollapsed ? (
+              <img
+                src="/icon.png"
+                alt="Automate Business"
+                className="h-8.5 w-8.5 object-contain transition-transform duration-300 group-hover:scale-110"
+              />
+            ) : (
+              <img
+                src="/logo.png"
+                alt="Automate Business"
+                className="h-8.5 w-auto max-w-[155px] object-contain transition-transform duration-300 group-hover:scale-102"
+              />
             )}
           </Link>
 
