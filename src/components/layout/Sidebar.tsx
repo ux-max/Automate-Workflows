@@ -169,14 +169,27 @@ export function Sidebar() {
             )}
           </Link>
 
-          {/* Collapse Toggle Button (when expanded) */}
-          {!isCollapsed && (
+          {/* Collapse / Expand Toggle Button */}
+          {!isCollapsed ? (
             <button
               onClick={() => setIsCollapsed(true)}
               className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
               title="Collapse Sidebar"
             >
               <ChevronLeft className="h-4 w-4" />
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                setIsCollapsed(false)
+                setIsFoldersSubSidebarOpen(false)
+                setIsSettingsSubSidebarOpen(false)
+                setIsAppBuilderSubSidebarOpen(false)
+              }}
+              className="absolute -right-3 top-5 z-30 h-6 w-6 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs flex items-center justify-center text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all cursor-pointer group hover:scale-110"
+              title="Expand Sidebar"
+            >
+              <ChevronRight className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" />
             </button>
           )}
         </div>
