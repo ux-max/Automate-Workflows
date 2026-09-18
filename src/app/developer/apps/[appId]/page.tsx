@@ -17,7 +17,11 @@ import { Badge } from "@/components/ui/badge"
 import {
   ArrowLeft,
   Workflow,
+  Save,
+  Check,
+  CheckCircle2,
 } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 import { OverviewTab } from "./components/OverviewTab"
 import { AuthTab } from "./components/AuthTab"
@@ -110,6 +114,23 @@ export default function DeveloperAppBuilderPage() {
     publish: "Publish & Review"
   }
 
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle")
+  const [saveNotification, setSaveNotification] = useState<string | null>(null)
+
+  const handleManualSave = () => {
+    if (!app) return
+    setSaveStatus("saving")
+    saveDeveloperApp(app)
+    setTimeout(() => {
+      setSaveStatus("saved")
+      setSaveNotification("Changes saved successfully!")
+      setTimeout(() => {
+        setSaveStatus("idle")
+        setSaveNotification(null)
+      }, 2500)
+    }, 300)
+  }
+
   return (
     <div className="p-3 sm:p-4 min-h-[calc(100vh-4rem)] font-sans select-none relative">
       <div className="w-full bg-white dark:bg-slate-900 p-5 md:p-7 rounded-[22px] border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-6 relative">
@@ -155,11 +176,41 @@ export default function DeveloperAppBuilderPage() {
           </div>
 
           <div className="flex items-center gap-2.5">
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleManualSave}
+              disabled={saveStatus === "saving"}
+              className={cn(
+                "h-9 px-4 gap-1.5 text-xs font-semibold cursor-pointer transition-all duration-200 shadow-xs",
+                saveStatus === "saved"
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              )}
+            >
+              {saveStatus === "saving" ? (
+                <>
+                  <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : saveStatus === "saved" ? (
+                <>
+                  <Check className="h-3.5 w-3.5" />
+                  <span>Saved!</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-3.5 w-3.5" />
+                  <span>Save Changes</span>
+                </>
+              )}
+            </Button>
+
             <Link href={`/workflows/editor?app=${app.id}`}>
               <Button
                 variant="outline"
                 size="sm"
-                className="h-9 gap-1.5 text-xs font-semibold"
+                className="h-9 gap-1.5 text-xs font-semibold cursor-pointer"
               >
                 <Workflow className="h-3.5 w-3.5 text-blue-600" />
                 <span>Preview in Canvas</span>
@@ -170,8 +221,8 @@ export default function DeveloperAppBuilderPage() {
 
         {/* Main Tab Viewport - Displays only the fields for the currently selected step */}
         <div>
-          {activeTab === "overview" && <OverviewTab app={app} onChange={handleAppChange} />}
-          {activeTab === "auth" && <AuthTab app={app} onChange={handleAppChange} />}
+          {activeTab === "overview" && <OverviewTab app={app} onChange={handleAppChange} onSave={handleManualSave} />}
+          {activeTab === "auth" && <AuthTab app={app} onChange={handleAppChange} onSave={handleManualSave} />}
           {activeTab === "triggers" && <TriggersTab app={app} onChange={handleAppChange} />}
           {activeTab === "actions" && <ActionsTab app={app} onChange={handleAppChange} />}
           {activeTab === "inbuilt_actions" && <InbuiltActionsTab app={app} onChange={handleAppChange} />}
@@ -179,6 +230,14 @@ export default function DeveloperAppBuilderPage() {
           {activeTab === "sharing" && <SharingTab app={app} onChange={handleAppChange} />}
           {activeTab === "publish" && <PublishTab app={app} onChange={handleAppChange} />}
         </div>
+
+        {/* Save Confirmation Notification Toast */}
+        {saveNotification && (
+          <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-medium shadow-xl border border-slate-700 animate-in slide-in-from-bottom-5 duration-200">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>{saveNotification}</span>
+          </div>
+        )}
       </div>
     </div>
   )

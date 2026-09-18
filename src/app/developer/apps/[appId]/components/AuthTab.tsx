@@ -46,12 +46,14 @@ import {
   Eye,
   HelpCircle,
   Code,
+  Save,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface AuthTabProps {
   app: DeveloperApp
   onChange: (updated: DeveloperApp) => void
+  onSave?: () => void
 }
 
 const AUTH_SCHEMES: { type: AuthType; title: string; desc: string; icon: any }[] = [
@@ -87,8 +89,20 @@ const AUTH_SCHEMES: { type: AuthType; title: string; desc: string; icon: any }[]
   },
 ]
 
-export function AuthTab({ app, onChange }: AuthTabProps) {
+export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
   const auth = app.authentication
+  const [isSaved, setIsSaved] = useState(false)
+
+  const handleSave = () => {
+    if (onSave) {
+      onSave()
+    } else {
+      onChange(app)
+    }
+    setIsSaved(true)
+    setTimeout(() => setIsSaved(false), 2500)
+  }
+
   const [copiedCallback, setCopiedCallback] = useState(false)
   const [testingConnection, setTestingConnection] = useState(false)
   const [testResult, setTestResult] = useState<{
@@ -1340,6 +1354,26 @@ export function AuthTab({ app, onChange }: AuthTabProps) {
           </div>
         </Card>
       )}
+
+      {/* Bottom Save Action Bar */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 shadow-2xs">
+        <div className="text-xs text-slate-500 dark:text-slate-400">
+          Save your authentication parameters, OAuth keys, and connection verification tests.
+        </div>
+        <Button
+          type="button"
+          onClick={handleSave}
+          className={cn(
+            "h-9 px-5 text-xs font-semibold gap-1.5 cursor-pointer shadow-xs transition-colors",
+            isSaved
+              ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
+          )}
+        >
+          {isSaved ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
+          <span>{isSaved ? "Saved Successfully!" : "Save Authentication"}</span>
+        </Button>
+      </div>
 
       {/* Parameter Settings Drawer (Built-in Drawer Component) */}
       {openParamSettingsId && (() => {
