@@ -156,9 +156,9 @@ export function Sidebar() {
           >
             {isCollapsed ? (
               <img
-                src="/icon.png"
+                src="/a-logo.png"
                 alt="Automate Business"
-                className="h-7 w-7 object-contain transition-transform duration-300 group-hover:scale-110"
+                className="h-7.5 w-7.5 object-contain transition-transform duration-300 group-hover:scale-110"
               />
             ) : (
               <img
