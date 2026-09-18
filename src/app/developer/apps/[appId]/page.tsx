@@ -43,6 +43,8 @@ export default function DeveloperAppBuilderPage() {
   const tabFromUrl = (searchParams?.get("tab") as TabType) || "overview"
   const [app, setApp] = useState<DeveloperApp | null>(null)
   const [activeTab, setActiveTab] = useState<TabType>(tabFromUrl)
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle")
+  const [saveNotification, setSaveNotification] = useState<string | null>(null)
 
   // Sync activeTab with URL search params
   useEffect(() => {
@@ -74,6 +76,20 @@ export default function DeveloperAppBuilderPage() {
   const handleAppChange = (updated: DeveloperApp) => {
     setApp(updated)
     saveDeveloperApp(updated)
+  }
+
+  const handleManualSave = () => {
+    if (!app) return
+    setSaveStatus("saving")
+    saveDeveloperApp(app)
+    setTimeout(() => {
+      setSaveStatus("saved")
+      setSaveNotification("Changes saved successfully!")
+      setTimeout(() => {
+        setSaveStatus("idle")
+        setSaveNotification(null)
+      }, 2500)
+    }, 300)
   }
 
   if (!app) {
@@ -112,23 +128,6 @@ export default function DeveloperAppBuilderPage() {
     sandbox: "Testing & Sandbox",
     sharing: "Sharing & Testers",
     publish: "Publish & Review"
-  }
-
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle")
-  const [saveNotification, setSaveNotification] = useState<string | null>(null)
-
-  const handleManualSave = () => {
-    if (!app) return
-    setSaveStatus("saving")
-    saveDeveloperApp(app)
-    setTimeout(() => {
-      setSaveStatus("saved")
-      setSaveNotification("Changes saved successfully!")
-      setTimeout(() => {
-        setSaveStatus("idle")
-        setSaveNotification(null)
-      }, 2500)
-    }, 300)
   }
 
   return (
