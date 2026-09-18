@@ -158,13 +158,13 @@ export function Sidebar() {
               <img
                 src="/icon.png"
                 alt="Automate Business"
-                className="h-8.5 w-8.5 object-contain transition-transform duration-300 group-hover:scale-110"
+                className="h-7 w-7 object-contain transition-transform duration-300 group-hover:scale-110"
               />
             ) : (
               <img
                 src="/logo.png"
                 alt="Automate Business"
-                className="h-8.5 w-auto max-w-[155px] object-contain transition-transform duration-300 group-hover:scale-102"
+                className="h-7 w-auto max-w-[135px] object-contain transition-transform duration-300 group-hover:scale-102"
               />
             )}
           </Link>
