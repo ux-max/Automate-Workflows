@@ -29,10 +29,24 @@ import { TriggersTab } from "./components/TriggersTab"
 import { ActionsTab } from "./components/ActionsTab"
 import { InbuiltActionsTab } from "./components/InbuiltActionsTab"
 import { SandboxTab } from "./components/SandboxTab"
+import { VersionsTab } from "./components/VersionsTab"
 import { SharingTab } from "./components/SharingTab"
+import { HistoryTab } from "./components/HistoryTab"
+import { MonitoringTab } from "./components/MonitoringTab"
 import { PublishTab } from "./components/PublishTab"
 
-type TabType = "overview" | "auth" | "triggers" | "actions" | "inbuilt_actions" | "sandbox" | "sharing" | "publish"
+type TabType =
+  | "overview"
+  | "auth"
+  | "triggers"
+  | "actions"
+  | "inbuilt_actions"
+  | "sandbox"
+  | "versions"
+  | "sharing"
+  | "history"
+  | "monitoring"
+  | "publish"
 
 export default function DeveloperAppBuilderPage() {
   const params = useParams()
@@ -49,7 +63,22 @@ export default function DeveloperAppBuilderPage() {
   // Sync activeTab with URL search params
   useEffect(() => {
     const t = searchParams?.get("tab") as TabType
-    if (t && ["overview", "auth", "triggers", "actions", "inbuilt_actions", "sandbox", "sharing", "publish"].includes(t)) {
+    if (
+      t &&
+      [
+        "overview",
+        "auth",
+        "triggers",
+        "actions",
+        "inbuilt_actions",
+        "sandbox",
+        "versions",
+        "sharing",
+        "history",
+        "monitoring",
+        "publish"
+      ].includes(t)
+    ) {
       setActiveTab(t)
     }
   }, [searchParams])
@@ -103,19 +132,19 @@ export default function DeveloperAppBuilderPage() {
   const getStatusBadge = (status: DeveloperAppStatus) => {
     switch (status) {
       case "draft":
-        return <Badge variant="secondary" className="text-[10px] uppercase font-bold">Draft</Badge>
+        return <Badge variant="secondary" className="text-[10px] font-medium">Draft</Badge>
       case "private":
-        return <Badge variant="outline" className="text-[10px] uppercase font-bold text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">Private (Dev)</Badge>
+        return <Badge variant="outline" className="text-[10px] font-medium text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">Private (Dev)</Badge>
       case "in_review":
-        return <Badge variant="outline" className="text-[10px] uppercase font-bold text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/50">In Review</Badge>
+        return <Badge variant="outline" className="text-[10px] font-medium text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/50">In Review</Badge>
       case "changes_requested":
-        return <Badge variant="outline" className="text-[10px] uppercase font-bold text-red-700 dark:text-red-300 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/50">Changes Requested</Badge>
+        return <Badge variant="outline" className="text-[10px] font-medium text-red-700 dark:text-red-300 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/50">Changes Requested</Badge>
       case "public_beta":
-        return <Badge variant="blue" className="text-[10px] uppercase font-bold">Public Beta</Badge>
+        return <Badge variant="blue" className="text-[10px] font-medium">Public Beta</Badge>
       case "published":
-        return <Badge variant="outline" className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/50">Verified</Badge>
+        return <Badge variant="outline" className="text-[10px] font-medium text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/50">Verified</Badge>
       default:
-        return <Badge variant="secondary" className="text-[10px]">{status}</Badge>
+        return <Badge variant="secondary" className="text-[10px] font-medium">{status}</Badge>
     }
   }
 
@@ -127,7 +156,10 @@ export default function DeveloperAppBuilderPage() {
     inbuilt_actions: "In-built Actions",
     sandbox: "Testing & Sandbox",
     sharing: "Sharing & Testers",
-    publish: "Publish & Review"
+    publish: "Publish & Review",
+    versions: "Version Control & Releases",
+    history: "Audit & Execution History",
+    monitoring: "App Telemetry & Monitoring"
   }
 
   return (
@@ -149,7 +181,7 @@ export default function DeveloperAppBuilderPage() {
               {app.logoIcon?.startsWith("data:") || app.logoIcon?.startsWith("http") ? (
                 <img src={app.logoIcon} alt={app.name} className="w-8 h-8 object-contain" />
               ) : (
-                <div className="w-full h-full rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center text-sm">
+                <div className="w-full h-full rounded-xl bg-blue-600 text-white font-semibold flex items-center justify-center text-sm">
                   {app.name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -157,19 +189,16 @@ export default function DeveloperAppBuilderPage() {
 
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                <h1 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                   {app.name || "Untitled Connector"}
                 </h1>
                 {getStatusBadge(app.status)}
-                <Badge variant="outline" className="text-[10px] font-mono">
+                <Badge variant="outline" className="text-[10px] font-mono text-slate-500">
                   v{app.version}
                 </Badge>
-                <Badge variant="blue" className="text-[10px] font-bold">
-                  {TAB_NAMES[activeTab]}
-                </Badge>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                slug: <code className="font-mono text-[11px] text-slate-600 dark:text-slate-300">{app.slug}</code> • ID: <code className="font-mono text-[11px] text-slate-600 dark:text-slate-300">{app.id}</code>
+              <p className="text-xs text-slate-400 dark:text-slate-500 font-mono mt-0.5">
+                {app.slug} • {app.id}
               </p>
             </div>
           </div>
@@ -230,6 +259,18 @@ export default function DeveloperAppBuilderPage() {
           {activeTab === "sandbox" && <SandboxTab app={app} onChange={handleAppChange} />}
           {activeTab === "sharing" && <SharingTab app={app} onChange={handleAppChange} />}
           {activeTab === "publish" && <PublishTab app={app} onChange={handleAppChange} />}
+          {activeTab === "versions" && <VersionsTab app={app} onChange={handleAppChange} />}
+          {activeTab === "history" && <HistoryTab app={app} onChange={handleAppChange} />}
+          {activeTab === "monitoring" && (
+            <MonitoringTab
+              app={app}
+              onChange={handleAppChange}
+              onNavigateToHistory={() => {
+                setActiveTab("history")
+                router.push(`/developer/apps/${appId}?tab=history`)
+              }}
+            />
+          )}
         </div>
 
         {/* Save Confirmation Notification Toast */}

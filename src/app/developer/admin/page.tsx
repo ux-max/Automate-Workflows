@@ -167,7 +167,7 @@ export default function AdminReviewConsolePage() {
                 <ShieldAlert className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 Admin Review Console
               </h1>
-              <Badge variant="blue" className="text-[10px] font-bold">STAFF</Badge>
+              <Badge variant="blue" className="text-[10px] font-medium">STAFF</Badge>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Audit custom connectors, execute live test suites with reviewer credentials, and publish verified apps to the Global Catalog.
@@ -176,12 +176,12 @@ export default function AdminReviewConsolePage() {
 
           <div className="flex items-center gap-3">
             <Link href="/developer">
-              <Button variant="outline" size="sm" className="text-xs h-9">
+              <Button variant="outline" size="sm" className="text-xs h-9 font-medium">
                 Developer Hub
               </Button>
             </Link>
             <Link href="/apps">
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 h-9 shadow-xs">
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 h-9 shadow-xs font-medium">
                 Public Directory
                 <ExternalLink className="w-3.5 h-3.5" />
               </Button>
@@ -194,8 +194,8 @@ export default function AdminReviewConsolePage() {
           <Card className="border-slate-200/90 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 shadow-2xs">
             <CardContent className="p-4 flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Pending Review</p>
-                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{pendingCount}</p>
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Pending Review</p>
+                <p className="text-2xl font-semibold text-amber-600 dark:text-amber-400 mt-1">{pendingCount}</p>
               </div>
               <div className="h-10 w-10 rounded-xl bg-amber-100/80 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center">
                 <Clock className="h-5 w-5" />
@@ -206,8 +206,8 @@ export default function AdminReviewConsolePage() {
           <Card className="border-slate-200/90 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 shadow-2xs">
             <CardContent className="p-4 flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Public Beta / Verified</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{betaCount}</p>
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Public Beta / Verified</p>
+                <p className="text-2xl font-semibold text-emerald-600 dark:text-emerald-400 mt-1">{betaCount}</p>
               </div>
               <div className="h-10 w-10 rounded-xl bg-emerald-100/80 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                 <CheckCircle2 className="h-5 w-5" />
@@ -218,8 +218,8 @@ export default function AdminReviewConsolePage() {
           <Card className="border-slate-200/90 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 shadow-2xs">
             <CardContent className="p-4 flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Changes Requested</p>
-                <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{changesCount}</p>
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Changes Requested</p>
+                <p className="text-2xl font-semibold text-rose-600 dark:text-rose-400 mt-1">{changesCount}</p>
               </div>
               <div className="h-10 w-10 rounded-xl bg-rose-100/80 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center">
                 <AlertCircle className="h-5 w-5" />
@@ -230,8 +230,8 @@ export default function AdminReviewConsolePage() {
           <Card className="border-slate-200/90 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 shadow-2xs">
             <CardContent className="p-4 flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Custom Apps</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-1">{apps.length}</p>
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Total Custom Apps</p>
+                <p className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mt-1">{apps.length}</p>
               </div>
               <div className="h-10 w-10 rounded-xl bg-blue-100/80 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                 <Layers className="h-5 w-5" />
@@ -249,7 +249,7 @@ export default function AdminReviewConsolePage() {
         >
           <div className="w-56">
             <Select
-              className="text-xs font-semibold h-8 bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700"
+              className="text-xs font-medium h-8 bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               options={[
@@ -266,20 +266,20 @@ export default function AdminReviewConsolePage() {
         <Card className="border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 font-semibold uppercase text-[10px]">
+              <thead className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-medium text-xs">
                 <tr>
-                  <th className="py-3 px-4">Application</th>
-                  <th className="py-3 px-4">Author & Organization</th>
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-4">Version</th>
-                  <th className="py-3 px-4">Review Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4 font-medium">Application</th>
+                  <th className="py-3 px-4 font-medium">Author & Organization</th>
+                  <th className="py-3 px-4 font-medium">Category</th>
+                  <th className="py-3 px-4 font-medium">Version</th>
+                  <th className="py-3 px-4 font-medium">Review Status</th>
+                  <th className="py-3 px-4 text-right font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
                 {filteredApps.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-slate-400 text-xs">
+                    <td colSpan={6} className="py-12 text-center text-slate-400 text-xs font-medium">
                       No custom applications match your filter.
                     </td>
                   </tr>
@@ -288,7 +288,7 @@ export default function AdminReviewConsolePage() {
                     <tr key={app.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                       <td className="p-4">
                         <div className="min-w-0">
-                          <div className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                          <div className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                             {app.name}
                             {app.status === "published" && (
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
@@ -367,10 +367,10 @@ export default function AdminReviewConsolePage() {
               <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between bg-slate-50/70 dark:bg-slate-900/80 rounded-t-2xl shrink-0">
                 <div className="space-y-1 pr-4">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                    <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                       Audit Inspection: {selectedApp.name}
                     </h3>
-                    <Badge variant="outline" className="text-xs font-mono">
+                    <Badge variant="outline" className="text-xs font-mono font-medium">
                       v{selectedApp.version}
                     </Badge>
                   </div>
@@ -395,7 +395,7 @@ export default function AdminReviewConsolePage() {
                   variant="outline"
                   size="sm"
                   onClick={() => setIsDrawerOpen(false)}
-                  className="text-xs cursor-pointer h-9 px-4"
+                  className="text-xs cursor-pointer h-9 px-4 font-medium"
                 >
                   Close
                 </Button>
@@ -427,7 +427,7 @@ export default function AdminReviewConsolePage() {
                     type="button"
                     onClick={() => handleDecision("approved")}
                     size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs gap-1.5 shadow-xs h-9 px-4 cursor-pointer font-medium"
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shadow-xs h-9 px-4 cursor-pointer font-medium"
                   >
                     <Check className="w-3.5 h-3.5" />
                     <span>Approve to Public Beta</span>
@@ -440,7 +440,7 @@ export default function AdminReviewConsolePage() {
               {/* Reviewer Credentials Section */}
               <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                  <h4 className="text-xs font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                     <Key className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                     Reviewer Sandbox Credentials
                   </h4>
@@ -499,7 +499,7 @@ export default function AdminReviewConsolePage() {
               <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                       <Play className="w-3.5 h-3.5 text-emerald-600" />
                       1-Click Security & Live Test Runner
                     </h4>
@@ -525,7 +525,7 @@ export default function AdminReviewConsolePage() {
                   <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-start gap-2.5 animate-in fade-in">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                     <div>
-                      <span className="text-xs font-bold text-emerald-900 dark:text-emerald-200">
+                      <span className="text-xs font-semibold text-emerald-900 dark:text-emerald-200">
                         Verification Test Passed ({auditResult.latency}ms)
                       </span>
                       <p className="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">
@@ -539,18 +539,18 @@ export default function AdminReviewConsolePage() {
               {/* Endpoints Breakdown */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
-                  <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                  <h5 className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5 text-amber-500" />
                     Configured Triggers ({selectedApp.triggers.length})
                   </h5>
                   <div className="space-y-1.5">
                     {selectedApp.triggers.length === 0 ? (
-                      <p className="text-xs text-slate-400 py-1">No triggers configured.</p>
+                      <p className="text-xs text-slate-400 py-1 font-medium">No triggers configured.</p>
                     ) : (
                       selectedApp.triggers.map((t) => (
                         <div key={t.id} className="text-xs p-2 rounded bg-slate-50 dark:bg-slate-800 flex items-center justify-between">
-                          <span className="font-semibold">{t.name}</span>
-                          <Badge variant="outline" className="text-[10px] uppercase">
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">{t.name}</span>
+                          <Badge variant="outline" className="text-[10px] font-medium uppercase">
                             {t.type}
                           </Badge>
                         </div>
@@ -560,18 +560,18 @@ export default function AdminReviewConsolePage() {
                 </div>
 
                 <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
-                  <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                  <h5 className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                     <Layers className="w-3.5 h-3.5 text-blue-600" />
                     Configured Actions ({selectedApp.actions.length})
                   </h5>
                   <div className="space-y-1.5">
                     {selectedApp.actions.length === 0 ? (
-                      <p className="text-xs text-slate-400 py-1">No actions configured.</p>
+                      <p className="text-xs text-slate-400 py-1 font-medium">No actions configured.</p>
                     ) : (
                       selectedApp.actions.map((a) => (
                         <div key={a.id} className="text-xs p-2 rounded bg-slate-50 dark:bg-slate-800 flex items-center justify-between">
-                          <span className="font-semibold">{a.name}</span>
-                          <Badge variant="outline" className="text-[10px] uppercase font-mono">
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">{a.name}</span>
+                          <Badge variant="outline" className="text-[10px] font-medium uppercase font-mono">
                             {a.method}
                           </Badge>
                         </div>
@@ -583,7 +583,7 @@ export default function AdminReviewConsolePage() {
 
               {/* Reviewer Feedback Notes */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                   Reviewer Audit Notes / Feedback for Developer
                 </label>
                 <textarea

@@ -13,11 +13,13 @@ import {
   Share2,
   Send,
   Search,
-  ChevronLeft,
   X,
   Code2,
   Workflow,
-  ArrowLeft
+  ArrowLeft,
+  GitBranch,
+  History,
+  Activity
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -101,7 +103,7 @@ export function AppBuilderSubSidebar({ isOpen, onClose }: AppBuilderSubSidebarPr
       tab: "sharing",
       label: "Sharing & Testers",
       icon: Share2,
-      count: app?.distribution?.activeInstalls ?? 0,
+      count: app?.distribution?.betaTesters?.length ?? 0,
       animClass: "group-hover:scale-115 group-hover:rotate-12"
     },
     {
@@ -110,6 +112,26 @@ export function AppBuilderSubSidebar({ isOpen, onClose }: AppBuilderSubSidebarPr
       icon: Send,
       badge: app?.status ? app.status.replace("_", " ") : undefined,
       animClass: "group-hover:scale-115 group-hover:-translate-y-0.5"
+    },
+    {
+      tab: "versions",
+      label: "Versions",
+      icon: GitBranch,
+      badge: `v${app?.version || "1.0.0"}`,
+      animClass: "group-hover:scale-115 group-hover:rotate-12"
+    },
+    {
+      tab: "history",
+      label: "History & Logs",
+      icon: History,
+      animClass: "group-hover:scale-115 group-hover:-rotate-12"
+    },
+    {
+      tab: "monitoring",
+      label: "Monitoring",
+      icon: Activity,
+      badge: "LIVE",
+      animClass: "group-hover:scale-115 group-hover:scale-110"
     }
   ]
 
@@ -134,7 +156,7 @@ export function AppBuilderSubSidebar({ isOpen, onClose }: AppBuilderSubSidebarPr
           </div>
           <div className="flex flex-col truncate">
             <div className="flex items-center space-x-1.5 truncate">
-              <span className="text-xs font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none truncate">
+              <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 tracking-tight leading-none truncate">
                 {app?.name || "App Builder"}
               </span>
             </div>
@@ -143,22 +165,12 @@ export function AppBuilderSubSidebar({ isOpen, onClose }: AppBuilderSubSidebarPr
                 v{app?.version || "1.0.0"}
               </span>
               <span className="text-slate-300 dark:text-slate-600">•</span>
-              <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase">
+              <span className="text-[9px] font-semibold text-blue-600 dark:text-blue-400 uppercase">
                 {app?.status ? app.status.replace("_", " ") : "dev"}
               </span>
             </div>
           </div>
         </div>
-
-        {/* Close Sub-Sidebar / Back to Developer Hub */}
-        <button
-          type="button"
-          onClick={onClose}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
-          title="Collapse Steps Sub-Sidebar"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </button>
       </div>
 
       {/* Steps Container */}
@@ -190,7 +202,7 @@ export function AppBuilderSubSidebar({ isOpen, onClose }: AppBuilderSubSidebarPr
         {/* Scrollable Steps Options List */}
         <div className="flex-1 overflow-y-auto p-2 space-y-1">
           {/* Section Header */}
-          <div className="px-2 pt-2 pb-1 text-[9px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">
+          <div className="px-2 pt-2 pb-1 text-[9px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">
             <span>Builder Steps</span>
             <span>{builderSteps.length}</span>
           </div>
@@ -214,7 +226,7 @@ export function AppBuilderSubSidebar({ isOpen, onClose }: AppBuilderSubSidebarPr
                   onClick={() => handleSelectStep(step.tab)}
                   className={`w-full group relative flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${
                     isActive
-                      ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
+                      ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
                       : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/70 border border-transparent"
                   }`}
                   title={step.label}
@@ -239,7 +251,7 @@ export function AppBuilderSubSidebar({ isOpen, onClose }: AppBuilderSubSidebarPr
                     <span
                       className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono shrink-0 ml-1.5 ${
                         isActive
-                          ? "bg-blue-200/80 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-bold"
+                          ? "bg-blue-200/80 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-medium"
                           : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium"
                       }`}
                     >
@@ -251,7 +263,7 @@ export function AppBuilderSubSidebar({ isOpen, onClose }: AppBuilderSubSidebarPr
                     <span
                       className={`text-[9px] px-1.5 py-0.2 rounded font-mono uppercase shrink-0 ml-1.5 ${
                         isActive
-                          ? "bg-blue-200/80 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-bold"
+                          ? "bg-blue-200/80 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-medium"
                           : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium"
                       }`}
                     >

@@ -90,10 +90,10 @@ export function SettingsSubSidebar({ isOpen, onClose }: SettingsSubSidebarProps)
           </div>
           <div className="flex flex-col truncate">
             <div className="flex items-center space-x-1.5">
-              <span className="text-xs font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none">
+              <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 tracking-tight leading-none">
                 Settings
               </span>
-              <Badge variant="blue" className="text-[9px] font-bold px-1.5 py-0">
+              <Badge variant="blue" className="text-[9px] font-medium px-1.5 py-0">
                 {settingsOptions.length}
               </Badge>
             </div>
@@ -143,7 +143,7 @@ export function SettingsSubSidebar({ isOpen, onClose }: SettingsSubSidebarProps)
         {/* Scrollable Settings Options List */}
         <div className="flex-1 overflow-y-auto p-2 space-y-1">
           {/* Section Header */}
-          <div className="px-2 pt-2 pb-1 text-[9px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">
+          <div className="px-2 pt-2 pb-1 text-[9px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">
             <span>Preferences</span>
             <span>{settingsOptions.length}</span>
           </div>
@@ -167,7 +167,7 @@ export function SettingsSubSidebar({ isOpen, onClose }: SettingsSubSidebarProps)
                   onClick={() => handleSelectOption(opt.href)}
                   className={`w-full group relative flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${
                     isActive
-                      ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
+                      ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
                       : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/70 border border-transparent"
                   }`}
                   title={opt.label}

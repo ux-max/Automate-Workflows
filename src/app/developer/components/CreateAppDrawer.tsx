@@ -241,11 +241,11 @@ export function CreateAppDrawer({ open, onOpenChange, onAppCreated }: CreateAppD
   const drawerHeader = (
     <div className="p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/80 rounded-t-2xl shrink-0 flex items-center justify-between">
       <div className="flex items-center space-x-3">
-        <div className="h-9 w-9 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+        <div className="h-9 w-9 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-semibold">
           <Code2 className="h-5 w-5" />
         </div>
         <div>
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
             Create Custom App
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -272,7 +272,7 @@ export function CreateAppDrawer({ open, onOpenChange, onAppCreated }: CreateAppD
         variant="outline"
         size="sm"
         onClick={handleClose}
-        className="text-xs font-semibold"
+        className="text-xs font-medium cursor-pointer"
       >
         Cancel
       </Button>
@@ -282,7 +282,7 @@ export function CreateAppDrawer({ open, onOpenChange, onAppCreated }: CreateAppD
         size="sm"
         disabled={!name.trim() || (category === "Other" && !customCategory.trim())}
         onClick={handleFinish}
-        className="space-x-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs"
+        className="space-x-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium shadow-xs cursor-pointer"
       >
         <Sparkles className="h-3.5 w-3.5" />
         <span>Create App & Open Builder</span>
@@ -302,7 +302,7 @@ export function CreateAppDrawer({ open, onOpenChange, onAppCreated }: CreateAppD
         {/* App Name & Slug */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label className="text-xs font-medium text-slate-700 dark:text-slate-300">
               App Name <span className="text-rose-500">*</span>
             </label>
             <Input
@@ -315,7 +315,7 @@ export function CreateAppDrawer({ open, onOpenChange, onAppCreated }: CreateAppD
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label className="text-xs font-medium text-slate-700 dark:text-slate-300">
               App Slug (Identifier)
             </label>
             <Input
@@ -329,7 +329,7 @@ export function CreateAppDrawer({ open, onOpenChange, onAppCreated }: CreateAppD
 
         {/* App Logo */}
         <div className="space-y-2.5">
-          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
             App Logo <span className="text-rose-500">*</span>
           </label>
 
@@ -358,13 +358,13 @@ export function CreateAppDrawer({ open, onOpenChange, onAppCreated }: CreateAppD
                 />
               ) : (
                 /* Default fallback logo using app's brand blue theme */
-                <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xl shadow-xs transition-transform group-hover:scale-105">
+                <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-xl shadow-xs transition-transform group-hover:scale-105">
                   {name ? name.trim().charAt(0).toUpperCase() : "A"}
                 </div>
               )}
 
               {/* Hover overlay hint */}
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[10px] font-semibold rounded-2xl">
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[10px] font-medium rounded-2xl">
                 <Upload className="w-3.5 h-3.5 mb-0.5" />
                 <span>{logoPreview ? "Change" : "Upload"}</span>
               </div>
@@ -390,7 +390,7 @@ export function CreateAppDrawer({ open, onOpenChange, onAppCreated }: CreateAppD
                   variant="outline"
                   size="sm"
                   onClick={() => fileInputRef.current?.click()}
-                  className="h-8 text-xs font-semibold space-x-1.5 cursor-pointer border-slate-200 dark:border-slate-700"
+                  className="h-8 text-xs font-medium space-x-1.5 cursor-pointer border-slate-200 dark:border-slate-700"
                 >
                   <Upload className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                   <span>{logoPreview ? "Replace Logo" : "Upload Logo"}</span>
@@ -401,7 +401,7 @@ export function CreateAppDrawer({ open, onOpenChange, onAppCreated }: CreateAppD
                     variant="ghost"
                     size="sm"
                     onClick={handleRemoveLogo}
-                    className="h-8 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 cursor-pointer"
+                    className="h-8 text-xs font-medium text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 cursor-pointer"
                   >
                     Reset Default
                   </Button>
@@ -426,7 +426,7 @@ export function CreateAppDrawer({ open, onOpenChange, onAppCreated }: CreateAppD
 
         {/* Primary Category */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="text-xs font-medium text-slate-700 dark:text-slate-300">
             Primary Category <span className="text-rose-500">*</span>
           </label>
           <Select
@@ -460,7 +460,7 @@ export function CreateAppDrawer({ open, onOpenChange, onAppCreated }: CreateAppD
 
         {/* Auth Type * (Positioned directly under App Logo / Category) */}
         <div className="space-y-2 pt-1">
-          <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="text-xs font-medium text-slate-700 dark:text-slate-300">
             Auth Type <span className="text-rose-500">*</span>
           </label>
           <Select
@@ -471,7 +471,7 @@ export function CreateAppDrawer({ open, onOpenChange, onAppCreated }: CreateAppD
               label: opt.label,
               icon: opt.icon,
             }))}
-            className="h-10 text-xs font-semibold"
+            className="h-10 text-xs font-medium"
           />
           <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed pt-0.5">
             {AUTH_OPTIONS.find((opt) => opt.value === (authType === "api_key" ? "parameters" : authType))?.description}

@@ -1045,39 +1045,39 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
   const getTypeBadge = (type: InbuiltActionType) => {
     switch (type) {
       case "dropdown_and_custom_fields":
-        return <Badge variant="blue" className="text-[10px] font-bold">Dropdown & Fields</Badge>
+        return <Badge variant="blue" className="text-[10px] font-medium">Dropdown & Fields</Badge>
       case "multi_step":
         return (
-          <Badge variant="outline" className="text-[10px] font-bold text-purple-700 dark:text-purple-300 border-purple-300 bg-purple-50 dark:bg-purple-950/40">
+          <Badge variant="outline" className="text-[10px] font-medium text-purple-700 dark:text-purple-300 border-purple-300 bg-purple-50 dark:bg-purple-950/40">
             Multi-Step
           </Badge>
         )
       case "app_auth_validator":
         return (
-          <Badge variant="outline" className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 border-emerald-300 bg-emerald-50 dark:bg-emerald-950/40">
+          <Badge variant="outline" className="text-[10px] font-medium text-emerald-700 dark:text-emerald-300 border-emerald-300 bg-emerald-50 dark:bg-emerald-950/40">
             Auth Validator
           </Badge>
         )
       case "webhook_validator":
         return (
-          <Badge variant="outline" className="text-[10px] font-bold text-cyan-700 dark:text-cyan-300 border-cyan-300 bg-cyan-50 dark:bg-cyan-950/40">
+          <Badge variant="outline" className="text-[10px] font-medium text-cyan-700 dark:text-cyan-300 border-cyan-300 bg-cyan-50 dark:bg-cyan-950/40">
             Webhook Validator
           </Badge>
         )
       case "delete_webhook":
         return (
-          <Badge variant="outline" className="text-[10px] font-bold text-amber-700 dark:text-amber-300 border-amber-300 bg-amber-50 dark:bg-amber-950/40">
+          <Badge variant="outline" className="text-[10px] font-medium text-amber-700 dark:text-amber-300 border-amber-300 bg-amber-50 dark:bg-amber-950/40">
             Delete Webhook
           </Badge>
         )
       case "delete_connection":
         return (
-          <Badge variant="outline" className="text-[10px] font-bold text-rose-700 dark:text-rose-300 border-rose-300 bg-rose-50 dark:bg-rose-950/40">
+          <Badge variant="outline" className="text-[10px] font-medium text-rose-700 dark:text-rose-300 border-rose-300 bg-rose-50 dark:bg-rose-950/40">
             Delete Connection
           </Badge>
         )
       default:
-        return <Badge variant="secondary" className="text-[10px]">{type}</Badge>
+        return <Badge variant="secondary" className="text-[10px] font-medium">{type}</Badge>
     }
   }
 
@@ -1096,7 +1096,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             In-Built Actions ({app.inbuiltActions?.length || 0})
           </h3>
@@ -1119,7 +1119,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
           <Button
             type="button"
             onClick={openNewInbuiltAction}
-            className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shadow-xs font-semibold cursor-pointer h-9 px-4"
+            className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shadow-xs font-medium cursor-pointer h-9 px-4"
           >
             <Plus className="w-4 h-4" />
             <span>Add In-built Action</span>
@@ -1131,7 +1131,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
       {filteredActions.length === 0 ? (
         <Card className="border-2 border-dashed border-slate-200 dark:border-slate-800 p-12 text-center rounded-2xl">
           <Sparkles className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-          <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">
+          <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
             {searchQuery ? "No matching inbuilt actions found" : "No In-built Actions configured yet"}
           </h4>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
@@ -1140,7 +1140,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
           <Button
             type="button"
             onClick={openNewInbuiltAction}
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1 font-semibold cursor-pointer"
+            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1 font-medium cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Create In-built Action</span>
@@ -1151,11 +1151,11 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-semibold">
-                  <th className="py-3 px-4 w-[28%]">Action Name & Key</th>
-                  <th className="py-3 px-3 w-[20%]">Type</th>
-                  <th className="py-3 px-3 w-[37%]">Endpoint</th>
-                  <th className="py-3 px-4 text-right w-[15%]">Actions</th>
+                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-medium">
+                  <th className="py-3 px-4 w-[28%] font-medium">Action Name & Key</th>
+                  <th className="py-3 px-3 w-[20%] font-medium">Type</th>
+                  <th className="py-3 px-3 w-[37%] font-medium">Endpoint</th>
+                  <th className="py-3 px-4 text-right w-[15%] font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
@@ -1190,7 +1190,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                         <div className="flex items-center gap-2">
                           <Badge
                             variant={action.method === "POST" ? "blue" : action.method === "DELETE" ? "destructive" : "secondary"}
-                            className="text-[9px] font-mono font-bold uppercase shrink-0"
+                            className="text-[9px] font-mono font-medium uppercase shrink-0"
                           >
                             {action.method}
                           </Badge>
@@ -1269,11 +1269,11 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
             <div className="p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 rounded-t-2xl shrink-0 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold shadow-2xs">
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 flex items-center justify-center font-semibold shadow-2xs">
                     <Layers className="w-4 h-4" />
                   </div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                    <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                       Inbuilt Action Configuration
                     </h3>
                     <button
@@ -1321,7 +1321,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                 >
                   <span>Setup Inbuilt Action</span>
                   {editingAction.nestedSteps && editingAction.nestedSteps.length > 0 && (
-                    <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-bold">
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-medium">
                       {editingAction.nestedSteps.length}
                     </span>
                   )}
@@ -1427,7 +1427,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                 {/* Name and Key */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                    <label className="text-xs font-medium text-slate-800 dark:text-slate-200 flex items-center gap-1">
                       <span>Inbuilt Action Name</span>
                       <span className="text-red-500">*</span>
                     </label>
@@ -1440,7 +1440,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                    <label className="text-xs font-medium text-slate-800 dark:text-slate-200 flex items-center gap-1">
                       <span>Inbuilt Action Key / Slug</span>
                       <span className="text-red-500">*</span>
                     </label>
@@ -1455,7 +1455,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
 
                 {/* Description */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  <label className="text-xs font-medium text-slate-800 dark:text-slate-200">
                     Inbuilt Action Description
                   </label>
                   <Input
@@ -1472,7 +1472,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                 {/* Inbuilt Action Type Dropdown */}
                 <div className="space-y-2.5 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/75 dark:bg-slate-900/60">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1">
+                    <label className="text-xs font-medium text-slate-900 dark:text-slate-100 flex items-center gap-1">
                       <span>Inbuilt Action Type</span>
                       <span className="text-red-500">*</span>
                     </label>
@@ -1490,7 +1490,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                         })
                       }}
                       options={INBUILT_ACTION_TYPES}
-                      className="h-10 text-sm font-semibold bg-white dark:bg-slate-900"
+                      className="h-10 text-sm font-medium bg-white dark:bg-slate-900"
                     />
                     <p className="text-[11px] text-slate-500 dark:text-slate-400">
                       Select the type of inbuilt action to configure its behaviour.
@@ -1510,7 +1510,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                           <button
                             type="button"
                             onClick={() => setActiveLearnMoreType(editingAction.type)}
-                            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer"
+                            className="text-blue-600 dark:text-blue-400 hover:underline font-medium cursor-pointer"
                           >
                             Learn more
                           </button>
@@ -1522,7 +1522,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                   {/* Multi Step Executes At Dropdown with Rich Descriptions (Only for Multi-Step) */}
                   {editingAction.type === "multi_step" && (
                     <div className="pt-1 space-y-1.5 animate-in fade-in-50 duration-150">
-                      <label className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1">
+                      <label className="text-xs font-medium text-slate-900 dark:text-slate-100 flex items-center gap-1">
                         <span>Multi Step Executes At</span>
                       </label>
                       <Select
@@ -1610,7 +1610,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                   return (
                     <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 space-y-3 animate-in fade-in-50 duration-150">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                        <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                           <Zap className="w-3.5 h-3.5 text-amber-500" />
                           <span>Usage & Dependent Actions ({dependentActions.length})</span>
                         </span>
@@ -1651,7 +1651,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                 <div className="p-3.5 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/40 dark:bg-blue-950/20 text-xs text-slate-600 dark:text-slate-300 flex items-start gap-2.5">
                   <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-bold text-slate-900 dark:text-slate-100 block">
+                    <span className="font-semibold text-slate-900 dark:text-slate-100 block">
                       Internal Helper Action
                     </span>
                     In-built actions are executed internally during workflow configuration (e.g. dropdown loading) and connection handshakes. They consume 0 user task credits.
@@ -1707,7 +1707,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                           {/* Card Top Row: Title & Remove '✕' */}
                           <div className="flex items-start justify-between">
                             <div>
-                              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                              <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                                 Inbuilt Action Step {index + 1}
                               </h4>
                               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -2145,14 +2145,14 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                 {/* Sandbox Detected Variables Input */}
                 {detectedPlaceholders.length > 0 && (
                   <div className="p-3 rounded-lg border border-amber-200 dark:border-amber-900/60 bg-amber-50/50 dark:bg-amber-950/20 space-y-2">
-                    <div className="flex items-center gap-1.5 text-amber-800 dark:text-amber-200 text-xs font-bold">
+                    <div className="flex items-center gap-1.5 text-amber-800 dark:text-amber-200 text-xs font-semibold">
                       <Link2 className="w-3.5 h-3.5 text-amber-600" />
                       <span>Test Parameters Required for Simulation</span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {detectedPlaceholders.map((varName) => (
                         <div key={varName} className="space-y-1">
-                          <label className="text-[10px] font-mono font-semibold text-slate-700 dark:text-slate-300">
+                          <label className="text-[10px] font-mono font-medium text-slate-700 dark:text-slate-300">
                             &#123;&#123;{varName}&#125;&#125;
                           </label>
                           <Input
@@ -2178,14 +2178,14 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                        <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                           Status: {testResult.status} {testResult.statusText}
                         </span>
                         <span className="text-[10px] text-slate-400">
                           ({testResult.latencyMs}ms)
                         </span>
                         {testResult.itemsCount !== undefined && (
-                          <Badge variant="blue" className="text-[10px]">
+                          <Badge variant="blue" className="text-[10px] font-medium">
                             {testResult.itemsCount} options detected
                           </Badge>
                         )}
@@ -2203,11 +2203,11 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                     {testResult.parsedOptions && testResult.parsedOptions.length > 0 && (
                       <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold text-blue-700 dark:text-blue-300 flex items-center gap-1">
+                          <span className="text-[11px] font-semibold text-blue-700 dark:text-blue-300 flex items-center gap-1">
                             <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                             <span>Live Dropdown Simulation (User Preview)</span>
                           </span>
-                          <Badge variant="outline" className="text-[9px]">
+                          <Badge variant="outline" className="text-[9px] font-medium">
                             Interactive Preview
                           </Badge>
                         </div>
@@ -2238,7 +2238,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                     {/* Headers Preview (if enabled) */}
                     {testResult.headers && (
                       <div className="space-y-1">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
                           HTTP Response Headers {editingAction.receiveHeaders && "(Exposed in Output)"}
                         </span>
                         <pre className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-700 dark:text-slate-300 max-h-28 overflow-y-auto">
@@ -2249,7 +2249,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
 
                     {/* Body Preview */}
                     <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                      <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
                         Response Body (JSON)
                       </span>
                       <pre className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-700 dark:text-slate-300 max-h-48 overflow-y-auto">
@@ -2267,7 +2267,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
       {/* Learn More Dialog for Response Headers */}
       <Dialog open={showHeadersLearnMore} onOpenChange={setShowHeadersLearnMore}>
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
+          <DialogTitle className="text-base font-semibold flex items-center gap-2">
             <Info className="w-4 h-4 text-blue-600" />
             How to Use: HTTP Response Headers
           </DialogTitle>
@@ -2301,7 +2301,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
             type="button"
             size="sm"
             onClick={() => setShowHeadersLearnMore(false)}
-            className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+            className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer font-medium"
           >
             Got it
           </Button>
@@ -2323,7 +2323,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
           return (
             <>
               <DialogHeader>
-                <DialogTitle className="text-base font-bold flex items-center gap-2">
+                <DialogTitle className="text-base font-semibold flex items-center gap-2">
                   <IconComp className="w-4 h-4 text-blue-600" />
                   <span>{info.title}</span>
                 </DialogTitle>
@@ -2345,7 +2345,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                 )}
 
                 <div className="space-y-2">
-                  <span className="font-bold text-slate-800 dark:text-slate-200 block">
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 block">
                     Key Architectural Capabilities:
                   </span>
 
@@ -2355,7 +2355,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                         key={idx}
                         className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60"
                       >
-                        <span className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
+                        <span className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
                           <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" />
                           <span>{b.label}</span>
                         </span>
@@ -2373,7 +2373,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                   type="button"
                   size="sm"
                   onClick={() => setActiveLearnMoreType(null)}
-                  className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white"
+                  className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium"
                 >
                   Got it
                 </Button>
@@ -2386,7 +2386,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
       {/* Learn More Dialog for Nested Inbuilt Actions (Step 2) */}
       <Dialog open={showNestedStepsLearnMore} onOpenChange={setShowNestedStepsLearnMore}>
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
+          <DialogTitle className="text-base font-semibold flex items-center gap-2">
             <Layers className="w-4 h-4 text-blue-600" />
             How to Use: In-built Actions & Chained Steps
           </DialogTitle>
@@ -2400,7 +2400,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
           </div>
 
           <div className="space-y-2">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
               How Developer Configures It:
             </h4>
             <ol className="list-decimal pl-4 space-y-1.5 text-slate-600 dark:text-slate-400">
@@ -2417,7 +2417,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
           </div>
 
           <div className="space-y-1.5">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-emerald-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-emerald-600">
               How End-Users Experience It:
             </h4>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -2430,7 +2430,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
             type="button"
             size="sm"
             onClick={() => setShowNestedStepsLearnMore(false)}
-            className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+            className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer font-medium"
           >
             Got it
           </Button>
@@ -2549,7 +2549,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
         {apiLearnMoreTopic && (
           <div className="p-6 space-y-4">
             <DialogHeader>
-              <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <DialogTitle className="text-base font-semibold flex items-center gap-2">
                 <Info className="w-5 h-5 text-blue-600 shrink-0" />
                 <span>
                   {apiLearnMoreTopic === "api_endpoint" && "How to Use: Inbuilt API Endpoints"}
@@ -2574,15 +2574,15 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
               {apiLearnMoreTopic === "api_endpoint" && (
                 <>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Endpoint URL:</strong> Enter the full REST URL. You can embed dynamic tags like <code>&#123;&#123;connection.access_token&#125;&#125;</code> or <code>&#123;&#123;input.field&#125;&#125;</code> directly in the URL path.</span>
                   </div>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>HTTP Method:</strong> Choose GET (for fetching dropdown items) or POST/PUT/DELETE for background validation and lifecycle management.</span>
                   </div>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Zero Task Credits:</strong> In-built actions execute purely for UI rendering and connection management, consuming 0 credits for users.</span>
                   </div>
                 </>
@@ -2591,11 +2591,11 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
               {apiLearnMoreTopic === "http_headers" && (
                 <>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Authorization Headers:</strong> Pass authentication tokens (e.g. <code>Bearer &#123;&#123;connection.access_token&#125;&#125;</code>) so your API authorizes the request.</span>
                   </div>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Receive Headers Option:</strong> Check this box if your API returns critical data (like pagination cursors or rate limits) in the response headers.</span>
                   </div>
                 </>
@@ -2604,15 +2604,15 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
               {apiLearnMoreTopic === "parameters" && (
                 <>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Query Parameters:</strong> Appended to the URL query string (e.g. <code>?limit=100&status=active</code>).</span>
                   </div>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Path Parameters:</strong> Replaces placeholders in the endpoint path (e.g. <code>/workspaces/&#123;&#123;workspace_id&#125;&#125;</code>).</span>
                   </div>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Body Parameters:</strong> Serialized as the JSON request payload for POST, PUT, and PATCH methods.</span>
                   </div>
                 </>
@@ -2621,15 +2621,15 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
               {apiLearnMoreTopic === "config" && (
                 <>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Step 1:</strong> Define metadata and action type (Dynamic Dropdown, Auth Validator, or Webhook Lifecycle).</span>
                   </div>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Step 2:</strong> Chain multi-step execution dependencies if this action relies on prior data.</span>
                   </div>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Step 3:</strong> Configure API endpoint, parameters, headers, and test the live response.</span>
                   </div>
                 </>
@@ -2638,11 +2638,11 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
               {apiLearnMoreTopic === "dynamic_param" && (
                 <>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Cascading Dropdowns:</strong> Links this In-built Action to a parent dropdown so selecting a Workspace automatically updates the list of Projects.</span>
                   </div>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Key Mapping:</strong> Select which field from the parent action supplies the filter value.</span>
                   </div>
                 </>
@@ -2651,11 +2651,11 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
               {apiLearnMoreTopic === "static_param" && (
                 <>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Default Value:</strong> Automatically sent if the user does not select or provide a custom value.</span>
                   </div>
                   <div className="flex items-start gap-2 leading-relaxed">
-                    <span className="text-blue-600 font-bold">•</span>
+                    <span className="text-blue-600 font-semibold">•</span>
                     <span><strong>Sandbox Test Value:</strong> Used when testing the endpoint inside the Developer Sandbox console.</span>
                   </div>
                 </>
@@ -2667,7 +2667,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                 type="button"
                 size="sm"
                 onClick={() => setApiLearnMoreTopic(null)}
-                className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer font-medium"
               >
                 Got it
               </Button>
@@ -2719,7 +2719,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => setOpenParamSettingsId(null)}
-                  className="h-9 px-4 text-xs cursor-pointer"
+                  className="h-9 px-4 text-xs cursor-pointer font-medium"
                 >
                   Cancel
                 </Button>
@@ -2978,12 +2978,12 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
         {previewActionJson && (
           <div className="space-y-4">
             <DialogHeader>
-              <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <DialogTitle className="text-base font-semibold flex items-center gap-2">
                 <Code className="w-4 h-4 text-blue-600" />
                 <span>In-built Action Schema & API Definition</span>
               </DialogTitle>
               <DialogDescription>
-                Raw technical JSON configuration for <code className="font-mono font-bold text-slate-900 dark:text-slate-100">{previewActionJson.name}</code> ({previewActionJson.key}).
+                Raw technical JSON configuration for <code className="font-mono font-medium text-slate-900 dark:text-slate-100">{previewActionJson.name}</code> ({previewActionJson.key}).
               </DialogDescription>
             </DialogHeader>
 
@@ -2999,7 +2999,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                 onClick={() => {
                   navigator.clipboard.writeText(JSON.stringify(previewActionJson, null, 2))
                 }}
-                className="h-8 text-xs gap-1.5"
+                className="h-8 text-xs gap-1.5 font-medium"
               >
                 <Copy className="w-3.5 h-3.5" />
                 Copy JSON
@@ -3008,7 +3008,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
                 type="button"
                 size="sm"
                 onClick={() => setPreviewActionJson(null)}
-                className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white"
+                className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium"
               >
                 Close
               </Button>

@@ -68,7 +68,7 @@ export default function PrivateInvitePage() {
       <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 dark:bg-slate-950">
         <Card className="max-w-md w-full border border-slate-200 dark:border-slate-800 p-6 text-center rounded-2xl shadow-sm">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
             Invalid or Expired Invite Link
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
@@ -76,12 +76,12 @@ export default function PrivateInvitePage() {
           </p>
           <div className="mt-6 flex justify-center gap-3">
             <Link href="/developer">
-              <Button variant="outline" size="sm" className="text-xs">
+              <Button variant="outline" size="sm" className="text-xs font-medium">
                 Developer Hub
               </Button>
             </Link>
             <Link href="/apps">
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs">
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium">
                 Browse Public Apps
               </Button>
             </Link>
@@ -98,12 +98,12 @@ export default function PrivateInvitePage() {
         <div className="flex items-center justify-between">
           <Link
             href="/developer"
-            className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-slate-100"
+            className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-900 dark:hover:text-slate-100"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Back to Developer Hub
           </Link>
-          <Badge variant="outline" className="text-[10px]">
+          <Badge variant="outline" className="text-[10px] font-medium">
             Private Beta Invite
           </Badge>
         </div>
@@ -112,7 +112,7 @@ export default function PrivateInvitePage() {
         <Card className="border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl rounded-2xl overflow-hidden">
           <CardHeader className="text-center pb-2 pt-6">
 
-            <CardTitle className="text-xl font-bold text-slate-900 dark:text-slate-100">
+            <CardTitle className="text-xl font-semibold text-slate-900 dark:text-slate-100">
               {app.name}
             </CardTitle>
             <CardDescription className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -120,14 +120,14 @@ export default function PrivateInvitePage() {
             </CardDescription>
 
             <div className="flex items-center justify-center gap-2 mt-3">
-              <Badge variant="outline" className="text-xs font-mono">
+              <Badge variant="outline" className="text-xs font-mono font-medium">
                 v{app.version}
               </Badge>
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs font-medium">
                 {app.category}
               </Badge>
               {app.author.isVerified && (
-                <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   Verified Author
                 </span>
@@ -150,12 +150,12 @@ export default function PrivateInvitePage() {
 
             {/* Included Triggers & Actions preview */}
             <div className="space-y-2">
-              <h5 className="text-xs font-bold text-slate-700 dark:text-slate-300">
+              <h5 className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                 Capabilities Included in This Connector:
               </h5>
               <div className="grid grid-cols-2 gap-2">
                 <div className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 mb-1">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-400 mb-1">
                     <Zap className="w-3.5 h-3.5" />
                     Triggers ({app.triggers.length})
                   </div>
@@ -169,7 +169,7 @@ export default function PrivateInvitePage() {
                 </div>
 
                 <div className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">
                     <Layers className="w-3.5 h-3.5" />
                     Actions ({app.actions.length})
                   </div>
@@ -188,7 +188,7 @@ export default function PrivateInvitePage() {
             {!isAccepted ? (
               <form onSubmit={handleAccept} className="space-y-3 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Your Workspace Email
                   </label>
                   <Input
@@ -203,7 +203,7 @@ export default function PrivateInvitePage() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 h-10 shadow-xs"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 h-10 shadow-xs font-medium cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4" />
                   Accept Invitation & Add to Workspace
@@ -213,7 +213,7 @@ export default function PrivateInvitePage() {
               <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-center space-y-3 animate-in fade-in duration-200">
                 <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400 mx-auto" />
                 <div>
-                  <h4 className="text-sm font-bold text-emerald-900 dark:text-emerald-200">
+                  <h4 className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
                     Successfully Installed!
                   </h4>
                   <p className="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">
@@ -223,14 +223,14 @@ export default function PrivateInvitePage() {
 
                 <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
                   <Link href={`/workflows/editor?app=${app.id}`} className="w-full sm:w-auto">
-                    <Button size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs gap-1.5">
+                    <Button size="sm" className="w-full text-xs gap-1.5 font-medium bg-blue-600 hover:bg-blue-700 text-white">
                       <Workflow className="w-3.5 h-3.5" />
                       Build Workflow With {app.name}
                     </Button>
                   </Link>
 
                   <Link href="/developer" className="w-full sm:w-auto">
-                    <Button variant="outline" size="sm" className="w-full text-xs">
+                    <Button variant="outline" size="sm" className="w-full text-xs font-medium">
                       Developer Hub
                     </Button>
                   </Link>

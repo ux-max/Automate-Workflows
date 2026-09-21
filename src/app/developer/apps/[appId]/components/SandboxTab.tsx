@@ -116,10 +116,10 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
       <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/90 dark:border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <Badge variant="blue" className="text-[10px] font-bold uppercase">
+            <Badge variant="blue" className="text-[10px] font-medium uppercase">
               Triple-Layer Sandbox
             </Badge>
-            <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
               Test Safely Before Going Live
             </h4>
           </div>
@@ -132,7 +132,7 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
           <Link href={`/workflows/editor?app=${app.id}`}>
             <Button
               size="sm"
-              className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shadow-xs"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shadow-xs font-medium"
             >
               <Workflow className="w-3.5 h-3.5" />
               Test on Canvas
@@ -148,12 +148,12 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
           className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 cursor-pointer select-none hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors"
         >
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-xs shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 flex items-center justify-center font-semibold text-xs shrink-0">
               L1
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <CardTitle className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <CardTitle className="text-base font-semibold text-slate-900 dark:text-slate-100">
                   In-Portal Visual Form Debugger
                 </CardTitle>
                 <button
@@ -175,7 +175,7 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
           </div>
 
           <div className="flex items-center gap-3 shrink-0" onClick={(e) => e.stopPropagation()}>
-            <Badge variant="outline" className="text-[10px]">Step 1</Badge>
+            <Badge variant="outline" className="text-[10px] font-medium">Step 1</Badge>
 
             {app.actions.length > 0 && (
               <div className="flex items-center gap-2">
@@ -191,7 +191,7 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
                       value: act.id,
                       label: `${act.name} (${act.method})`,
                     }))}
-                    className="h-8 text-xs font-semibold"
+                    className="h-8 text-xs font-medium"
                   />
                 </div>
               </div>
@@ -221,29 +221,29 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
           {!selectedAction ? (
             <div className="p-8 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
               <Layers className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
-              <p className="text-xs text-slate-500">Configure at least one action in the Actions tab to test.</p>
+              <p className="text-xs text-slate-500 font-medium">Configure at least one action in the Actions tab to test.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left Column: Interactive Form Fields matching action inputs */}
               <div className="lg:col-span-6 space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-                  <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                  <h5 className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                     <Layers className="w-4 h-4 text-blue-600" />
                     Input Parameters Form
                   </h5>
-                  <Badge variant="outline" className="text-[10px] font-mono">
+                  <Badge variant="outline" className="text-[10px] font-mono font-medium">
                     {selectedAction.method} {selectedAction.endpointUrl}
                   </Badge>
                 </div>
 
                 {selectedAction.inputFields.length === 0 ? (
-                  <p className="text-xs text-slate-500 py-4">This action has no input fields configured.</p>
+                  <p className="text-xs text-slate-500 py-4 font-medium">This action has no input fields configured.</p>
                 ) : (
                   <div className="space-y-3">
                     {selectedAction.inputFields.map((field) => (
                       <div key={field.id}>
-                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                           {field.label}
                           {field.required && <span className="text-rose-500 ml-0.5">*</span>}
                         </label>
@@ -282,7 +282,7 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
                     type="button"
                     onClick={runTestRequest}
                     disabled={isRunningTest}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shadow-xs h-9"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shadow-xs h-9 font-medium"
                   >
                     <Play className={`w-3.5 h-3.5 ${isRunningTest ? "animate-spin" : ""}`} />
                     {isRunningTest ? "Executing Test Request..." : "Send Test Request"}
@@ -293,7 +293,7 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
               {/* Right Column: Visual Response Table (Zero Raw JSON) */}
               <div className="lg:col-span-6 space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-                  <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                  <h5 className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                     <Table className="w-4 h-4 text-emerald-600" />
                     Structured Response Data (Zero JSON)
                   </h5>
@@ -304,13 +304,13 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
                         variant="outline"
                         size="sm"
                         onClick={() => setPreviewRawTestModal(true)}
-                        className="h-6 px-2 text-[11px] gap-1 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer shadow-2xs"
+                        className="h-6 px-2 text-[11px] gap-1 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer shadow-2xs font-medium"
                         title="Inspect Raw JSON Response"
                       >
                         <Eye className="w-3 h-3 text-blue-600" />
                         <span>Raw JSON</span>
                       </Button>
-                      <Badge className="bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-mono">
+                      <Badge className="bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-mono font-medium">
                         {testResult.status} {testResult.statusText}
                       </Badge>
                       <span className="text-[10px] font-mono text-slate-400">{testResult.latency}ms</span>
@@ -332,12 +332,12 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
                   <div className="space-y-3 animate-in fade-in duration-200">
                     <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-2xs">
                       <table className="w-full text-left text-xs">
-                        <thead className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 font-semibold uppercase text-[10px]">
+                        <thead className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 font-medium text-xs">
                           <tr>
-                            <th className="py-2.5 px-3">Field</th>
-                            <th className="py-2.5 px-3">Type</th>
-                            <th className="py-2.5 px-3">Returned Value</th>
-                            <th className="py-2.5 px-2 text-right w-12"></th>
+                            <th className="py-2.5 px-3 font-medium">Field</th>
+                            <th className="py-2.5 px-3 font-medium">Type</th>
+                            <th className="py-2.5 px-3 font-medium">Returned Value</th>
+                            <th className="py-2.5 px-2 text-right w-12 font-medium"></th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
@@ -401,7 +401,7 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
           <div className="flex items-center gap-2">
             <Layers className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <div>
-              <CardTitle className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <CardTitle className="text-base font-semibold text-slate-900 dark:text-slate-100">
                 Multi-Environment Deployment & Sandbox Access
               </CardTitle>
               <CardDescription className="text-xs text-slate-500 dark:text-slate-400">
@@ -411,8 +411,8 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
           </div>
 
           <div className="flex items-center gap-3">
-            <Badge variant="outline" className="text-[10px]">Step 2</Badge>
-            <Badge variant="secondary" className="text-[10px] font-mono">Layers 2 & 3</Badge>
+            <Badge variant="outline" className="text-[10px] font-medium">Step 2</Badge>
+            <Badge variant="secondary" className="text-[10px] font-mono font-medium">Layers 2 & 3</Badge>
             <ChevronDown
               className={cn(
                 "w-4 h-4 text-slate-400 transition-transform duration-200",
@@ -429,23 +429,23 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
                 {/* Layer 2 */}
                 <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 space-y-3">
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-xs shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 flex items-center justify-center font-semibold text-xs shrink-0">
                       L2
                     </div>
                     <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                      <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                         Instant Private Canvas Availability
                       </h4>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
                         Your custom app is immediately visible in your personal workflow canvas with the{" "}
-                        <Badge variant="outline" className="text-[10px]">
+                        <Badge variant="outline" className="text-[10px] font-medium">
                           Private (Dev)
                         </Badge>{" "}
                         badge. You can connect it with Slack, Sheets, or Webhooks right now.
                       </p>
                       <div className="pt-2">
                         <Link href={`/workflows/editor?app=${app.id}`}>
-                          <Button variant="outline" size="sm" className="text-xs gap-1.5 border-blue-200 text-blue-700 dark:text-blue-300">
+                          <Button variant="outline" size="sm" className="text-xs gap-1.5 border-blue-200 text-blue-700 dark:text-blue-300 font-medium">
                             Open Canvas With App
                             <ArrowRight className="w-3.5 h-3.5" />
                           </Button>
@@ -458,18 +458,18 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
                 {/* Layer 3 */}
                 <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 space-y-3">
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-xs shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-semibold text-xs shrink-0">
                       L3
                     </div>
                     <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                      <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                         Cryptographic Private Invite Links
                       </h4>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
                         Share a private invite URL with up to {app.distribution.maxTesters} team members or clients. They can install the app into their workspace before public launch.
                       </p>
                       <div className="pt-2">
-                        <span className="text-xs text-emerald-700 dark:text-emerald-400 font-semibold">
+                        <span className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">
                           {app.distribution.activeInstalls} active beta testers installed
                         </span>
                       </div>
@@ -491,12 +491,12 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
         {testResult && (
           <div className="space-y-4">
             <DialogHeader>
-              <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <DialogTitle className="text-base font-semibold flex items-center gap-2">
                 <Code className="w-4 h-4 text-emerald-600" />
                 <span>Raw HTTP Test Execution Payload</span>
               </DialogTitle>
               <DialogDescription>
-                Live response snapshot for <code className="font-mono font-bold text-slate-900 dark:text-slate-100">{selectedAction?.name || "Action"}</code> ({testResult.status} {testResult.statusText} • {testResult.latency}ms).
+                Live response snapshot for <code className="font-mono font-medium text-slate-900 dark:text-slate-100">{selectedAction?.name || "Action"}</code> ({testResult.status} {testResult.statusText} • {testResult.latency}ms).
               </DialogDescription>
             </DialogHeader>
 
@@ -512,7 +512,7 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
                 onClick={() => {
                   navigator.clipboard.writeText(JSON.stringify(testResult, null, 2))
                 }}
-                className="h-8 text-xs gap-1.5 cursor-pointer"
+                className="h-8 text-xs gap-1.5 cursor-pointer font-medium"
               >
                 <Copy className="w-3.5 h-3.5" />
                 Copy JSON
@@ -521,7 +521,7 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
                 type="button"
                 size="sm"
                 onClick={() => setPreviewRawTestModal(false)}
-                className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer font-medium"
               >
                 Close
               </Button>
@@ -533,7 +533,7 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
       {/* Sandbox Testing Environment Helping Modal */}
       <Dialog open={showSandboxHelpModal} onOpenChange={setShowSandboxHelpModal}>
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
+          <DialogTitle className="text-base font-semibold flex items-center gap-2">
             <Info className="w-4 h-4 text-blue-600" />
             How to Use: Triple-Layer Sandbox & Live Testing
           </DialogTitle>
@@ -547,7 +547,7 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
           </div>
 
           <div className="space-y-2">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
               How Developer Uses It:
             </h4>
             <ol className="list-decimal pl-4 space-y-1.5 text-slate-600 dark:text-slate-400">
@@ -564,7 +564,7 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
           </div>
 
           <div className="space-y-1.5">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-emerald-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-emerald-600">
               How End-Users Experience It:
             </h4>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -577,7 +577,7 @@ export function SandboxTab({ app, onChange }: SandboxTabProps) {
             type="button"
             size="sm"
             onClick={() => setShowSandboxHelpModal(false)}
-            className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+            className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer font-medium"
           >
             Got it
           </Button>

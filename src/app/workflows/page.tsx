@@ -228,7 +228,7 @@ export default function WorkflowsPage() {
                 size="sm"
                 variant="outline"
                 onClick={requestBulkDelete}
-                className="border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 hover:border-red-300 font-bold text-xs space-x-1.5 shadow-none h-9 px-3.5 cursor-pointer animate-in fade-in"
+                className="border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 hover:border-red-300 font-medium text-xs space-x-1.5 shadow-none h-9 px-3.5 cursor-pointer animate-in fade-in"
               >
                 <Trash2 className="h-4 w-4 text-red-600 dark:text-red-400" />
                 <span>Delete ({selectedCount})</span>
@@ -327,7 +327,7 @@ export default function WorkflowsPage() {
                 <Folder className="h-6 w-6" />
               </div>
               <div className="space-y-1 max-w-sm mx-auto">
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                   {selectedFolderFilter !== "All Folders"
                     ? `No workflows in '${selectedFolderFilter}'`
                     : "No workflows found"}
@@ -350,7 +350,7 @@ export default function WorkflowsPage() {
                   </Button>
                   <Button
                     size="sm"
-                    className="font-bold text-xs space-x-1.5"
+                    className="font-medium text-xs space-x-1.5"
                     onClick={() => {
                       setNewWorkflowFolder(selectedFolderFilter !== "All Folders" ? selectedFolderFilter : "")
                       setIsCreateModalOpen(true)
@@ -452,7 +452,7 @@ export default function WorkflowsPage() {
 
                     {wf.steps.length > 2 && (
                       <div className="relative group shrink-0" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-center font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2 py-1 rounded-md border border-blue-200 dark:border-blue-800 text-[11px] cursor-pointer transition-colors shadow-2xs">
+                        <div className="flex items-center justify-center font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2 py-1 rounded-md border border-blue-200 dark:border-blue-800 text-[11px] cursor-pointer transition-colors shadow-2xs">
                           +{wf.steps.length - 2}
                         </div>
 
@@ -488,7 +488,7 @@ export default function WorkflowsPage() {
                 <Folder className="h-6 w-6" />
               </div>
               <div className="space-y-1 max-w-sm mx-auto">
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                     {selectedFolderFilter !== "All Folders"
                       ? `No workflows in '${selectedFolderFilter}'`
                       : "No workflows found"}
@@ -511,7 +511,7 @@ export default function WorkflowsPage() {
                     </Button>
                     <Button
                       size="sm"
-                      className="font-bold text-xs space-x-1.5"
+                      className="font-medium text-xs space-x-1.5"
                       onClick={() => {
                         setNewWorkflowFolder(selectedFolderFilter !== "All Folders" ? selectedFolderFilter : "")
                         setIsCreateModalOpen(true)
@@ -526,7 +526,7 @@ export default function WorkflowsPage() {
             ) : (
               <div className="overflow-x-auto overflow-y-visible min-h-[360px] pb-10">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[11px]">
+                  <thead className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
                     <tr>
                       <th className="py-3 px-4 w-10 text-center">
                         <TableCheckbox
@@ -603,7 +603,7 @@ export default function WorkflowsPage() {
                                 checked={wf.status === "On"}
                                 onCheckedChange={() => handleToggleStatus(wf.id)}
                               />
-                              <span className={`text-[11px] font-medium ${wf.status === "On" ? "text-blue-600 dark:text-blue-400 font-bold" : "text-slate-400 dark:text-slate-500"}`}>
+                              <span className={`text-[11px] font-medium ${wf.status === "On" ? "text-blue-600 dark:text-blue-400 font-semibold" : "text-slate-400 dark:text-slate-500"}`}>
                                 {wf.status}
                               </span>
                             </div>
@@ -620,7 +620,7 @@ export default function WorkflowsPage() {
 
                               {wf.steps.length > 3 && (
                                 <div className="relative group/chainMore shrink-0">
-                                  <div className="h-7 px-2 rounded-lg bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 font-bold text-[11px] flex items-center justify-center cursor-pointer transition-colors shadow-2xs">
+                                  <div className="h-7 px-2 rounded-lg bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 font-medium text-[11px] flex items-center justify-center cursor-pointer transition-colors shadow-2xs">
                                     +{wf.steps.length - 3}
                                   </div>
 
@@ -659,14 +659,14 @@ export default function WorkflowsPage() {
 
                             {isMoveOpen && (
                               <div className={`absolute left-2 z-[100] w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl py-1.5 text-xs animate-in fade-in zoom-in-95 ${openUpward ? "bottom-full mb-1" : "top-12"}`}>
-                                <div className="px-3 py-1 font-bold text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-100 dark:border-slate-800">
+                                <div className="px-3 py-1 font-semibold text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-100 dark:border-slate-800">
                                   Move Workflow To:
                                 </div>
 
                                 <button
                                   onClick={() => handleMoveWorkflow(wf.id, "")}
                                   className={`w-full flex items-center justify-between px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
-                                    !currentLocation ? "font-bold text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/30" : "text-slate-700 dark:text-slate-300"
+                                    !currentLocation ? "font-semibold text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/30" : "text-slate-700 dark:text-slate-300"
                                   }`}
                                 >
                                   <div className="flex items-center space-x-2 truncate">
@@ -681,7 +681,7 @@ export default function WorkflowsPage() {
                                     key={fName}
                                     onClick={() => handleMoveWorkflow(wf.id, fName)}
                                     className={`w-full flex items-center justify-between px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
-                                      currentLocation === fName ? "font-bold text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/30" : "text-slate-700 dark:text-slate-300"
+                                      currentLocation === fName ? "font-semibold text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/30" : "text-slate-700 dark:text-slate-300"
                                     }`}
                                   >
                                     <div className="flex items-center space-x-2 truncate">

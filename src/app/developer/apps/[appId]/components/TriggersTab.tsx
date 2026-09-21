@@ -530,7 +530,7 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
             {/* Live Webhook Capture Listener */}
             <div className="p-3.5 rounded-xl bg-blue-50/40 dark:bg-blue-950/20 border border-blue-200/80 dark:border-blue-900/80 space-y-3">
               <div className="flex items-center justify-between">
-                <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                <h5 className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                   <Radio className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                   Live Webhook Capture Listener
                 </h5>
@@ -715,7 +715,7 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
         {getTriggerCategory(editingTrigger) === "polling" && (
           <div className="p-4 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/20 dark:bg-blue-950/20 space-y-3 animate-in fade-in duration-150">
             <div className="flex items-center justify-between">
-              <h5 className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+              <h5 className="text-xs font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-blue-600" />
                 Polling Query Configuration
               </h5>
@@ -838,7 +838,7 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
         <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
           <div className="flex items-center justify-between mb-2">
             <div>
-              <h5 className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+              <h5 className="text-xs font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                 <Table className="w-4 h-4 text-blue-600" />
                 Trigger Output Variables
               </h5>
@@ -942,7 +942,7 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
       {/* Header Bar */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             Configured Triggers ({app.triggers.length})
           </h3>
@@ -965,7 +965,7 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
       {app.triggers.length === 0 ? (
         <Card className="border-2 border-dashed border-slate-200 dark:border-slate-800 p-12 text-center rounded-2xl">
           <Zap className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-          <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">No triggers configured yet</h4>
+          <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300">No triggers configured yet</h4>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
             Add an Instant Webhook or Polling trigger so users can trigger automations when records change in your service.
           </p>
@@ -993,10 +993,10 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">{trigger.name}</h4>
+                        <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{trigger.name}</h4>
                         <Badge
                           variant="blue"
-                          className="text-[10px] uppercase font-semibold"
+                          className="text-[10px] font-medium"
                         >
                           {trigger.type === "webhook" ? "Instant Webhook" : "Polling"}
                         </Badge>
@@ -1006,16 +1006,16 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
 
                       <div className="mt-3 flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
                         <span>
-                          <strong>{trigger.sampleFields.length}</strong> output fields mapped
+                          <strong className="font-semibold">{trigger.sampleFields.length}</strong> output fields mapped
                         </span>
                         {trigger.type === "polling" && trigger.pollingConfig && (
                           <span>
-                            • Polling interval: <strong>{trigger.pollingConfig.frequencyMinutes}m</strong>
+                            • Polling interval: <strong className="font-semibold">{trigger.pollingConfig.frequencyMinutes}m</strong>
                           </span>
                         )}
                         {trigger.type === "webhook" && trigger.webhookConfig && (
                           <span>
-                            • Setup: <strong>{trigger.webhookConfig.setupType === "rest_hook" ? "REST Hook" : "Catch URL"}</strong>
+                            • Setup: <strong className="font-semibold">{trigger.webhookConfig.setupType === "rest_hook" ? "REST Hook" : "Catch URL"}</strong>
                           </span>
                         )}
                       </div>
@@ -1072,11 +1072,11 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
             <div className="p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 rounded-t-2xl shrink-0 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold shadow-2xs">
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 flex items-center justify-center font-semibold shadow-2xs">
                     <Zap className="w-4 h-4" />
                   </div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                    <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                       Trigger Configuration
                     </h3>
                     <button
@@ -1126,7 +1126,7 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
                     >
                       <span>Setup Inbuilt Actions</span>
                       {editingTrigger.inbuiltActionSteps && editingTrigger.inbuiltActionSteps.length > 0 && (
-                        <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-bold">
+                        <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-medium">
                           {editingTrigger.inbuiltActionSteps.length}
                         </span>
                       )}
@@ -1143,7 +1143,7 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
                     >
                       <span>Setup Multi-Step Action</span>
                       {editingTrigger.isMultiStep && (
-                        <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold">
+                        <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-medium">
                           Active
                         </span>
                       )}
@@ -1332,7 +1332,7 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
                   <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto">
                     <Sparkles className="w-5 h-5" />
                   </div>
-                  <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                  <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                     No Inbuilt Actions Attached Yet
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
@@ -1347,10 +1347,10 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center justify-center">
+                        <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-semibold flex items-center justify-center">
                           {idx + 1}
                         </span>
-                        <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                        <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                           Inbuilt Action Step {idx + 1}
                         </span>
                       </div>
@@ -1444,7 +1444,7 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
                   <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto">
                     <Layers className="w-5 h-5" />
                   </div>
-                  <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                  <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                     No Multi-Step Actions Attached Yet
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
@@ -1460,7 +1460,7 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
                     {/* Card Top Row: Title & Remove '✕' */}
                     <div className="flex items-start justify-between">
                       <div>
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                        <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                           Multi-Step Action {idx + 1}
                         </h4>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -1580,7 +1580,7 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
   {/* Learn More Dialog */}
   <Dialog open={showLearnMoreDialog} onOpenChange={setShowLearnMoreDialog}>
     <DialogHeader>
-      <DialogTitle className="text-base font-bold flex items-center gap-2">
+      <DialogTitle className="text-base font-semibold flex items-center gap-2">
         <Zap className="w-4 h-4 text-blue-600" />
         How to Use: Triggers & In-built Actions
       </DialogTitle>
@@ -1590,28 +1590,28 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
     </DialogHeader>
     <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300">
       <div className="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl border border-blue-200 dark:border-blue-900/60 text-slate-700 dark:text-slate-300">
-        <strong>What this does:</strong> Listens for incoming real-time webhooks or polls your service on a schedule to initiate automated user workflows.
+        <strong className="font-semibold">What this does:</strong> Listens for incoming real-time webhooks or polls your service on a schedule to initiate automated user workflows.
       </div>
 
       <div className="space-y-2">
-        <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
+        <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
           How Developer Configures It:
         </h4>
         <ol className="list-decimal pl-4 space-y-1.5 text-slate-600 dark:text-slate-400">
           <li>
-            <strong>Choose Trigger Type:</strong> Select <strong>Instant Webhook</strong> (real-time push) or <strong>Polling</strong> (fetch updates every 5-15 mins).
+            <strong className="font-semibold">Choose Trigger Type:</strong> Select <strong>Instant Webhook</strong> (real-time push) or <strong>Polling</strong> (fetch updates every 5-15 mins).
           </li>
           <li>
-            <strong>Attach In-built Actions:</strong> Link internal helper actions to dynamically populate user dropdowns (e.g. List of Boards or Channels).
+            <strong className="font-semibold">Attach In-built Actions:</strong> Link internal helper actions to dynamically populate user dropdowns (e.g. List of Boards or Channels).
           </li>
           <li>
-            <strong>Sample Output Fields:</strong> Define the JSON keys emitted when the trigger fires so downstream action steps can use them.
+            <strong className="font-semibold">Sample Output Fields:</strong> Define the JSON keys emitted when the trigger fires so downstream action steps can use them.
           </li>
         </ol>
       </div>
 
       <div className="space-y-1.5">
-        <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-emerald-600">
+        <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
           How End-Users Experience It:
         </h4>
         <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -1642,12 +1642,12 @@ export function TriggersTab({ app, onChange }: TriggersTabProps) {
     {previewTriggerJson && (
       <div className="space-y-4">
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
+          <DialogTitle className="text-base font-semibold flex items-center gap-2">
             <Code className="w-4 h-4 text-blue-600" />
             <span>Trigger Output Schema & Payload Definition</span>
           </DialogTitle>
           <DialogDescription>
-            Raw technical JSON definition and sample payload fields for <code className="font-mono font-bold text-slate-900 dark:text-slate-100">{previewTriggerJson.name}</code> ({previewTriggerJson.key}).
+            Raw technical JSON definition and sample payload fields for <code className="font-mono font-semibold text-slate-900 dark:text-slate-100">{previewTriggerJson.name}</code> ({previewTriggerJson.key}).
           </DialogDescription>
         </DialogHeader>
 

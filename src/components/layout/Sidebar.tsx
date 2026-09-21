@@ -199,7 +199,7 @@ export function Sidebar() {
           {/* SECTION 1: PLATFORM MAIN */}
           <div className="space-y-1">
             {!isCollapsed && (
-              <div className="px-3 pt-2 pb-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              <div className="px-3 pt-2 pb-1 text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                 Platform
               </div>
             )}
@@ -231,7 +231,7 @@ export function Sidebar() {
                       isCollapsed ? "justify-center px-0 py-2.5" : "px-3 py-2.5"
                     } rounded-lg text-xs font-medium transition-all ${
                       isActive
-                        ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
+                        ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/60"
                     }`}
                     title={isCollapsed ? `Folders (${folders.length})` : undefined}
@@ -253,7 +253,7 @@ export function Sidebar() {
                         <span className="truncate">{item.label}</span>
                         <div className="flex items-center space-x-1.5 shrink-0">
                           <span
-                            className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full border transition-colors ${
+                            className={`text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-full border transition-colors ${
                               isActive
                                 ? "bg-blue-100/80 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
                                 : "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border-slate-200/80 dark:border-slate-700 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/60 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:border-blue-200 dark:group-hover:border-blue-800"
@@ -263,7 +263,7 @@ export function Sidebar() {
                           </span>
                           <ChevronRight
                             className={`h-3.5 w-3.5 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${
-                              isActive ? "rotate-90 text-blue-600 dark:text-blue-400 font-bold" : "group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                              isActive ? "rotate-90 text-blue-600 dark:text-blue-400 font-semibold" : "group-hover:text-slate-600 dark:group-hover:text-slate-300"
                             }`}
                           />
                         </div>
@@ -272,7 +272,7 @@ export function Sidebar() {
 
                     {/* Tooltip in Collapsed Mode */}
                     {isCollapsed && (
-                      <div className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none">
+                      <div className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[11px] font-medium px-2.5 py-1.5 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none">
                         {item.label} ({folders.length})
                       </div>
                     )}
@@ -301,7 +301,7 @@ export function Sidebar() {
                     isCollapsed ? "justify-center px-0 py-2.5" : "px-3 py-2.5"
                   } rounded-lg text-xs font-medium transition-all ${
                     isActive
-                      ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
+                      ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/60"
                   }`}
                 >
@@ -321,7 +321,7 @@ export function Sidebar() {
                     <div className="ml-3 flex items-center justify-between flex-1 min-w-0">
                       <span className="truncate">{item.label}</span>
                       {"badge" in item && item.badge && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 shrink-0">
+                        <span className="text-[10px] font-medium px-1.5 py-0.2 rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 shrink-0">
                           {item.badge}
                         </span>
                       )}
@@ -330,7 +330,7 @@ export function Sidebar() {
 
                   {/* Tooltip in Collapsed Mode */}
                   {isCollapsed && (
-                    <div className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none">
+                    <div className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[11px] font-medium px-2.5 py-1.5 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none">
                       {item.label}
                     </div>
                   )}
@@ -342,7 +342,7 @@ export function Sidebar() {
           {/* SECTION 2: PREFERENCES & SETTINGS */}
           <div className="space-y-1">
             {!isCollapsed && (
-              <div className="px-3 pt-2 pb-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              <div className="px-3 pt-2 pb-1 text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                 Preferences
               </div>
             )}
@@ -371,7 +371,7 @@ export function Sidebar() {
                     isCollapsed ? "justify-center px-0 py-2.5" : "px-3 py-2.5"
                   } rounded-lg text-xs font-medium transition-all ${
                     isActive
-                      ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
+                      ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/60"
                   }`}
                   title={isCollapsed ? "Settings (3)" : undefined}
@@ -393,7 +393,7 @@ export function Sidebar() {
                       <span className="truncate">Settings</span>
                       <div className="flex items-center space-x-1.5 shrink-0">
                           <span
-                            className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full border transition-colors ${
+                            className={`text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-full border transition-colors ${
                               isActive
                                 ? "bg-blue-100/80 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
                                 : "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border-slate-200/80 dark:border-slate-700 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/60 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:border-blue-200 dark:group-hover:border-blue-800"
@@ -403,7 +403,7 @@ export function Sidebar() {
                           </span>
                           <ChevronRight
                             className={`h-3.5 w-3.5 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${
-                              isSettingsSubSidebarOpen ? "rotate-90 text-blue-600 dark:text-blue-400 font-bold" : "group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                              isSettingsSubSidebarOpen ? "rotate-90 text-blue-600 dark:text-blue-400 font-semibold" : "group-hover:text-slate-600 dark:group-hover:text-slate-300"
                             }`}
                           />
                       </div>
@@ -412,7 +412,7 @@ export function Sidebar() {
 
                   {/* Tooltip in Collapsed Mode */}
                   {isCollapsed && (
-                    <div className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none">
+                    <div className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[11px] font-medium px-2.5 py-1.5 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none">
                       Settings (5)
                     </div>
                   )}
@@ -424,7 +424,7 @@ export function Sidebar() {
           {/* SECTION 3: HELP & SUPPORT */}
           <div className="space-y-1">
             {!isCollapsed && (
-              <div className="px-3 pt-2 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <div className="px-3 pt-2 pb-1 text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                 Support
               </div>
             )}
@@ -446,7 +446,7 @@ export function Sidebar() {
                     isCollapsed ? "justify-center px-0 py-2.5" : "px-3 py-2.5"
                   } rounded-lg text-xs font-medium transition-all ${
                     isActive
-                      ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
+                      ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/60"
                   }`}
                 >
@@ -468,7 +468,7 @@ export function Sidebar() {
 
                   {/* Tooltip in Collapsed Mode */}
                   {isCollapsed && (
-                    <div className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none">
+                    <div className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[11px] font-medium px-2.5 py-1.5 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none">
                       Create Custom App
                     </div>
                   )}
@@ -494,7 +494,7 @@ export function Sidebar() {
               <HelpCircle className="h-4 w-4 shrink-0 text-slate-400 group-hover:text-slate-700 transition-transform duration-300 ease-out group-hover:scale-120 group-hover:rotate-12" />
               {!isCollapsed && <span className="ml-3 truncate">Get Help & Templates</span>}
               {isCollapsed && (
-                <div className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none">
+                <div className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[11px] font-medium px-2.5 py-1.5 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none">
                   Get Help & Templates
                 </div>
               )}
@@ -518,13 +518,13 @@ export function Sidebar() {
           >
             <div className="flex items-center space-x-2.5 min-w-0">
               <div className="relative">
-                <div className="h-8 w-8 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs border border-slate-300 dark:border-slate-600 transition-transform duration-300 group-hover:scale-105">
+                <div className="h-8 w-8 rounded-full bg-slate-800 text-white flex items-center justify-center font-semibold text-xs shrink-0 shadow-2xs border border-slate-300 dark:border-slate-600 transition-transform duration-300 group-hover:scale-105">
                   H
                 </div>
                 <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   Himanshu Pundir
                 </p>
                 <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">Product Lead (Pro)</p>
@@ -544,11 +544,11 @@ export function Sidebar() {
               }}
               className="relative group"
             >
-              <div className="h-8 w-8 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs border border-slate-300 transition-transform duration-300 group-hover:scale-110">
+              <div className="h-8 w-8 rounded-full bg-slate-800 text-white flex items-center justify-center font-semibold text-xs shrink-0 shadow-2xs border border-slate-300 transition-transform duration-300 group-hover:scale-110">
                 H
               </div>
               <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-white" />
-              <div className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none">
+              <div className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[11px] font-medium px-2.5 py-1.5 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none">
                 Himanshu Pundir (Product Lead)
               </div>
             </Link>

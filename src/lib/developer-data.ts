@@ -626,3 +626,421 @@ export function developerAppsToAppConnections(devApps: DeveloperApp[]): any[] {
     status: dev.status,
   }))
 }
+
+import {
+  AppVersion,
+  AppCollaborator,
+  InstalledWorkspace,
+  AppAuditLog,
+  AppExecutionLog,
+  AppMonitoringMetrics
+} from "./developer-types"
+
+const DEFAULT_VERSIONS: Record<string, AppVersion[]> = {
+  default: [
+    {
+      id: "ver_v120_draft",
+      version: "1.2.0",
+      status: "draft",
+      releaseType: "minor",
+      changelog: "Added multi-step dynamic dropdowns for pipeline stages and webhook HMAC validation handshake.",
+      createdAt: "2026-09-18",
+      triggerCount: 3,
+      actionCount: 5,
+      inbuiltActionCount: 2,
+      isBreaking: false
+    },
+    {
+      id: "ver_v110_live",
+      version: "1.1.0",
+      status: "live",
+      releaseType: "minor",
+      changelog: "Added OAuth 2.0 PKCE authentication and 'New Deal Created' instant trigger.",
+      createdAt: "2026-08-10",
+      publishedAt: "2026-08-12",
+      triggerCount: 2,
+      actionCount: 4,
+      inbuiltActionCount: 1,
+      isBreaking: false
+    },
+    {
+      id: "ver_v100_archived",
+      version: "1.0.0",
+      status: "archived",
+      releaseType: "initial",
+      changelog: "Initial connector release with basic API Key authentication and contact lookup action.",
+      createdAt: "2026-06-01",
+      publishedAt: "2026-06-05",
+      triggerCount: 1,
+      actionCount: 2,
+      inbuiltActionCount: 0,
+      isBreaking: false
+    }
+  ]
+}
+
+export function getAppVersions(appId: string): AppVersion[] {
+  if (typeof window === "undefined") return DEFAULT_VERSIONS[appId] || DEFAULT_VERSIONS.default
+  const raw = localStorage.getItem(`automate_app_versions_${appId}`)
+  if (!raw) {
+    const initial = DEFAULT_VERSIONS[appId] || DEFAULT_VERSIONS.default
+    localStorage.setItem(`automate_app_versions_${appId}`, JSON.stringify(initial))
+    return initial
+  }
+  try {
+    return JSON.parse(raw)
+  } catch {
+    return DEFAULT_VERSIONS.default
+  }
+}
+
+export function saveAppVersions(appId: string, versions: AppVersion[]): void {
+  if (typeof window === "undefined") return
+  localStorage.setItem(`automate_app_versions_${appId}`, JSON.stringify(versions))
+}
+
+const DEFAULT_COLLABORATORS: AppCollaborator[] = [
+  {
+    id: "collab_1",
+    name: "Himanshu Pundir",
+    email: "himanshu@automate.com",
+    role: "admin",
+    joinedAt: "2026-05-12",
+    status: "active"
+  },
+  {
+    id: "collab_2",
+    name: "Sarah Jenkins",
+    email: "sarah.j@acme.com",
+    role: "editor",
+    joinedAt: "2026-07-04",
+    status: "active"
+  },
+  {
+    id: "collab_3",
+    name: "Alex Rivera",
+    email: "alex.r@partner.dev",
+    role: "tester",
+    joinedAt: "2026-08-15",
+    status: "active"
+  },
+  {
+    id: "collab_4",
+    name: "Elena Rostova",
+    email: "elena@client.io",
+    role: "viewer",
+    joinedAt: "2026-09-02",
+    status: "pending"
+  }
+]
+
+export function getAppCollaborators(appId: string): AppCollaborator[] {
+  if (typeof window === "undefined") return DEFAULT_COLLABORATORS
+  const raw = localStorage.getItem(`automate_app_collabs_${appId}`)
+  if (!raw) {
+    localStorage.setItem(`automate_app_collabs_${appId}`, JSON.stringify(DEFAULT_COLLABORATORS))
+    return DEFAULT_COLLABORATORS
+  }
+  try {
+    return JSON.parse(raw)
+  } catch {
+    return DEFAULT_COLLABORATORS
+  }
+}
+
+export function saveAppCollaborators(appId: string, collabs: AppCollaborator[]): void {
+  if (typeof window === "undefined") return
+  localStorage.setItem(`automate_app_collabs_${appId}`, JSON.stringify(collabs))
+}
+
+export function getInstalledWorkspaces(appId: string): InstalledWorkspace[] {
+  return [
+    {
+      id: "inst_1",
+      workspaceName: "Growth Team Production",
+      ownerEmail: "marcus.growth@acme.com",
+      installedAt: "2026-08-14",
+      status: "active",
+      activeWorkflowsCount: 12,
+      lastUsed: "10 mins ago"
+    },
+    {
+      id: "inst_2",
+      workspaceName: "Marketing Automation Lab",
+      ownerEmail: "jessica@marketing.org",
+      installedAt: "2026-08-20",
+      status: "active",
+      activeWorkflowsCount: 5,
+      lastUsed: "2 hours ago"
+    },
+    {
+      id: "inst_3",
+      workspaceName: "EU Sales Regional Org",
+      ownerEmail: "lukas.sales@europe-acme.de",
+      installedAt: "2026-09-01",
+      status: "active",
+      activeWorkflowsCount: 8,
+      lastUsed: "Yesterday"
+    },
+    {
+      id: "inst_4",
+      workspaceName: "Staging Sandbox Workspace",
+      ownerEmail: "dev-sandbox@acme.com",
+      installedAt: "2026-09-10",
+      status: "suspended",
+      activeWorkflowsCount: 1,
+      lastUsed: "4 days ago"
+    }
+  ]
+}
+
+export function getAppAuditLogs(appId: string): AppAuditLog[] {
+  return [
+    {
+      id: "aud_1",
+      actorName: "Himanshu Pundir",
+      actorEmail: "himanshu@automate.com",
+      actorRole: "Admin",
+      action: "Created draft version v1.2.0",
+      target: "Version Management",
+      category: "version",
+      timestamp: "Today at 10:15 AM",
+      diffDetails: [{ field: "version", from: "1.1.0", to: "1.2.0 (Draft)" }]
+    },
+    {
+      id: "aud_2",
+      actorName: "Sarah Jenkins",
+      actorEmail: "sarah.j@acme.com",
+      actorRole: "Editor",
+      action: "Added In-built Action: Pipeline Stages Dropdown",
+      target: "In-built Actions",
+      category: "inbuilt_action",
+      timestamp: "Yesterday at 04:30 PM",
+      diffDetails: [{ field: "endpointUrl", from: "None", to: "/v2/pipelines/stages" }]
+    },
+    {
+      id: "aud_3",
+      actorName: "Himanshu Pundir",
+      actorEmail: "himanshu@automate.com",
+      actorRole: "Admin",
+      action: "Updated OAuth 2.0 Scopes",
+      target: "Authentication",
+      category: "auth",
+      timestamp: "Sep 18, 2026",
+      diffDetails: [{ field: "scopes", from: "contacts:read", to: "contacts:read contacts:write deals:read deals:write" }]
+    },
+    {
+      id: "aud_4",
+      actorName: "Alex Rivera",
+      actorEmail: "alex.r@partner.dev",
+      actorRole: "Tester",
+      action: "Generated new Beta Test invitation token",
+      target: "Sharing & Testers",
+      category: "sharing",
+      timestamp: "Sep 15, 2026"
+    },
+    {
+      id: "aud_5",
+      actorName: "Sarah Jenkins",
+      actorEmail: "sarah.j@acme.com",
+      actorRole: "Editor",
+      action: "Modified Trigger: New Deal Created webhook payload schema",
+      target: "Triggers",
+      category: "trigger",
+      timestamp: "Sep 12, 2026"
+    }
+  ]
+}
+
+export function getAppExecutionLogs(appId: string): AppExecutionLog[] {
+  return [
+    {
+      id: "exec_98124",
+      componentType: "action",
+      componentName: "Create or Update Contact",
+      componentKey: "create_contact",
+      status: "success",
+      statusCode: 200,
+      latencyMs: 142,
+      timestamp: "2 mins ago",
+      requestMethod: "POST",
+      requestUrl: "https://api.acmecrm.io/v2/contacts",
+      requestPayload: {
+        email: "alex.johnson@stripe.com",
+        firstName: "Alex",
+        lastName: "Johnson",
+        company: "Stripe Inc",
+        phone: "+1 (555) 392-1049"
+      },
+      responsePayload: {
+        success: true,
+        contact_id: "cnt_9981240",
+        created_at: "2026-09-21T04:45:10Z",
+        status: "active"
+      },
+      environment: "live"
+    },
+    {
+      id: "exec_98123",
+      componentType: "trigger",
+      componentName: "New Deal Created",
+      componentKey: "new_deal_created",
+      status: "success",
+      statusCode: 200,
+      latencyMs: 88,
+      timestamp: "12 mins ago",
+      requestMethod: "POST",
+      requestUrl: "https://connect.automateworkflows.com/webhook-listener/wh_acme_8912",
+      requestPayload: {
+        event: "deal.created",
+        deal_id: 84920,
+        deal_name: "Enterprise License - Q3",
+        amount: 45000,
+        stage: "Proposal Sent",
+        owner_email: "sarah@acmecrm.io"
+      },
+      responsePayload: {
+        acknowledged: true,
+        workflow_runs_triggered: 3
+      },
+      environment: "live"
+    },
+    {
+      id: "exec_98122",
+      componentType: "inbuilt_action",
+      componentName: "Dynamic Pipeline Stages Dropdown",
+      componentKey: "pipeline_stages",
+      status: "success",
+      statusCode: 200,
+      latencyMs: 110,
+      timestamp: "25 mins ago",
+      requestMethod: "GET",
+      requestUrl: "https://api.acmecrm.io/v2/pipelines/stages?pipeline_id=pipe_main",
+      requestPayload: {},
+      responsePayload: {
+        data: [
+          { label: "Discovery & Qualification", value: "stage_qual" },
+          { label: "Technical Demo", value: "stage_demo" },
+          { label: "Proposal & Negotiation", value: "stage_prop" },
+          { label: "Closed Won", value: "stage_won" }
+        ]
+      },
+      environment: "sandbox"
+    },
+    {
+      id: "exec_98121",
+      componentType: "action",
+      componentName: "Create or Update Contact",
+      componentKey: "create_contact",
+      status: "error",
+      statusCode: 401,
+      latencyMs: 230,
+      timestamp: "1 hour ago",
+      requestMethod: "POST",
+      requestUrl: "https://api.acmecrm.io/v2/contacts",
+      requestPayload: { email: "invalid_auth_test@company.com" },
+      responsePayload: {
+        error: "Unauthorized",
+        message: "Bearer token expired or signature validation failed. Please re-authorize."
+      },
+      errorMessage: "HTTP 401: Invalid Bearer Access Token",
+      environment: "live"
+    },
+    {
+      id: "exec_98120",
+      componentType: "auth_test",
+      componentName: "OAuth 2.0 Connection Health Check",
+      componentKey: "test_connection",
+      status: "success",
+      statusCode: 200,
+      latencyMs: 95,
+      timestamp: "3 hours ago",
+      requestMethod: "GET",
+      requestUrl: "https://api.acmecrm.io/v2/me",
+      responsePayload: {
+        account_id: "acct_88910",
+        name: "Acme Production Workspace",
+        plan: "Enterprise",
+        rate_limit_remaining: 9850
+      },
+      environment: "sandbox"
+    }
+  ]
+}
+
+export function getAppMonitoringMetrics(appId: string): AppMonitoringMetrics {
+  return {
+    totalInvocations24h: 14280,
+    totalInvocationsTrendPercent: 12.4,
+    successRatePercent: 99.4,
+    avgLatencyMs: 138,
+    p95LatencyMs: 310,
+    activeWorkspaces: 28,
+    rateLimitUsagePercent: 34,
+    hourlyTimeSeries: [
+      { hour: "00:00", success: 420, errors: 2, latencyMs: 125 },
+      { hour: "03:00", success: 280, errors: 1, latencyMs: 118 },
+      { hour: "06:00", success: 610, errors: 3, latencyMs: 132 },
+      { hour: "09:00", success: 1850, errors: 8, latencyMs: 154 },
+      { hour: "12:00", success: 2420, errors: 12, latencyMs: 168 },
+      { hour: "15:00", success: 2950, errors: 14, latencyMs: 160 },
+      { hour: "18:00", success: 2100, errors: 9, latencyMs: 145 },
+      { hour: "21:00", success: 1250, errors: 4, latencyMs: 130 }
+    ],
+    endpointBreakdown: [
+      {
+        name: "Action: Create or Update Contact",
+        type: "action",
+        calls24h: 8420,
+        errorRatePercent: 0.4,
+        avgLatencyMs: 142,
+        lastExecuted: "2 mins ago"
+      },
+      {
+        name: "Trigger: New Deal Created",
+        type: "trigger",
+        calls24h: 3950,
+        errorRatePercent: 0.1,
+        avgLatencyMs: 88,
+        lastExecuted: "12 mins ago"
+      },
+      {
+        name: "In-built: Dynamic Pipeline Stages",
+        type: "inbuilt",
+        calls24h: 1820,
+        errorRatePercent: 0.2,
+        avgLatencyMs: 110,
+        lastExecuted: "25 mins ago"
+      },
+      {
+        name: "Auth: Connection Health Validator",
+        type: "inbuilt",
+        calls24h: 90,
+        errorRatePercent: 1.1,
+        avgLatencyMs: 95,
+        lastExecuted: "3 hours ago"
+      }
+    ],
+    topErrors: [
+      {
+        code: 401,
+        message: "Invalid or expired Bearer Token (requires connection re-auth)",
+        occurrences: 24,
+        lastSeen: "1 hour ago"
+      },
+      {
+        code: 429,
+        message: "API Rate limit exceeded (Acme CRM 100 req/min quota)",
+        occurrences: 7,
+        lastSeen: "4 hours ago"
+      },
+      {
+        code: 400,
+        message: "Validation Error: Missing required field 'email'",
+        occurrences: 5,
+        lastSeen: "Yesterday"
+      }
+    ]
+  }
+}
+

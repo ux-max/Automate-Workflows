@@ -335,8 +335,103 @@ export interface DeveloperApp {
     decision?: "approved" | "changes_requested"
     feedbackNotes?: string
   }
+  versions?: AppVersion[]
+  collaborators?: AppCollaborator[]
+  installedWorkspaces?: InstalledWorkspace[]
   createdAt: string
   updatedAt: string
+}
+
+export type AppVersionStatus = "draft" | "live" | "deprecated" | "archived"
+
+export interface AppVersion {
+  id: string
+  version: string
+  status: AppVersionStatus
+  changelog: string
+  releaseType: "major" | "minor" | "patch" | "initial"
+  createdAt: string
+  publishedAt?: string
+  triggerCount: number
+  actionCount: number
+  inbuiltActionCount: number
+  isBreaking: boolean
+}
+
+export type CollaboratorRole = "admin" | "editor" | "tester" | "viewer"
+
+export interface AppCollaborator {
+  id: string
+  name: string
+  email: string
+  role: CollaboratorRole
+  joinedAt: string
+  status: "active" | "pending"
+  avatarUrl?: string
+}
+
+export interface InstalledWorkspace {
+  id: string
+  workspaceName: string
+  ownerEmail: string
+  installedAt: string
+  status: "active" | "suspended"
+  activeWorkflowsCount: number
+  lastUsed: string
+}
+
+export interface AppAuditLog {
+  id: string
+  actorName: string
+  actorEmail: string
+  actorRole: string
+  action: string
+  target: string
+  category: "auth" | "trigger" | "action" | "inbuilt_action" | "version" | "sharing" | "general"
+  timestamp: string
+  diffDetails?: { field: string; from: string; to: string }[]
+}
+
+export interface AppExecutionLog {
+  id: string
+  componentType: "trigger" | "action" | "inbuilt_action" | "auth_test"
+  componentName: string
+  componentKey: string
+  status: "success" | "error" | "rate_limited"
+  statusCode: number
+  latencyMs: number
+  timestamp: string
+  requestMethod: string
+  requestUrl: string
+  requestPayload?: any
+  responsePayload?: any
+  errorMessage?: string
+  environment: "sandbox" | "live"
+}
+
+export interface AppMonitoringMetrics {
+  totalInvocations24h: number
+  totalInvocationsTrendPercent: number
+  successRatePercent: number
+  avgLatencyMs: number
+  p95LatencyMs: number
+  activeWorkspaces: number
+  rateLimitUsagePercent: number
+  hourlyTimeSeries: { hour: string; success: number; errors: number; latencyMs: number }[]
+  endpointBreakdown: {
+    name: string
+    type: "trigger" | "action" | "inbuilt"
+    calls24h: number
+    errorRatePercent: number
+    avgLatencyMs: number
+    lastExecuted: string
+  }[]
+  topErrors: {
+    code: number
+    message: string
+    occurrences: number
+    lastSeen: string
+  }[]
 }
 
 export interface ValidationItem {
@@ -346,3 +441,4 @@ export interface ValidationItem {
   status: "pass" | "fail" | "warning"
   remediation?: string
 }
+

@@ -158,7 +158,7 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
         >
           <div>
             <div className="flex items-center gap-2">
-              <CardTitle className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <CardTitle className="text-base font-semibold text-slate-900 dark:text-slate-100">
                 App Identity & Details
               </CardTitle>
               <button
@@ -211,7 +211,7 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
             <CardContent className="space-y-6 p-5 pt-4">
               {/* App Logo */}
               <div className="space-y-2.5 pb-2 border-b border-slate-100 dark:border-slate-800">
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
                   App Logo <span className="text-rose-500">*</span>
                 </label>
 
@@ -238,7 +238,7 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
                         className="w-14 h-14 object-contain rounded-xl transition-transform group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xl shadow-xs transition-transform group-hover:scale-105">
+                      <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-xl shadow-xs transition-transform group-hover:scale-105">
                         {app.name ? app.name.trim().charAt(0).toUpperCase() : "A"}
                       </div>
                     )}
@@ -309,7 +309,7 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
               {/* Row 1: App Name & Slug */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                 App Display Name <span className="text-rose-500">*</span>
               </label>
               <Input
@@ -321,7 +321,7 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                 App Identifier Slug
               </label>
               <div className="relative">
@@ -338,7 +338,7 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
           {/* Row 2: Tagline & Category */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                 Short Tagline
               </label>
               <Input
@@ -350,21 +350,21 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                 Primary Category
               </label>
               <Select
                 value={app.category}
                 onChange={(e) => updateField("category", e.target.value)}
                 options={CATEGORIES.map((cat) => ({ value: cat, label: cat }))}
-                className="h-10 text-xs font-semibold"
+                className="h-10 text-xs font-medium"
               />
             </div>
           </div>
 
           {/* Row 3: Description */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
               Full Description & Use Cases <span className="text-rose-500">*</span>
             </label>
             <textarea
@@ -393,7 +393,7 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
             <Key className="w-5 h-5 text-amber-500 shrink-0" />
             <div>
               <div className="flex items-center gap-2">
-                <CardTitle className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <CardTitle className="text-base font-semibold text-slate-900 dark:text-slate-100">
                   Environment Secrets & Common Data
                 </CardTitle>
                 <button
@@ -466,7 +466,7 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
           ) : (
             <div className="rounded-xl border border-slate-200/90 dark:border-slate-800 overflow-hidden">
               <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-200/90 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold">
+                <thead className="bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-200/90 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-medium">
                   <tr>
                     <th className="p-3">Secret Key Identifier</th>
                     <th className="p-3">Environment Value</th>
@@ -553,7 +553,7 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
           <div className="mt-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-900/60 flex items-start gap-2.5">
             <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
             <p className="text-xs text-blue-700 dark:text-blue-300">
-              <strong>Zero-Code Variable Injection</strong>: Any secret stored here can be used in your
+              <strong className="font-semibold">Zero-Code Variable Injection</strong>: Any secret stored here can be used in your
               Authentication, Headers, or Action Parameter Rows without writing code or exposing plaintext values.
             </p>
           </div>
@@ -590,7 +590,7 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
   >
     <div className="space-y-4">
       <DialogHeader>
-        <DialogTitle className="text-base font-bold flex items-center gap-2">
+        <DialogTitle className="text-base font-semibold flex items-center gap-2">
           <Code className="w-4 h-4 text-blue-600" />
           <span>App Manifest Definition ({app.name || "App"})</span>
         </DialogTitle>
@@ -631,7 +631,7 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
   {/* App Identity Helping Modal */}
   <Dialog open={showIdentityHelpModal} onOpenChange={setShowIdentityHelpModal}>
     <DialogHeader>
-      <DialogTitle className="text-base font-bold flex items-center gap-2">
+      <DialogTitle className="text-base font-semibold flex items-center gap-2">
         <Info className="w-4 h-4 text-blue-600" />
         How to Configure: App Identity & Branding
       </DialogTitle>
@@ -641,31 +641,31 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
     </DialogHeader>
     <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300">
       <div className="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl border border-blue-200 dark:border-blue-900/60 text-slate-700 dark:text-slate-300">
-        <strong>What this does:</strong> Sets the public face of your integration in the App Catalog and the workflow builder connector search.
+        <strong className="font-semibold">What this does:</strong> Sets the public face of your integration in the App Catalog and the workflow builder connector search.
       </div>
 
       <div className="space-y-2">
-        <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
+        <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
           How Developer Sets It Up:
         </h4>
         <ol className="list-decimal pl-4 space-y-1.5 text-slate-600 dark:text-slate-400">
           <li>
-            <strong>App Name & Slug:</strong> Pick a recognizable name (e.g. <em>Acme CRM</em>) and URL-safe slug (e.g. <code>acme_crm</code>).
+            <strong className="font-semibold">App Name & Slug:</strong> Pick a recognizable name (e.g. <em>Acme CRM</em>) and URL-safe slug (e.g. <code>acme_crm</code>).
           </li>
           <li>
-            <strong>App Logo:</strong> Upload a square SVG or PNG (max 25KB) with transparent background.
+            <strong className="font-semibold">App Logo:</strong> Upload a square SVG or PNG (max 25KB) with transparent background.
           </li>
           <li>
-            <strong>Category:</strong> Assign your app to an ecosystem category (CRM, Payment, Marketing, Productivity) for catalog filtering.
+            <strong className="font-semibold">Category:</strong> Assign your app to an ecosystem category (CRM, Payment, Marketing, Productivity) for catalog filtering.
           </li>
           <li>
-            <strong>Description:</strong> Write a concise summary of what automation actions this connector enables.
+            <strong className="font-semibold">Description:</strong> Write a concise summary of what automation actions this connector enables.
           </li>
         </ol>
       </div>
 
       <div className="space-y-1.5">
-        <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-emerald-600">
+        <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
           How End-Users Experience It:
         </h4>
         <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -688,7 +688,7 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
   {/* Secrets & Environment Variables Helping Modal */}
   <Dialog open={showSecretsHelpModal} onOpenChange={setShowSecretsHelpModal}>
     <DialogHeader>
-      <DialogTitle className="text-base font-bold flex items-center gap-2">
+      <DialogTitle className="text-base font-semibold flex items-center gap-2">
         <Key className="w-4 h-4 text-amber-500" />
         How to Use: Environment Secrets & Common Data
       </DialogTitle>
@@ -698,28 +698,28 @@ export function OverviewTab({ app, onChange, onSave }: OverviewTabProps) {
     </DialogHeader>
     <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300">
       <div className="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-900/60 text-slate-700 dark:text-slate-300">
-        <strong>What this does:</strong> Securely stores sensitive developer credentials (like OAuth Client Secrets) with AES-256 encryption so they are never exposed to clients.
+        <strong className="font-semibold">What this does:</strong> Securely stores sensitive developer credentials (like OAuth Client Secrets) with AES-256 encryption so they are never exposed to clients.
       </div>
 
       <div className="space-y-2">
-        <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
+        <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
           How Developer Sets It Up:
         </h4>
         <ol className="list-decimal pl-4 space-y-1.5 text-slate-600 dark:text-slate-400">
           <li>
-            <strong>Add Secret:</strong> Click "+ Add Secret" and provide a unique key (e.g. <code>CLIENT_SECRET</code> or <code>SIGNING_KEY</code>).
+            <strong className="font-semibold">Add Secret:</strong> Click "+ Add Secret" and provide a unique key (e.g. <code>CLIENT_SECRET</code> or <code>SIGNING_KEY</code>).
           </li>
           <li>
-            <strong>Paste Secret Value:</strong> Enter the token or key value. It is masked immediately for security.
+            <strong className="font-semibold">Paste Secret Value:</strong> Enter the token or key value. It is masked immediately for security.
           </li>
           <li>
-            <strong>Interpolate Anywhere:</strong> Reference this secret in any endpoint URL, header, or body payload using <code>&#123;&#123;common.KEY_NAME&#125;&#125;</code>.
+            <strong className="font-semibold">Interpolate Anywhere:</strong> Reference this secret in any endpoint URL, header, or body payload using <code>&#123;&#123;common.KEY_NAME&#125;&#125;</code>.
           </li>
         </ol>
       </div>
 
       <div className="space-y-1.5">
-        <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-emerald-600">
+        <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
           How End-Users Experience It:
         </h4>
         <p className="text-slate-600 dark:text-slate-400 leading-relaxed">

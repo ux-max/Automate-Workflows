@@ -106,7 +106,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
         <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 flex items-start gap-3">
           <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <h4 className="text-sm font-bold text-amber-900 dark:text-amber-200">
+            <h4 className="text-sm font-semibold text-amber-900 dark:text-amber-200">
               App Submission Is Currently In Review
             </h4>
             <p className="text-xs text-amber-700 dark:text-amber-300">
@@ -124,7 +124,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
         <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <h4 className="text-sm font-bold text-rose-900 dark:text-rose-200">
+            <h4 className="text-sm font-semibold text-rose-900 dark:text-rose-200">
               Changes Requested by Reviewer
             </h4>
             <p className="text-xs text-rose-700 dark:text-rose-300">
@@ -138,11 +138,11 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
       {(app.status === "public_beta" || app.status === "published") && (
         <div className="p-5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/80 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold shadow-xs">
+            <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-semibold shadow-xs">
               <Check className="w-5 h-5 text-white stroke-[2.5]" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-blue-950 dark:text-blue-100">
+              <h4 className="text-sm font-semibold text-blue-950 dark:text-blue-100">
                 Official Connector Published in Global Directory!
               </h4>
               <p className="text-xs text-blue-700 dark:text-blue-300">
@@ -152,7 +152,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
           </div>
 
           <Link href="/apps">
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shrink-0 shadow-xs">
+            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shrink-0 shadow-xs font-medium">
               View in App Directory
               <ExternalLink className="w-3.5 h-3.5" />
             </Button>
@@ -170,7 +170,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
             <ShieldCheck className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" />
             <div>
               <div className="flex items-center gap-2">
-                <CardTitle className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <CardTitle className="text-base font-semibold text-slate-900 dark:text-slate-100">
                   Pre-Flight Automated Quality Checklist
                 </CardTitle>
                 <button
@@ -200,15 +200,15 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
                 e.stopPropagation()
                 setPreviewMarketplaceModal(true)
               }}
-              className="h-7 px-2.5 text-xs gap-1 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer shadow-2xs"
+              className="h-7 px-2.5 text-xs gap-1 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer shadow-2xs font-medium"
               title="Preview Marketplace Card"
             >
               <Eye className="w-3.5 h-3.5 text-blue-600" />
               <span>Card Preview</span>
             </Button>
-            <Badge variant="outline" className="text-[10px]">Step 1</Badge>
+            <Badge variant="outline" className="text-[10px] font-medium">Step 1</Badge>
             <Badge
-              className={`text-xs font-semibold px-2.5 py-1 ${
+              className={`text-xs font-medium px-2.5 py-1 ${
                 isAllPassed
                   ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800"
                   : "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border-rose-300"
@@ -241,7 +241,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
                     <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                   )}
                   <div>
-                    <h5 className="text-xs font-bold text-slate-900 dark:text-slate-100">{item.title}</h5>
+                    <h5 className="text-xs font-semibold text-slate-900 dark:text-slate-100">{item.title}</h5>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{item.description}</p>
                     {item.status === "fail" && item.remediation && (
                       <p className="text-[11px] text-rose-600 dark:text-rose-400 mt-1 font-medium">
@@ -253,7 +253,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
 
                 <Badge
                   variant="outline"
-                  className={`text-[10px] font-mono uppercase shrink-0 ${
+                  className={`text-[10px] font-mono font-medium uppercase shrink-0 ${
                     item.status === "pass"
                       ? "text-blue-700 border-blue-200 bg-blue-50 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800"
                       : "text-rose-700 border-rose-200 bg-rose-50 dark:bg-rose-950/40"
@@ -279,7 +279,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
             <FileCheck className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <div>
               <div className="flex items-center gap-2">
-                <CardTitle className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <CardTitle className="text-base font-semibold text-slate-900 dark:text-slate-100">
                   Submit App for Platform Review
                 </CardTitle>
                 <button
@@ -301,10 +301,10 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
           </div>
 
           <div className="flex items-center gap-3">
-            <Badge variant="outline" className="text-[10px]">Step 2</Badge>
+            <Badge variant="outline" className="text-[10px] font-medium">Step 2</Badge>
             <Badge
               variant="outline"
-              className={`text-[10px] font-semibold ${
+              className={`text-[10px] font-medium ${
                 isAllPassed
                   ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800"
                   : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300"
@@ -327,7 +327,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
               <form onSubmit={handleSubmitReview} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                       Reviewer Sandbox Username / Email <span className="text-rose-500">*</span>
                     </label>
                     <Input
@@ -340,7 +340,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                       Reviewer Sandbox Password / API Key <span className="text-rose-500">*</span>
                     </label>
                     <Input
@@ -356,7 +356,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                       Sandbox Host URL (Optional)
                     </label>
                     <Input
@@ -368,7 +368,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                       Privacy Policy URL
                     </label>
                     <Input
@@ -381,7 +381,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                     Notes for Reviewers
                   </label>
                   <textarea
@@ -403,7 +403,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
                   <Button
                     type="submit"
                     disabled={!isAllPassed || isSubmitting || app.status === "in_review"}
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shadow-xs"
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shadow-xs font-medium"
                   >
                     <Send className={`w-3.5 h-3.5 ${isSubmitting ? "animate-spin" : ""}`} />
                     {isSubmitting
@@ -427,7 +427,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
       >
         <div className="space-y-4">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold flex items-center gap-2">
+            <DialogTitle className="text-base font-semibold flex items-center gap-2">
               <Eye className="w-4 h-4 text-blue-600" />
               <span>Public Directory Card Preview</span>
             </DialogTitle>
@@ -439,15 +439,15 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
           <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-3.5">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-blue-600 text-white font-bold text-lg flex items-center justify-center shadow-xs">
+                <div className="w-12 h-12 rounded-xl bg-blue-600 text-white font-semibold text-lg flex items-center justify-center shadow-xs">
                   {app.name ? app.name.charAt(0).toUpperCase() : "A"}
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                    <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                       {app.name || "Custom App"}
                     </h4>
-                    <span className="w-4 h-4 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center text-[10px] font-bold" title="Verified Integration">
+                    <span className="w-4 h-4 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center text-[10px] font-medium" title="Verified Integration">
                       ✓
                     </span>
                   </div>
@@ -456,7 +456,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
                   </span>
                 </div>
               </div>
-              <Badge variant="outline" className="text-[10px] font-semibold text-emerald-600 border-emerald-200 dark:border-emerald-800">
+              <Badge variant="outline" className="text-[10px] font-medium text-emerald-600 border-emerald-200 dark:border-emerald-800">
                 Official
               </Badge>
             </div>
@@ -474,7 +474,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
               </div>
             </div>
 
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs h-9 shadow-xs cursor-pointer">
+            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs h-9 shadow-xs cursor-pointer">
               Connect App & Automate →
             </Button>
           </div>
@@ -484,7 +484,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
               type="button"
               size="sm"
               onClick={() => setPreviewMarketplaceModal(false)}
-              className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+              className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer font-medium"
             >
               Close Preview
             </Button>
@@ -495,7 +495,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
       {/* Review Guidelines Helping Modal */}
       <Dialog open={showReviewHelpModal} onOpenChange={setShowReviewHelpModal}>
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
+          <DialogTitle className="text-base font-semibold flex items-center gap-2">
             <Info className="w-4 h-4 text-blue-600" />
             How to Submit: Marketplace Review &amp; Verification Checklist
           </DialogTitle>
@@ -530,7 +530,7 @@ export function PublishTab({ app, onChange }: PublishTabProps) {
             type="button"
             size="sm"
             onClick={() => setShowReviewHelpModal(false)}
-            className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+            className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white cursor-pointer font-medium"
           >
             Got it
           </Button>

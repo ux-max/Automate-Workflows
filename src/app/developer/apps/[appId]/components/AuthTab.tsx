@@ -399,7 +399,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
             <Lock className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" />
             <div>
               <div className="flex items-center gap-2">
-                <CardTitle className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <CardTitle className="text-base font-semibold text-slate-900 dark:text-slate-100">
                   Select Authentication Type
                 </CardTitle>
                 <button
@@ -516,7 +516,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
               <div className="flex items-center gap-2">
                 <Globe className="w-5 h-5 text-blue-500" />
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                     OAuth 2.0 Credentials & Endpoints
                   </h3>
                   <button
@@ -700,7 +700,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
             {/* PKCE Switch */}
             <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40">
               <div>
-                <h5 className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                <h5 className="text-xs font-semibold text-slate-900 dark:text-slate-100">
                   Enable PKCE (Proof Key for Code Exchange)
                 </h5>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
@@ -730,7 +730,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
               <div className="flex items-center gap-2">
                 <Key className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                     {auth.type === "bearer_token"
                       ? "Parameters Configuration (Multi-Auth)"
                       : "Parameters Configuration"}
@@ -892,7 +892,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
               <div className="flex items-center gap-2">
                 <Lock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                     Bearer Token Authentication
                   </h3>
                   <button
@@ -914,8 +914,8 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
             </div>
 
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="text-[10px]">Step 2</Badge>
-              <Badge variant="secondary" className="text-[10px] font-mono">Standard Header</Badge>
+              <Badge variant="outline" className="text-[10px] font-medium">Step 2</Badge>
+              <Badge variant="secondary" className="text-[10px] font-mono font-medium">Standard Header</Badge>
               <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform duration-200", activeStep === "config" && "rotate-180 text-blue-600 dark:text-blue-400")} />
             </div>
           </div>
@@ -940,7 +940,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-emerald-500" />
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                     Basic Authentication Prompts
                   </h3>
                   <button
@@ -962,8 +962,8 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
             </div>
 
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="text-[10px]">Step 2</Badge>
-              <Badge variant="secondary" className="text-[10px] font-mono">Username/Password</Badge>
+              <Badge variant="outline" className="text-[10px] font-medium">Step 2</Badge>
+              <Badge variant="secondary" className="text-[10px] font-mono font-medium">Username/Password</Badge>
               <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform duration-200", activeStep === "config" && "rotate-180 text-blue-600 dark:text-blue-400")} />
             </div>
           </div>
@@ -1023,7 +1023,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
               <div className="flex items-center gap-2">
                 <Key className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                     End-User Connection Dialog Fields
                   </h3>
                   <button
@@ -1045,8 +1045,8 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
             </div>
 
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="text-[10px]">Step 3</Badge>
-              <Badge variant="secondary" className="text-[10px]">
+              <Badge variant="outline" className="text-[10px] font-medium">Step 3</Badge>
+              <Badge variant="secondary" className="text-[10px] font-medium">
                 {auth.userFields.length} {auth.userFields.length === 1 ? "Field" : "Fields"}
               </Badge>
               <Button
@@ -1058,7 +1058,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
                 }}
                 variant="outline"
                 size="sm"
-                className="gap-1.5 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs h-7 px-2.5"
+                className="gap-1.5 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs h-7 px-2.5 font-medium"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Field</span>
@@ -1080,7 +1080,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
                   onClick={addUserField}
                   size="sm"
                   variant="outline"
-                  className="mt-3 text-xs gap-1 border-slate-300 dark:border-slate-700"
+                  className="mt-3 text-xs gap-1 border-slate-300 dark:border-slate-700 font-medium"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Add User Credential Field
@@ -1095,7 +1095,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 text-[11px] font-bold flex items-center justify-center">
+                        <span className="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 text-[11px] font-medium flex items-center justify-center">
                           {idx + 1}
                         </span>
                         <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
@@ -1201,7 +1201,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                     Connection Verification & Label Templating
                   </h3>
                   <button
@@ -1223,8 +1223,8 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
             </div>
 
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="text-[10px]">Step 4</Badge>
-              <Badge variant="secondary" className="text-[10px] font-mono">
+              <Badge variant="outline" className="text-[10px] font-medium">Step 4</Badge>
+              <Badge variant="secondary" className="text-[10px] font-mono font-medium">
                 {auth.connectionTest.method} {auth.connectionTest.url ? "Endpoint Configured" : "Optional"}
               </Badge>
               <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform duration-200", activeStep === "test" && "rotate-180 text-blue-600 dark:text-blue-400")} />
@@ -1246,7 +1246,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
                     { value: "GET", label: "GET" },
                     { value: "POST", label: "POST" },
                   ]}
-                  className="h-10 text-xs font-mono"
+                  className="h-10 text-xs font-mono font-medium"
                 />
               </div>
 
@@ -1285,7 +1285,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
                 type="button"
                 onClick={runConnectionTest}
                 disabled={testingConnection}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs gap-1.5 shadow-sm"
+                className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shadow-xs cursor-pointer font-medium"
               >
                 <Play className={`w-3.5 h-3.5 ${testingConnection ? "animate-spin" : ""}`} />
                 {testingConnection ? "Pinging Endpoint..." : "Test Connection Endpoint"}
@@ -1307,27 +1307,26 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
                   <div>
                     <div className="flex items-center gap-2">
                       <span
-                        className={`text-xs font-bold ${
+                        className={`text-xs font-semibold ${
                           testResult.status === "success"
                             ? "text-emerald-900 dark:text-emerald-200"
                             : "text-rose-900 dark:text-rose-200"
                         }`}
                       >
-                        Status {testResult.code} {testResult.status === "success" ? "OK" : "Error"}
+                        {testResult.message}
                       </span>
-                      <Badge variant="outline" className="text-[10px] font-mono">
-                        {testResult.latency}ms
+                      <Badge
+                        variant="outline"
+                        className={`text-[10px] font-mono ${
+                          testResult.status === "success"
+                            ? "text-emerald-700 border-emerald-300 dark:text-emerald-300"
+                            : "text-rose-700 border-rose-300 dark:text-rose-300"
+                        }`}
+                      >
+                        HTTP {testResult.code}
                       </Badge>
+                      <span className="text-[10px] font-mono text-slate-400">{testResult.latency}ms</span>
                     </div>
-                    <p
-                      className={`text-xs mt-1 ${
-                        testResult.status === "success"
-                          ? "text-emerald-700 dark:text-emerald-300"
-                          : "text-rose-700 dark:text-rose-300"
-                      }`}
-                    >
-                      {testResult.message}
-                    </p>
                   </div>
                 </div>
               )}
@@ -1338,15 +1337,13 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
     </Card>
       )}
 
-      {/* Informational notice when No Authentication is selected */}
+      {/* No Authentication Notice Card */}
       {auth.type === "none" && (
-        <Card className="border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 rounded-2xl p-6 text-center animate-in fade-in-50 duration-200">
-          <div className="max-w-md mx-auto space-y-2">
-            <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto">
-              <Globe className="w-5 h-5" />
-            </div>
-            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-              No Authentication Required
+        <Card className="border border-slate-200/90 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-sm rounded-2xl p-5">
+          <div className="space-y-1">
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <Globe className="w-4 h-4 text-blue-600" />
+              Public API Mode (No Credentials Required)
             </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
               This app connects directly to public APIs or open endpoints. Users can immediately use your app&apos;s actions and triggers without configuring credentials.
@@ -1364,7 +1361,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
           type="button"
           onClick={handleSave}
           className={cn(
-            "h-9 px-5 text-xs font-semibold gap-1.5 cursor-pointer shadow-xs transition-colors",
+            "h-9 px-5 text-xs font-medium gap-1.5 cursor-pointer shadow-xs transition-colors",
             isSaved
               ? "bg-emerald-600 hover:bg-emerald-700 text-white"
               : "bg-blue-600 hover:bg-blue-700 text-white"
@@ -1396,7 +1393,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => setOpenParamSettingsId(null)}
-                  className="h-9 px-4 text-xs cursor-pointer"
+                  className="h-9 px-4 text-xs cursor-pointer font-medium"
                 >
                   Cancel
                 </Button>
@@ -1416,21 +1413,21 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
               {/* Parameter Identification Banner */}
               <div className="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider block">
+                  <span className="text-[10px] font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wider block">
                     Authentication Parameter Key
                   </span>
-                  <code className="text-xs font-mono font-bold text-slate-900 dark:text-slate-100">
+                  <code className="text-xs font-mono font-medium text-slate-900 dark:text-slate-100">
                     {activeParam.key || "unnamed_parameter"}
                   </code>
                 </div>
-                <Badge variant="outline" className="text-[10px] text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 font-mono">
+                <Badge variant="outline" className="text-[10px] text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 font-mono font-medium">
                   &#123;&#123;auth.{activeParam.key || "key"}&#125;&#125;
                 </Badge>
               </div>
 
               {/* Display Label */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                <label className="text-xs font-medium text-slate-800 dark:text-slate-200 flex items-center gap-1">
                   <span>Display Label</span>
                   <span className="text-red-500">*</span>
                 </label>
@@ -1447,7 +1444,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
 
               {/* Placeholder Text */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                <label className="text-xs font-medium text-slate-800 dark:text-slate-200">
                   Placeholder Text
                 </label>
                 <Input
@@ -1463,7 +1460,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
 
               {/* Help Instruction / Description */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                <label className="text-xs font-medium text-slate-800 dark:text-slate-200">
                   Help Instruction / Description
                 </label>
                 <Input
@@ -1480,7 +1477,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
               {/* Required Field Toggle */}
               <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 block">
                     Required Field
                   </span>
                   <span className="text-[11px] text-slate-500 dark:text-slate-400">
@@ -1500,7 +1497,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
       {/* Set Body/Query/Path Parameters Learn More Dialog */}
       <Dialog open={showParamLearnMore} onOpenChange={setShowParamLearnMore}>
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
+          <DialogTitle className="text-base font-semibold flex items-center gap-2">
             <Settings className="w-4 h-4 text-blue-600" />
             How to Use: Custom Parameters Authentication
           </DialogTitle>
@@ -1510,19 +1507,19 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
         </DialogHeader>
         <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300">
           <div className="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl border border-blue-200 dark:border-blue-900/60 text-slate-700 dark:text-slate-300">
-            <strong>What this does:</strong> Automatically attaches API keys or custom parameters to every trigger and action request sent to your service.
+            <strong className="font-semibold">What this does:</strong> Automatically attaches API keys or custom parameters to every trigger and action request sent to your service.
           </div>
 
           <div className="space-y-2">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
               How Developer Sets It Up:
             </h4>
             <ol className="list-decimal pl-4 space-y-1.5 text-slate-600 dark:text-slate-400">
               <li>
-                <strong>Add Parameter Key:</strong> Type the parameter name expected by your API (e.g. <code>api_key</code> or <code>access_token</code>).
+                <strong className="font-semibold">Add Parameter Key:</strong> Type the parameter name expected by your API (e.g. <code>api_key</code> or <code>access_token</code>).
               </li>
               <li>
-                <strong>Configure Placement (⚙):</strong> Click the gear icon to choose where it goes:
+                <strong className="font-semibold">Configure Placement (⚙):</strong> Click the gear icon to choose where it goes:
                 <ul className="list-disc pl-4 mt-1 space-y-0.5">
                   <li><strong>Header:</strong> Sent as HTTP header (e.g. <code>X-API-Key: value</code>).</li>
                   <li><strong>Query:</strong> Appended to URL (e.g. <code>?api_key=value</code>).</li>
@@ -1530,13 +1527,13 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
                 </ul>
               </li>
               <li>
-                <strong>Value Prefix:</strong> Add optional prefixes like <code>Bearer </code> or <code>Token </code> if required.
+                <strong className="font-semibold">Value Prefix:</strong> Add optional prefixes like <code>Bearer </code> or <code>Token </code> if required.
               </li>
             </ol>
           </div>
 
           <div className="space-y-1.5">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-emerald-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
               How End-Users Experience It:
             </h4>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -1559,7 +1556,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
       {/* Auth Type Learn More Dialog */}
       <Dialog open={showAuthLearnMore} onOpenChange={setShowAuthLearnMore}>
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
+          <DialogTitle className="text-base font-semibold flex items-center gap-2">
             <Lock className="w-4 h-4 text-blue-600" />
             How to Choose: Authentication Mechanism
           </DialogTitle>
@@ -1569,21 +1566,21 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
         </DialogHeader>
         <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300">
           <div className="space-y-2">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
               Available Methods & When to Use:
             </h4>
             <div className="space-y-2 text-slate-600 dark:text-slate-400">
               <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                <strong className="text-slate-800 dark:text-slate-200">1. Parameters / API Key:</strong> Best for APIs where users provide an API Key, Token, or Account ID passed in headers or query strings.
+                <strong className="text-slate-800 dark:text-slate-200 font-semibold">1. Parameters / API Key:</strong> Best for APIs where users provide an API Key, Token, or Account ID passed in headers or query strings.
               </div>
               <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                <strong className="text-slate-800 dark:text-slate-200">2. OAuth 2.0:</strong> Best for major platforms (Google, Slack, HubSpot) where users log in via a popup consent screen without sharing raw passwords.
+                <strong className="text-slate-800 dark:text-slate-200 font-semibold">2. OAuth 2.0:</strong> Best for major platforms (Google, Slack, HubSpot) where users log in via a popup consent screen without sharing raw passwords.
               </div>
               <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                <strong className="text-slate-800 dark:text-slate-200">3. Basic Authentication:</strong> Best for standard Username and Password combinations sent via Base64 Authorization header.
+                <strong className="text-slate-800 dark:text-slate-200 font-semibold">3. Basic Authentication:</strong> Best for standard Username and Password combinations sent via Base64 Authorization header.
               </div>
               <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                <strong className="text-slate-800 dark:text-slate-200">4. Bearer Token:</strong> For APIs expecting a dedicated <code>Authorization: Bearer &lt;token&gt;</code> HTTP header.
+                <strong className="text-slate-800 dark:text-slate-200 font-semibold">4. Bearer Token:</strong> For APIs expecting a dedicated <code>Authorization: Bearer &lt;token&gt;</code> HTTP header.
               </div>
             </div>
           </div>
@@ -1603,7 +1600,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
       {/* OAuth 2.0 Learn More Dialog */}
       <Dialog open={showOAuthLearnMore} onOpenChange={setShowOAuthLearnMore}>
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
+          <DialogTitle className="text-base font-semibold flex items-center gap-2">
             <Globe className="w-4 h-4 text-blue-600" />
             How to Use: OAuth 2.0 Authentication Flow
           </DialogTitle>
@@ -1613,34 +1610,34 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
         </DialogHeader>
         <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300">
           <div className="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl border border-blue-200 dark:border-blue-900/60 text-slate-700 dark:text-slate-300">
-            <strong>What this does:</strong> Allows end-users to connect by clicking "Authorize" on your app's login page without typing secrets manually.
+            <strong className="font-semibold">What this does:</strong> Allows end-users to connect by clicking "Authorize" on your app's login page without typing secrets manually.
           </div>
 
           <div className="space-y-2">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
               How Developer Configures It:
             </h4>
             <ol className="list-decimal pl-4 space-y-1.5 text-slate-600 dark:text-slate-400">
               <li>
-                <strong>Authorize URL:</strong> The web page where users log in and grant permissions (e.g. <code>https://app.example.com/oauth/authorize</code>).
+                <strong className="font-semibold">Authorize URL:</strong> The web page where users log in and grant permissions (e.g. <code>https://app.example.com/oauth/authorize</code>).
               </li>
               <li>
-                <strong>Access Token URL:</strong> The backend endpoint where the authorization code is exchanged for an access token (e.g. <code>https://api.example.com/oauth/token</code>).
+                <strong className="font-semibold">Access Token URL:</strong> The backend endpoint where the authorization code is exchanged for an access token (e.g. <code>https://api.example.com/oauth/token</code>).
               </li>
               <li>
-                <strong>Redirect Callback URI:</strong> Copy the callback URL provided in this tab and paste it into your third-party Developer Portal app settings.
+                <strong className="font-semibold">Redirect Callback URI:</strong> Copy the callback URL provided in this tab and paste it into your third-party Developer Portal app settings.
               </li>
               <li>
-                <strong>Scopes:</strong> List the permissions required (e.g. <code>read_contacts write_messages</code>).
+                <strong className="font-semibold">Scopes:</strong> List the permissions required (e.g. <code>read_contacts write_messages</code>).
               </li>
               <li>
-                <strong>PKCE:</strong> Enable Proof Key for Code Exchange (SHA-256) to eliminate authorization code interception vulnerabilities.
+                <strong className="font-semibold">PKCE:</strong> Enable Proof Key for Code Exchange (SHA-256) to eliminate authorization code interception vulnerabilities.
               </li>
             </ol>
           </div>
 
           <div className="space-y-1.5">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-emerald-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
               How End-Users Experience It:
             </h4>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -1663,7 +1660,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
       {/* Connection Prompt Fields Learn More Dialog */}
       <Dialog open={showUserFieldsLearnMore} onOpenChange={setShowUserFieldsLearnMore}>
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
+          <DialogTitle className="text-base font-semibold flex items-center gap-2">
             <Key className="w-4 h-4 text-blue-600" />
             How to Use: End-User Connection Dialog Fields
           </DialogTitle>
@@ -1673,34 +1670,34 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
         </DialogHeader>
         <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300">
           <div className="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl border border-blue-200 dark:border-blue-900/60 text-slate-700 dark:text-slate-300">
-            <strong>What this does:</strong> Creates custom input fields in the connection popup so users can enter account-specific data (e.g., Subdomain, API Key, Region).
+            <strong className="font-semibold">What this does:</strong> Creates custom input fields in the connection popup so users can enter account-specific data (e.g., Subdomain, API Key, Region).
           </div>
 
           <div className="space-y-2">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
               How Developer Configures It:
             </h4>
             <ol className="list-decimal pl-4 space-y-1.5 text-slate-600 dark:text-slate-400">
               <li>
-                <strong>Click "Add Field":</strong> Create an input field for each value needed from the user.
+                <strong className="font-semibold">Click "Add Field":</strong> Create an input field for each value needed from the user.
               </li>
               <li>
-                <strong>Field Key:</strong> Unique identifier used in API URLs (e.g. <code>subdomain</code> or <code>api_key</code>).
+                <strong className="font-semibold">Field Key:</strong> Unique identifier used in API URLs (e.g. <code>subdomain</code> or <code>api_key</code>).
               </li>
               <li>
-                <strong>Display Label:</strong> Friendly title shown on the form (e.g. "Your Company Subdomain" or "API Secret Key").
+                <strong className="font-semibold">Display Label:</strong> Friendly title shown on the form (e.g. "Your Company Subdomain" or "API Secret Key").
               </li>
               <li>
-                <strong>Input Type:</strong> Use <strong>Password</strong> for secrets/tokens (masks characters) and <strong>Text</strong> for public IDs/URLs.
+                <strong className="font-semibold">Input Type:</strong> Use <strong>Password</strong> for secrets/tokens (masks characters) and <strong>Text</strong> for public IDs/URLs.
               </li>
               <li>
-                <strong>Help Description:</strong> Tell users where to find this value in their software dashboard (e.g. &ldquo;Located under Settings &gt; API Keys in your portal&rdquo;).
+                <strong className="font-semibold">Help Description:</strong> Tell users where to find this value in their software dashboard (e.g. &ldquo;Located under Settings &gt; API Keys in your portal&rdquo;).
               </li>
             </ol>
           </div>
 
           <div className="space-y-1.5">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-emerald-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
               How End-Users Experience It:
             </h4>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -1723,7 +1720,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
       {/* Connection Test & Label Templating Learn More Dialog */}
       <Dialog open={showConnectionTestLearnMore} onOpenChange={setShowConnectionTestLearnMore}>
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
+          <DialogTitle className="text-base font-semibold flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
             How to Use: Connection Verification & Account Labeling
           </DialogTitle>
@@ -1733,28 +1730,28 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
         </DialogHeader>
         <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300">
           <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-200 dark:border-emerald-900/60 text-slate-700 dark:text-slate-300">
-            <strong>What this does:</strong> Instantly tests user credentials against your API when they click Save, and formats the account name cleanly in workflow dropdowns.
+            <strong className="font-semibold">What this does:</strong> Instantly tests user credentials against your API when they click Save, and formats the account name cleanly in workflow dropdowns.
           </div>
 
           <div className="space-y-2">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
               How Developer Sets It Up:
             </h4>
             <ol className="list-decimal pl-4 space-y-1.5 text-slate-600 dark:text-slate-400">
               <li>
-                <strong>Test Endpoint URL:</strong> Enter a lightweight identity endpoint (e.g. <code>https://api.yourdomain.com/v1/me</code> or <code>https://api.yourdomain.com/v1/user</code>).
+                <strong className="font-semibold">Test Endpoint URL:</strong> Enter a lightweight identity endpoint (e.g. <code>https://api.yourdomain.com/v1/me</code> or <code>https://api.yourdomain.com/v1/user</code>).
               </li>
               <li>
-                <strong>HTTP Method:</strong> Select <code>GET</code> or <code>POST</code>.
+                <strong className="font-semibold">HTTP Method:</strong> Select <code>GET</code> or <code>POST</code>.
               </li>
               <li>
-                <strong>Display Label Template:</strong> Use double-curly brackets to reference response fields (e.g. <code>&#123;&#123;email&#125;&#125; (&#123;&#123;account_name&#125;&#125;)</code> or <code>&#123;&#123;username&#125;&#125;</code>).
+                <strong className="font-semibold">Display Label Template:</strong> Use double-curly brackets to reference response fields (e.g. <code>&#123;&#123;email&#125;&#125; (&#123;&#123;account_name&#125;&#125;)</code> or <code>&#123;&#123;username&#125;&#125;</code>).
               </li>
             </ol>
           </div>
 
           <div className="space-y-1.5">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-emerald-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
               How End-Users Experience It:
             </h4>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -1782,7 +1779,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
       >
         <div className="space-y-4">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold flex items-center gap-2">
+            <DialogTitle className="text-base font-semibold flex items-center gap-2">
               <Eye className="w-4 h-4 text-blue-600" />
               <span>Connect {app.name || "App"} Account</span>
             </DialogTitle>
@@ -1798,14 +1795,14 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
                   <Globe className="w-6 h-6" />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                  <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                     Authorize {app.name || "Application"}
                   </h4>
                   <p className="text-xs text-slate-500 max-w-xs mx-auto">
                     You will be securely redirected to {auth.oauth2Config?.authorizeUrl || "OAuth Provider"} to grant permissions.
                   </p>
                 </div>
-                <Button className="h-9 px-6 bg-blue-600 text-white text-xs font-semibold w-full">
+                <Button className="h-9 px-6 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold w-full">
                   Connect via OAuth 2.0 →
                 </Button>
               </div>

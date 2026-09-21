@@ -50,7 +50,7 @@ export function Navbar() {
       {/* Right Header Actions */}
       <div className="flex items-center space-x-4 ml-auto">
         <Link href="/billing">
-          <Button size="sm" className="font-bold text-xs space-x-1.5 px-4 shadow-xs">
+          <Button size="sm" className="font-medium text-xs space-x-1.5 px-4 shadow-xs">
             <span>Upgrade</span>
           </Button>
         </Link>
@@ -82,7 +82,7 @@ export function Navbar() {
           {/* Profile Avatar */}
           <Link
             href="/settings"
-            className="flex items-center justify-center h-8 w-8 rounded-full bg-slate-700 text-white font-bold text-xs border border-slate-300 dark:border-slate-600 shadow-2xs hover:opacity-90 transition-opacity"
+            className="flex items-center justify-center h-8 w-8 rounded-full bg-slate-700 text-white font-semibold text-xs border border-slate-300 dark:border-slate-600 shadow-2xs hover:opacity-90 transition-opacity"
             title="Profile & Settings"
           >
             H

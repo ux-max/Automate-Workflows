@@ -665,7 +665,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
       {/* Header Bar */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <Layers className="w-5 h-5 text-blue-600" />
             Configured Actions ({app.actions.length})
           </h3>
@@ -688,7 +688,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
       {app.actions.length === 0 ? (
         <Card className="border-2 border-dashed border-slate-200 dark:border-slate-800 p-12 text-center rounded-2xl">
           <Layers className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-          <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">No actions configured yet</h4>
+          <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300">No actions configured yet</h4>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
             Build outbound operations like "Create Contact", "Send Message", or "Update Status" with visual parameter rows.
           </p>
@@ -713,14 +713,14 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
                   <div className="flex items-start gap-3">
                     <Badge
                       variant={action.method === "POST" ? "success" : action.method === "GET" ? "blue" : "warning"}
-                      className="text-[10px] font-mono font-bold uppercase shrink-0"
+                      className="text-[10px] font-mono font-medium uppercase shrink-0"
                     >
                       {action.method}
                     </Badge>
 
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">{action.name}</h4>
+                        <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{action.name}</h4>
                         <span className="font-mono text-[11px] text-slate-400">key: {action.key}</span>
                       </div>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{action.description}</p>
@@ -792,11 +792,11 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
             <div className="p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 rounded-t-2xl shrink-0 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold shadow-2xs">
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 flex items-center justify-center font-semibold shadow-2xs">
                     <Layers className="w-4 h-4" />
                   </div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                    <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                       Action Configuration
                     </h3>
                     <button
@@ -844,7 +844,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
                 >
                   <span>Setup Inbuilt Actions</span>
                   {editingAction.inbuiltActionSteps && editingAction.inbuiltActionSteps.length > 0 && (
-                    <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-bold">
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-medium">
                       {editingAction.inbuiltActionSteps.length}
                     </span>
                   )}
@@ -873,7 +873,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
                 >
                   <span>Setup Multi-Step Action</span>
                   {editingAction.isMultiStep && (
-                    <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold">
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-medium">
                       Active
                     </span>
                   )}
@@ -1070,7 +1070,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
                       <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto">
                         <Sparkles className="w-5 h-5" />
                       </div>
-                      <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                      <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                         No Inbuilt Actions Attached Yet
                       </h4>
                       <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
@@ -1085,10 +1085,10 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center justify-center">
+                            <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-semibold flex items-center justify-center">
                               {idx + 1}
                             </span>
-                            <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                               Inbuilt Action Step {idx + 1}
                             </span>
                           </div>
@@ -1420,7 +1420,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
             <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-800">
               <div className="flex items-center justify-between">
                 <div>
-                  <h5 className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                  <h5 className="text-xs font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                     <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     Sample Action Output Fields (Zero JSON)
                   </h5>
@@ -1454,7 +1454,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className={`w-2 h-2 rounded-full ${testResult.success ? "bg-emerald-500" : "bg-amber-500"}`} />
-                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                         Test Response ({testResult.status} {testResult.statusText})
                       </span>
                       <Badge variant="outline" className="text-[10px] text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800">
@@ -1562,7 +1562,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
                   <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto">
                     <Layers className="w-5 h-5" />
                   </div>
-                  <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                  <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                     No Multi-Step Actions Attached Yet
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
@@ -1578,7 +1578,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
                     {/* Card Top Row: Title & Remove '✕' */}
                     <div className="flex items-start justify-between">
                       <div>
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                        <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                           Multi-Step Action {idx + 1}
                         </h4>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -1703,10 +1703,10 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
               {/* Parameter Identification Banner */}
               <div className="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider block">
+                  <span className="text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase tracking-wider block">
                     Parameter Key
                   </span>
-                  <code className="text-xs font-mono font-bold text-slate-900 dark:text-slate-100">
+                  <code className="text-xs font-mono font-semibold text-slate-900 dark:text-slate-100">
                     {activeField.key || "unnamed_field"}
                   </code>
                 </div>
@@ -1717,7 +1717,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
 
               {/* Display Label */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                <label className="text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1">
                   <span>Display Label</span>
                   <span className="text-red-500">*</span>
                 </label>
@@ -2094,7 +2094,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
 
               {/* Placeholder */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                <label className="text-xs font-medium text-slate-700 dark:text-slate-300">
                   Placeholder Text
                 </label>
                 <Input
@@ -2110,7 +2110,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
 
               {/* Help Instruction / Description */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                <label className="text-xs font-medium text-slate-700 dark:text-slate-300">
                   Help Instruction / Description
                 </label>
                 <Input
@@ -2127,7 +2127,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
               {/* Required Field Toggle */}
               <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                  <span className="text-xs font-medium text-slate-800 dark:text-slate-200 block">
                     Required Field
                   </span>
                   <span className="text-[11px] text-slate-500 dark:text-slate-400">
@@ -2149,7 +2149,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
       {/* Learn More Dialog (Parameters Guide) */}
       <Dialog open={showLearnMoreDialog} onOpenChange={setShowLearnMoreDialog}>
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
+          <DialogTitle className="text-base font-semibold flex items-center gap-2">
             <Settings className="w-4 h-4 text-blue-600" />
             How to Use: Action Parameters & Mappings
           </DialogTitle>
@@ -2159,28 +2159,28 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
         </DialogHeader>
         <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300">
           <div className="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl border border-blue-200 dark:border-blue-900/60 text-slate-700 dark:text-slate-300">
-            <strong>What this does:</strong> Transforms inputs entered by workflow users into the exact JSON format or query string required by your API.
+            <strong className="font-semibold">What this does:</strong> Transforms inputs entered by workflow users into the exact JSON format or query string required by your API.
           </div>
 
           <div className="space-y-2">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
               How Developer Sets It Up:
             </h4>
             <ol className="list-decimal pl-4 space-y-1.5 text-slate-600 dark:text-slate-400">
               <li>
-                <strong>Step 1 (User Inputs):</strong> Create fields users fill out (e.g. Customer Email, Message Body, Status).
+                <strong className="font-semibold">Step 1 (User Inputs):</strong> Create fields users fill out (e.g. Customer Email, Message Body, Status).
               </li>
               <li>
-                <strong>Step 2 (API Body Parameters):</strong> Map those inputs to the JSON request payload using tags like <code>&#123;&#123;input.customer_email&#125;&#125;</code>.
+                <strong className="font-semibold">Step 2 (API Body Parameters):</strong> Map those inputs to the JSON request payload using tags like <code>&#123;&#123;input.customer_email&#125;&#125;</code>.
               </li>
               <li>
-                <strong>Step 3 (Field Settings ⚙):</strong> Configure dropdown option sources, placeholder hints, and required validation.
+                <strong className="font-semibold">Step 3 (Field Settings ⚙):</strong> Configure dropdown option sources, placeholder hints, and required validation.
               </li>
             </ol>
           </div>
 
           <div className="space-y-1.5">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-emerald-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
               How End-Users Experience It:
             </h4>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -2240,10 +2240,10 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
               {/* Header Identification Banner */}
               <div className="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider block">
+                  <span className="text-[10px] font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wider block">
                     HTTP Header
                   </span>
-                  <code className="text-xs font-mono font-bold text-slate-900 dark:text-slate-100">
+                  <code className="text-xs font-mono font-semibold text-slate-900 dark:text-slate-100">
                     {activeHeader.key || "unnamed_header"}
                   </code>
                 </div>
@@ -2254,7 +2254,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
 
               {/* Header Key */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                <label className="text-xs font-medium text-slate-800 dark:text-slate-200 flex items-center gap-1">
                   <span>Header Name / Key</span>
                   <span className="text-red-500">*</span>
                 </label>
@@ -2271,7 +2271,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
 
               {/* Header Value */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                <label className="text-xs font-medium text-slate-800 dark:text-slate-200 flex items-center gap-1">
                   <span>Header Value</span>
                   <span className="text-red-500">*</span>
                 </label>
@@ -2288,7 +2288,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
 
               {/* Description */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                <label className="text-xs font-medium text-slate-800 dark:text-slate-200">
                   Description / Documentation
                 </label>
                 <Input
@@ -2309,7 +2309,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
       {/* HTTP Headers Learn More Dialog */}
       <Dialog open={showHeadersLearnMore} onOpenChange={setShowHeadersLearnMore}>
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
+          <DialogTitle className="text-base font-semibold flex items-center gap-2">
             <Settings className="w-4 h-4 text-blue-600" />
             How to Use: HTTP Request Headers
           </DialogTitle>
@@ -2319,28 +2319,28 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
         </DialogHeader>
         <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-300">
           <div className="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl border border-blue-200 dark:border-blue-900/60 text-slate-700 dark:text-slate-300">
-            <strong>What this does:</strong> Injects necessary HTTP headers (like <code>Content-Type</code> or <code>X-Version</code>) into every outbound request.
+            <strong className="font-semibold">What this does:</strong> Injects necessary HTTP headers (like <code>Content-Type</code> or <code>X-Version</code>) into every outbound request.
           </div>
 
           <div className="space-y-2">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-blue-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
               How Developer Sets It Up:
             </h4>
             <ol className="list-decimal pl-4 space-y-1.5 text-slate-600 dark:text-slate-400">
               <li>
-                <strong>Header Key:</strong> Enter standard names (e.g. <code>Content-Type</code>, <code>Accept</code>, <code>Idempotency-Key</code>).
+                <strong className="font-semibold">Header Key:</strong> Enter standard names (e.g. <code>Content-Type</code>, <code>Accept</code>, <code>Idempotency-Key</code>).
               </li>
               <li>
-                <strong>Header Value:</strong> Enter static values (e.g. <code>application/json</code>) or dynamic connection variables (e.g. <code>Bearer &#123;&#123;connection.apiKey&#125;&#125;</code>).
+                <strong className="font-semibold">Header Value:</strong> Enter static values (e.g. <code>application/json</code>) or dynamic connection variables (e.g. <code>Bearer &#123;&#123;connection.apiKey&#125;&#125;</code>).
               </li>
               <li>
-                <strong>Header Settings (⚙):</strong> Add documentation notes for team collaboration.
+                <strong className="font-semibold">Header Settings (⚙):</strong> Add documentation notes for team collaboration.
               </li>
             </ol>
           </div>
 
           <div className="space-y-1.5">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 uppercase text-[11px] tracking-wider text-emerald-600">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-xs">
               How End-Users Experience It:
             </h4>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -2404,12 +2404,12 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
         {previewActionJson && (
           <div className="space-y-4">
             <DialogHeader>
-              <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <DialogTitle className="text-base font-semibold flex items-center gap-2">
                 <Code className="w-4 h-4 text-blue-600" />
                 <span>Action Event Schema & Technical Definition</span>
               </DialogTitle>
               <DialogDescription>
-                Raw technical JSON definition for <code className="font-mono font-bold text-slate-900 dark:text-slate-100">{previewActionJson.name}</code> ({previewActionJson.key}).
+                Raw technical JSON definition for <code className="font-mono font-semibold text-slate-900 dark:text-slate-100">{previewActionJson.name}</code> ({previewActionJson.key}).
               </DialogDescription>
             </DialogHeader>
 
@@ -2452,7 +2452,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
         {editingAction && (
           <div className="space-y-4">
             <DialogHeader>
-              <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <DialogTitle className="text-base font-semibold flex items-center gap-2">
                 <Eye className="w-4 h-4 text-blue-600" />
                 <span>Simulated User Input Form</span>
               </DialogTitle>
@@ -2465,7 +2465,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
               {editingAction.inputFields && editingAction.inputFields.length > 0 ? (
                 editingAction.inputFields.map((field) => (
                   <div key={field.id} className="space-y-1.5 bg-white dark:bg-slate-900 p-3.5 rounded-lg border border-slate-200/80 dark:border-slate-800">
-                    <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center justify-between">
+                    <label className="text-xs font-medium text-slate-800 dark:text-slate-200 flex items-center justify-between">
                       <span className="flex items-center gap-1">
                         <span>{field.label || field.key}</span>
                         {field.required && <span className="text-red-500">*</span>}
