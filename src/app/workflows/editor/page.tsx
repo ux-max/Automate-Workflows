@@ -47,7 +47,9 @@ import {
   Send,
   Eye,
   Sun,
-  Moon
+  Moon,
+  Sparkles,
+  Crosshair
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -69,23 +71,23 @@ import { HumanFormFieldsBuilder } from "@/components/workflow/HumanFormFieldsBui
 import { EmailApprovalPreviewModal } from "@/components/workflow/EmailApprovalPreviewModal"
 import { useTheme } from "@/context/ThemeContext"
 import { getDeveloperApps, developerAppsToAppConnections } from "@/lib/developer-data"
+import { AIWorkflowAssistant } from "@/components/workflow/AIWorkflowAssistant"
+import { GeneratedWorkflowPlan, ChatMessage } from "@/lib/ai-workflow-generator"
 
 function WorkflowEditorContent() {
   const { theme, toggleTheme } = useTheme()
   const searchParams = useSearchParams()
-  const isNew = searchParams.get("new") === "true" || searchParams.get("empty") === "true"
   const wfId = searchParams.get("id")
   const paramName = searchParams.get("name")
   const initialAppId = searchParams.get("app")
+  const isExplicitNew = searchParams.get("new") === "true" || searchParams.get("empty") === "true"
+  const existingWorkflow = wfId ? INITIAL_WORKFLOWS.find((w) => w.id === wfId) : null
+  const isNew = isExplicitNew || !wfId || !existingWorkflow
 
   const [workflowName, setWorkflowName] = useState(() => {
     if (paramName) return decodeURIComponent(paramName)
-    if (isNew) return "Untitled Workflow"
-    if (wfId) {
-      const existing = INITIAL_WORKFLOWS.find((w) => w.id === wfId)
-      if (existing) return existing.name
-    }
-    return "Slack Channel to Google Sheets Column"
+    if (existingWorkflow) return existingWorkflow.name
+    return "Untitled Workflow"
   })
   const [isOn, setIsOn] = useState(true)
   const [canvasOrientation, setCanvasOrientation] = useState<"vertical" | "horizontal">("vertical")
@@ -109,11 +111,67 @@ function WorkflowEditorContent() {
     return [...MVP_APPS, ...devApps]
   }, [devApps])
 
+  // AI Workflow Builder Interface State
+  const [aiPanelMode, setAiPanelMode] = useState<"bottom-floating" | "left-docked" | "minimized" | "closed">(() => {
+    if (isNew && !initialAppId) return "bottom-floating"
+    return "closed"
+  })
+  const [aiChatMessages, setAiChatMessages] = useState<ChatMessage[]>([])
+  const [aiLastPlan, setAiLastPlan] = useState<GeneratedWorkflowPlan | null>(null)
+  const [isBuildingWorkflow, setIsBuildingWorkflow] = useState(false)
+  const [buildingProgress, setBuildingProgress] = useState<{ total: number; current: number; currentAppName?: string }>({
+    total: 0,
+    current: 0
+  })
+  const [activeAiGeneratingStepId, setActiveAiGeneratingStepId] = useState<string | null>(null)
+
+  const handleGenerateStepsWithAI = (plan: GeneratedWorkflowPlan) => {
+    setIsBuildingWorkflow(true)
+    if (plan.workflowName) {
+      setWorkflowName(plan.workflowName)
+    }
+
+    const stepsToAdd = plan.steps
+    setSteps([])
+    setBuildingProgress({ total: stepsToAdd.length, current: 0 })
+
+    stepsToAdd.forEach((st, idx) => {
+      setTimeout(() => {
+        setActiveAiGeneratingStepId(st.id)
+        setSteps((prev) => [...prev, st])
+        setBuildingProgress({
+          total: stepsToAdd.length,
+          current: idx + 1,
+          currentAppName: st.appName
+        })
+
+        handleResetPan()
+
+        if (idx === stepsToAdd.length - 1) {
+          setTimeout(() => {
+            setActiveAiGeneratingStepId(null)
+            setIsBuildingWorkflow(false)
+            showToast(`Workflow built! ${stepsToAdd.length} steps generated in real-time.`, "success")
+          }, 600)
+        }
+      }, (idx + 1) * 650)
+    })
+  }
+
+  const handleRefineStepsWithAI = (plan: GeneratedWorkflowPlan) => {
+    setIsBuildingWorkflow(true)
+    if (plan.workflowName) {
+      setWorkflowName(plan.workflowName)
+    }
+    setSteps(plan.steps)
+    setTimeout(() => {
+      setIsBuildingWorkflow(false)
+      showToast("Workflow updated with AI refinement!", "success")
+    }, 450)
+  }
+
   // Canvas Steps State
   const [steps, setSteps] = useState<WorkflowStep[]>(() => {
-    if (isNew && !initialAppId) {
-      return []
-    }
     if (initialAppId) {
       const allInitial = typeof window !== "undefined" ? [...MVP_APPS, ...developerAppsToAppConnections(getDeveloperApps())] : MVP_APPS
       const matchedApp = allInitial.find((a) => a.id === initialAppId)
@@ -134,74 +192,15 @@ function WorkflowEditorContent() {
         ]
       }
     }
-    if (wfId) {
-      const existing = INITIAL_WORKFLOWS.find((w) => w.id === wfId)
-      if (existing && existing.steps && existing.steps.length > 0) {
-        return existing.steps
-      }
+    if (existingWorkflow && existingWorkflow.steps && existingWorkflow.steps.length > 0) {
+      return existingWorkflow.steps
     }
-    return [
-      {
-        id: "step_1",
-        type: "trigger",
-        appId: "slack",
-        appName: "Slack",
-        eventId: "new_channel_msg",
-        eventName: "New Channel",
-        connectionId: "conn_5",
-        status: "configured",
-        fieldMappings: { channel: "#general" },
-        testOutput: { channel_id: "C054812", user: "Rahul", text: "New lead incoming!" }
-      },
-      {
-        id: "step_2",
-        type: "action",
-        appId: "api-webhook",
-        appName: "API",
-        eventId: "send_custom_http",
-        eventName: "Custom API Request (GET/POST/PUT/DELETE)",
-        connectionId: "conn_4",
-        status: "configured",
-        fieldMappings: { url: "https://api.stripe.com/v1/charges", method: "POST" }
-      },
-      {
-        id: "step_3",
-        type: "action",
-        appId: "automate-chats",
-        appName: "Automate Chats",
-        eventId: "send_wa_template",
-        eventName: "Send WhatsApp Template Message",
-        connectionId: "conn_1",
-        status: "configured",
-        fieldMappings: { phone: "{{step_1.user}}", template: "welcome_v1" }
-      },
-      {
-        id: "step_4",
-        type: "action",
-        appId: "google-sheets",
-        appName: "Google Sheets",
-        eventId: "add_row",
-        eventName: "Create Spreadsheet Column",
-        connectionId: "conn_3",
-        status: "configured",
-        fieldMappings: { spreadsheet: "Sales Ledger 2026", col_A: "{{step_1.text}}" }
-      },
-      {
-        id: "step_5",
-        type: "action",
-        appId: "hubspot",
-        appName: "HubSpot",
-        eventId: "create_contact",
-        eventName: "Create CRM Contact",
-        connectionId: "conn_2",
-        status: "configured",
-        fieldMappings: { email: "{{step_1.user}}" }
-      }
-    ]
+    // New workflows default to a completely empty canvas!
+    return []
   })
 
   // Canvas Side Rail Toolbar State
-  const [activeSideTool, setActiveSideTool] = useState<string | null>("outline")
+  const [activeSideTool, setActiveSideTool] = useState<string | null>(null)
   const [zoomPercent, setZoomPercent] = useState<string>("110%")
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null)
   const [copiedTooltipId, setCopiedTooltipId] = useState<string | null>(null)
@@ -2741,6 +2740,10 @@ function WorkflowEditorContent() {
 
   const requestDeleteStep = (stepId: string, stepName?: string) => {
     const targetStep = steps.find((s) => s.id === stepId)
+    if (targetStep?.type === "trigger" || stepId === steps[0]?.id) {
+      showToast("Trigger cannot be deleted. A workflow must start with a trigger.", "warning")
+      return
+    }
     const displayName = stepName || (targetStep ? `${targetStep.appName} - ${targetStep.eventName}` : "this step")
     setDeleteStepModalState({ open: true, stepId, stepName: displayName })
   }
@@ -2776,6 +2779,11 @@ function WorkflowEditorContent() {
         handleDeleteBranchStep(deleteStepModalState.branchKey, deleteStepModalState.stepId)
       }
     } else if (deleteStepModalState.stepId) {
+      const targetStep = steps.find((s) => s.id === deleteStepModalState.stepId)
+      if (targetStep?.type === "trigger" || deleteStepModalState.stepId === steps[0]?.id) {
+        showToast("Trigger cannot be deleted.", "warning")
+        return
+      }
       setSteps((prev) => prev.filter((s) => s.id !== deleteStepModalState.stepId))
       if (selectedStepId === deleteStepModalState.stepId) {
         setSelectedStepId("")
@@ -3593,8 +3601,25 @@ function WorkflowEditorContent() {
         {/* STATIC FIXED LEFT VERTICAL SIDEBAR (Seamless continuation of Top Header) */}
         <aside className="w-12 shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between items-center py-4 z-20">
           <div className="flex flex-col items-center space-y-3.5">
+            {/* AI Architect Tool Toggle */}
             <button
-              onClick={() => setActiveSideTool(activeSideTool === "search" ? null : "search")}
+              onClick={() => {
+                setActiveSideTool(null)
+                setAiPanelMode(aiPanelMode === "left-docked" ? "closed" : "left-docked")
+              }}
+              className={`p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
+                aiPanelMode === "left-docked" ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold" : ""
+              }`}
+              title="AI Workflow Architect"
+            >
+              <Sparkles className="h-4 w-4" />
+            </button>
+
+            <button
+              onClick={() => {
+                if (aiPanelMode === "left-docked") setAiPanelMode("closed")
+                setActiveSideTool(activeSideTool === "search" ? null : "search")
+              }}
               className={`p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
                 activeSideTool === "search" ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold" : ""
               }`}
@@ -3603,7 +3628,10 @@ function WorkflowEditorContent() {
               <Search className="h-4 w-4" />
             </button>
             <button
-              onClick={() => setActiveSideTool(activeSideTool === "add" ? null : "add")}
+              onClick={() => {
+                if (aiPanelMode === "left-docked") setAiPanelMode("closed")
+                setActiveSideTool(activeSideTool === "add" ? null : "add")
+              }}
               className={`p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
                 activeSideTool === "add" ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold" : ""
               }`}
@@ -3612,7 +3640,10 @@ function WorkflowEditorContent() {
               <Plus className="h-4 w-4" />
             </button>
             <button
-              onClick={() => setActiveSideTool(activeSideTool === "outline" ? null : "outline")}
+              onClick={() => {
+                if (aiPanelMode === "left-docked") setAiPanelMode("closed")
+                setActiveSideTool(activeSideTool === "outline" ? null : "outline")
+              }}
               className={`p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
                 activeSideTool === "outline" ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold" : ""
               }`}
@@ -3621,7 +3652,10 @@ function WorkflowEditorContent() {
               <Layers className="h-4 w-4" />
             </button>
             <button
-              onClick={() => setActiveSideTool(activeSideTool === "history" ? null : "history")}
+              onClick={() => {
+                if (aiPanelMode === "left-docked") setAiPanelMode("closed")
+                setActiveSideTool(activeSideTool === "history" ? null : "history")
+              }}
               className={`p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
                 activeSideTool === "history" ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold" : ""
               }`}
@@ -3630,7 +3664,10 @@ function WorkflowEditorContent() {
               <Clock className="h-4 w-4" />
             </button>
             <button
-              onClick={() => setActiveSideTool(activeSideTool === "settings" ? null : "settings")}
+              onClick={() => {
+                if (aiPanelMode === "left-docked") setAiPanelMode("closed")
+                setActiveSideTool(activeSideTool === "settings" ? null : "settings")
+              }}
               className={`p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
                 activeSideTool === "settings" ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold" : ""
               }`}
@@ -3652,6 +3689,25 @@ function WorkflowEditorContent() {
             </button>
           </div>
         </aside>
+
+        {/* AI WORKFLOW ASSISTANT (Persistent across bottom-floating, left-docked, and minimized) */}
+        {aiPanelMode !== "closed" && (
+          <AIWorkflowAssistant
+            mode={aiPanelMode}
+            onModeChange={setAiPanelMode}
+            catalog={ALL_AVAILABLE_APPS}
+            steps={steps}
+            onGenerateSteps={handleGenerateStepsWithAI}
+            onRefineSteps={handleRefineStepsWithAI}
+            onSelectStepToConfigure={handleOpenConfig}
+            isBuildingWorkflow={isBuildingWorkflow}
+            buildingProgress={buildingProgress}
+            chatMessages={aiChatMessages}
+            onChatMessagesChange={setAiChatMessages}
+            lastPlan={aiLastPlan}
+            onLastPlanChange={setAiLastPlan}
+          />
+        )}
 
         {/* EXPANDABLE LEFT SIDE TOOL PANEL FLOATING ISLAND */}
         {activeSideTool && (
@@ -3842,12 +3898,14 @@ function WorkflowEditorContent() {
                           >
                             Configure
                           </button>
-                          <button
-                            onClick={() => requestDeleteStep(step.id, `${step.appName} - ${step.eventName}`)}
-                            className="text-red-500 font-bold hover:underline cursor-pointer"
-                          >
-                            Delete
-                          </button>
+                          {step.type !== "trigger" && idx !== 0 && (
+                            <button
+                              onClick={() => requestDeleteStep(step.id, `${step.appName} - ${step.eventName}`)}
+                              className="text-red-500 font-bold hover:underline cursor-pointer"
+                            >
+                              Delete
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -4053,19 +4111,6 @@ function WorkflowEditorContent() {
               : {})
           }}
         >
-          {/* Canvas Pan Recenter Badge */}
-          {(panOffset.x !== 0 || panOffset.y !== 0) && (
-            <div className="absolute bottom-6 left-6 z-30 bg-slate-900/90 dark:bg-slate-800/90 text-white dark:text-slate-100 text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-xl flex items-center space-x-2 animate-in fade-in">
-              <span>Canvas Panned</span>
-              <button
-                onClick={handleResetPan}
-                className="underline hover:text-blue-300 font-bold ml-1 cursor-pointer"
-              >
-                Recenter
-              </button>
-            </div>
-          )}
-
           {/* Node Workspace Container */}
           {canvasOrientation === "vertical" ? (
             <div
@@ -4092,6 +4137,16 @@ function WorkflowEditorContent() {
                     Choose Your First Application
                   </p>
                 </div>
+
+                {aiPanelMode === "closed" && (
+                  <button
+                    onClick={() => setAiPanelMode("bottom-floating")}
+                    className="mt-4 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 text-xs font-semibold flex items-center space-x-1.5 shadow-2xs transition-all hover:scale-105 cursor-pointer"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    <span>Build with AI</span>
+                  </button>
+                )}
               </div>
             ) : (
               <>
@@ -4119,6 +4174,10 @@ function WorkflowEditorContent() {
                         : isUnconfigured
                         ? "border-dashed border-blue-300 dark:border-blue-700 hover:border-blue-500 dark:hover:border-blue-400 bg-blue-50/30 dark:bg-blue-950/20 hover:bg-blue-50/60 dark:hover:bg-blue-950/40"
                         : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md bg-white dark:bg-slate-900"
+                    } ${
+                      activeAiGeneratingStepId === step.id
+                        ? "border-blue-500 ring-4 ring-blue-400/40 shadow-xl animate-pulse scale-102"
+                        : ""
                     }`}
                   >
                     {/* Left: BRAND ICON + APP NAME */}
@@ -4138,6 +4197,12 @@ function WorkflowEditorContent() {
                           <span>{isUnconfigured ? (step.type === "trigger" ? "Select Trigger App" : "Select Action App") : step.appName}</span>
                           {step.appId === "router" && (
                             <Badge variant="blue" className="text-[9px] font-bold px-1.5 py-0">Router</Badge>
+                          )}
+                          {activeAiGeneratingStepId === step.id && (
+                            <Badge variant="blue" className="text-[9px] font-bold px-1.5 py-0 bg-blue-600 text-white animate-pulse flex items-center gap-1">
+                              <Sparkles className="h-2.5 w-2.5" />
+                              <span>AI Adding...</span>
+                            </Badge>
                           )}
                         </h4>
                         <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate max-w-[150px]">
@@ -4192,16 +4257,18 @@ function WorkflowEditorContent() {
                           </button>
                         )}
 
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            requestDeleteStep(step.id, isUnconfigured ? "Unconfigured Step" : `${step.appName} - ${step.eventName}`)
-                          }}
-                          className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
-                          title="Delete Step"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        {step.type !== "trigger" && idx !== 0 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              requestDeleteStep(step.id, isUnconfigured ? "Unconfigured Step" : `${step.appName} - ${step.eventName}`)
+                            }}
+                            className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                            title="Delete Step"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -4575,6 +4642,16 @@ function WorkflowEditorContent() {
                       Choose Your First Application
                     </p>
                   </div>
+
+                  {aiPanelMode === "closed" && (
+                    <button
+                      onClick={() => setAiPanelMode("bottom-floating")}
+                      className="mt-4 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 text-xs font-semibold flex items-center space-x-1.5 shadow-2xs transition-all hover:scale-105 cursor-pointer"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      <span>Build with AI</span>
+                    </button>
+                  )}
                 </div>
               ) : (
                 <>
@@ -4603,6 +4680,10 @@ function WorkflowEditorContent() {
                           : isUnconfigured
                           ? "border-dashed border-blue-300 dark:border-blue-700 hover:border-blue-500 dark:hover:border-blue-400 bg-blue-50/30 dark:bg-blue-950/20 hover:bg-blue-50/60 dark:hover:bg-blue-950/40"
                           : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md bg-white dark:bg-slate-900"
+                      } ${
+                        activeAiGeneratingStepId === step.id
+                          ? "border-blue-500 ring-4 ring-blue-400/40 shadow-xl animate-pulse scale-102"
+                          : ""
                       }`}
                     >
                       {/* Big App Icon on Top or Node Selector Squircle */}
@@ -4671,7 +4752,7 @@ function WorkflowEditorContent() {
                             <Copy className="h-3 w-3" />
                           </button>
                         )}
-                        {steps.length > 1 && (
+                        {step.type !== "trigger" && idx !== 0 && (
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
@@ -4793,12 +4874,20 @@ function WorkflowEditorContent() {
 
             <button
               onClick={handleResetPan}
-              className="p-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all active:scale-95 cursor-pointer flex items-center space-x-1"
+              className={`p-2 rounded-xl transition-all active:scale-95 cursor-pointer relative ${
+                panOffset.x !== 0 || panOffset.y !== 0
+                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 font-bold"
+                  : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800"
+              }`}
               title="Recenter Canvas View"
             >
-              <Maximize2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <Crosshair className="h-4 w-4" />
+              {(panOffset.x !== 0 || panOffset.y !== 0) && (
+                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-blue-600" />
+              )}
             </button>
           </div>
+
         </div>
       </div>
 

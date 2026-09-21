@@ -145,7 +145,7 @@ export default function DashboardPage() {
         ? `Created "${title}" in "${selectedFolder}"`
         : `Created "${title}" (No Folder)`
     )
-    router.push(`/workflows/editor?id=${newId}&name=${encodeURIComponent(title)}`)
+    router.push(`/workflows/editor?id=${newId}&name=${encodeURIComponent(title)}&new=true`)
   }
 
   const [activeMenuWfId, setActiveMenuWfId] = useState<string | null>(null)

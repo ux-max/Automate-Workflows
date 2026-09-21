@@ -82,7 +82,7 @@ export default function WorkflowsPage() {
         ? `Created "${title}" in "${selectedFolder}"`
         : `Created "${title}" (No Folder)`
     )
-    router.push(`/workflows/editor?id=${newId}&name=${encodeURIComponent(title)}`)
+    router.push(`/workflows/editor?id=${newId}&name=${encodeURIComponent(title)}&new=true`)
   }
 
   const [activeMoveWfId, setActiveMoveWfId] = useState<string | null>(null)
