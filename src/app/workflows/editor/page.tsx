@@ -126,6 +126,7 @@ function WorkflowEditorContent() {
     current: 0
   })
   const [activeAiGeneratingStepId, setActiveAiGeneratingStepId] = useState<string | null>(null)
+ 
 
   const handleGenerateStepsWithAI = (plan: GeneratedWorkflowPlan) => {
     setIsBuildingWorkflow(true)
@@ -200,6 +201,18 @@ function WorkflowEditorContent() {
     // New workflows default to a completely empty canvas!
     return []
   })
+
+  // Only convert AI Interface into the Pill when a trigger is newly added (transition from no-trigger to has-trigger).
+  // When the user clicks the pill to reopen, allow it to open freely without being forced back to minimized!
+  const prevHasTriggerRef = useRef<boolean>(steps.some((s) => s.type === "trigger" && Boolean(s.appId)))
+
+  useEffect(() => {
+    const hasTrigger = steps.some((s) => s.type === "trigger" && Boolean(s.appId))
+    if (!prevHasTriggerRef.current && hasTrigger) {
+      setAiPanelMode("minimized")
+    }
+    prevHasTriggerRef.current = hasTrigger
+  }, [steps])
 
   // Canvas Side Rail Toolbar State
   const [activeSideTool, setActiveSideTool] = useState<string | null>(null)
@@ -3620,7 +3633,7 @@ function WorkflowEditorContent() {
         {/* STATIC FIXED LEFT VERTICAL SIDEBAR (Seamless continuation of Top Header) */}
         <aside className="w-12 shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between items-center py-4 z-20">
           <div className="flex flex-col items-center space-y-3.5">
-            {/* AI Architect Tool Toggle */}
+            {/* AI Builder Tool Toggle */}
             <button
               onClick={() => {
                 setActiveSideTool(null)
@@ -3629,7 +3642,7 @@ function WorkflowEditorContent() {
               className={`p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
                 aiPanelMode === "left-docked" ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold" : ""
               }`}
-              title="AI Workflow Architect"
+              title="AI Workflow Builder"
             >
               <Sparkles className="h-4 w-4" />
             </button>
@@ -4721,6 +4734,9 @@ function WorkflowEditorContent() {
 
                       {/* Title & Subtitle Downside below the icon */}
                       <div className="mt-2.5 space-y-0.5 w-full">
+                        <span className="text-[10px] font-medium text-slate-400 dark:text-slate-400 block leading-tight">
+                          {idx + 1}. {step.type === "trigger" ? "Trigger" : "Action"}
+                        </span>
                         <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 tracking-tight leading-snug truncate">
                           {isUnconfigured ? (step.type === "trigger" ? "Select Trigger" : "Select Action") : step.appName}
                         </h4>
@@ -5500,6 +5516,9 @@ function WorkflowEditorContent() {
                           }))
                           setDrawerStep("setup_details")
                           setIsDrawerMaximized(false)
+                          if (isTrigger || selectedStep.type === "trigger") {
+                            setAiPanelMode("minimized")
+                          }
                         }}
                         className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex flex-col items-center justify-center text-center space-y-2.5 relative min-h-[135px] ${
                           isSelected

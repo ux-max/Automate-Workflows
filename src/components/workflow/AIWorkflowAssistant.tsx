@@ -53,13 +53,83 @@ export interface AIWorkflowAssistantProps {
   onLastPlanChange?: (plan: GeneratedWorkflowPlan | null) => void
 }
 
-export const WORKFLOW_IDEAS = [
-  "When a new lead fills Google Forms, send a Slack message to #leads and add a row in Google Sheets",
-  "When a new WhatsApp message arrives in Automate Chats, create or update a contact in HubSpot CRM",
-  "When an order is paid in Shopify, send an email receipt via Gmail and alert the sales team on Slack",
-  "Catch an inbound Webhook, filter for high-value transactions, and create a deal in Pipedrive",
-  "When a new customer signs up, send a welcome email and create an onboarding task in ClickUp"
+export interface WorkflowIdeaCard {
+  id: string
+  title: string
+  text: string
+  badge?: string
+  apps: { id: string; name: string }[]
+}
+
+export const WORKFLOW_IDEA_CARDS: WorkflowIdeaCard[] = [
+  {
+    id: "lead-capture",
+    title: "Lead Capture & Alert",
+    text: "When a new lead fills Google Forms, send a Slack message to #leads and add a row in Google Sheets",
+    badge: "Leads",
+    apps: [
+      { id: "googleforms", name: "Google Forms" },
+      { id: "slack", name: "Slack" },
+      { id: "googlesheets", name: "Sheets" }
+    ]
+  },
+  {
+    id: "whatsapp-crm",
+    title: "WhatsApp CRM Sync",
+    text: "When a new WhatsApp message arrives in Automate Chats, create or update a contact in HubSpot CRM",
+    badge: "CRM",
+    apps: [
+      { id: "whatsapp", name: "WhatsApp" },
+      { id: "hubspot", name: "HubSpot" }
+    ]
+  },
+  {
+    id: "shopify-order",
+    title: "Order Notification",
+    text: "When an order is paid in Shopify, send an email receipt via Gmail and alert the sales team on Slack",
+    badge: "E-Commerce",
+    apps: [
+      { id: "shopify", name: "Shopify" },
+      { id: "gmail", name: "Gmail" },
+      { id: "slack", name: "Slack" }
+    ]
+  },
+  {
+    id: "webhook-filter",
+    title: "Webhook Routing",
+    text: "Catch an inbound Webhook, filter for high-value transactions, and create a deal in Pipedrive",
+    badge: "Webhook",
+    apps: [
+      { id: "webhook", name: "Webhook" },
+      { id: "filter", name: "Filter" },
+      { id: "pipedrive", name: "Pipedrive" }
+    ]
+  },
+  {
+    id: "calendly-meeting",
+    title: "Meeting Scheduler",
+    text: "When an event is booked in Calendly, generate a Zoom meeting and send confirmation via Gmail",
+    badge: "Meetings",
+    apps: [
+      { id: "calendly", name: "Calendly" },
+      { id: "zoom", name: "Zoom" },
+      { id: "gmail", name: "Gmail" }
+    ]
+  },
+  {
+    id: "stripe-payout",
+    title: "Payment Records",
+    text: "When a customer pays in Stripe, record transaction in Google Sheets and notify team in Slack",
+    badge: "Finance",
+    apps: [
+      { id: "stripe", name: "Stripe" },
+      { id: "googlesheets", name: "Sheets" },
+      { id: "slack", name: "Slack" }
+    ]
+  }
 ]
+
+export const WORKFLOW_IDEAS = WORKFLOW_IDEA_CARDS.map((card) => card.text)
 
 export const PEEKING_APPS = [
   {
@@ -435,16 +505,11 @@ export function AIWorkflowAssistant({
           <div className="flex items-center space-x-2">
             <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             <h3 className="text-xs font-semibold text-slate-800 dark:text-slate-100 flex items-center space-x-2">
-              <span>AI Workflow Architect</span>
-              {isBuildingWorkflow ? (
+              <span>AI Workflow Builder</span>
+              {isBuildingWorkflow && (
                 <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold flex items-center gap-1 animate-pulse">
                   <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-ping" />
                   Building...
-                </span>
-              ) : (
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                  Active
                 </span>
               )}
             </h3>
@@ -499,35 +564,81 @@ export function AIWorkflowAssistant({
                 <Sparkles className="h-5 w-5" />
               </div>
               <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm">
-                AI Workflow Architect
+                AI Workflow Builder
               </h4>
               <p className="text-[11px] mt-1 text-slate-500 max-w-xs leading-relaxed">
                 Describe any multi-app automation. I will build the nodes on your canvas in real-time.
               </p>
 
-              {/* Workflow Ideas Showcase */}
-              <div className="mt-4 w-full space-y-2 text-left">
-                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block px-1">
-                  💡 Workflow Ideas
-                </span>
-                {WORKFLOW_IDEAS.slice(0, 3).map((idea, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      setInputText(idea)
-                      handlePromptSubmit(idea)
-                    }}
-                    className="w-full text-left p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-950/30 transition-all text-xs text-slate-700 dark:text-slate-300 group cursor-pointer shadow-2xs"
-                  >
-                    <div className="flex items-start space-x-2">
-                      <Sparkles className="h-3.5 w-3.5 text-blue-500 shrink-0 mt-0.5" />
-                      <span className="leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 text-[11px]">
-                        {idea}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+              {/* Workflow Ideas Showcase - Scrolling Cards Strip */}
+              <div className="mt-4 w-full text-left">
+                <div className="flex items-center justify-between px-1 mb-2">
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>💡</span>
+                    <span>Workflow Ideas</span>
+                  </span>
+                  <span className="text-[9px] text-slate-400 dark:text-slate-500 font-medium">
+                    Hover to pause · Click to use
+                  </span>
+                </div>
+
+                {/* Marquee Outer Container with subtle fade gradient edges */}
+                <div className="relative w-full overflow-hidden py-1 marquee-container rounded-xl">
+                  {/* Subtle fade masks at left & right edges */}
+                  <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-white dark:from-slate-900 to-transparent z-10 pointer-events-none" />
+                  <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-white dark:from-slate-900 to-transparent z-10 pointer-events-none" />
+
+                  {/* Marquee Track: Left-to-Right Scrolling, Pauses on Hover */}
+                  <div className="flex gap-2.5 animate-marquee-ltr hover:[animation-play-state:paused]">
+                    {[...WORKFLOW_IDEA_CARDS, ...WORKFLOW_IDEA_CARDS].map((card, idx) => (
+                      <div
+                        key={`${card.id}-${idx}`}
+                        onClick={() => {
+                          setInputText(card.text)
+                          handlePromptSubmit(card.text)
+                        }}
+                        className="w-[230px] shrink-0 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 hover:border-blue-400 dark:hover:border-blue-500 transition-all cursor-pointer shadow-2xs hover:shadow-md flex flex-col justify-between group/card text-left active:scale-[0.98]"
+                      >
+                        {/* Top Header: Actual App Icons + Category Badge */}
+                        <div className="flex items-center justify-between gap-1 mb-1.5">
+                          <div className="flex items-center gap-1">
+                            {card.apps.map((app, appIdx) => (
+                              <React.Fragment key={app.id}>
+                                <div
+                                  className="h-6 w-6 rounded-md bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center shadow-2xs group-hover/card:scale-105 transition-transform"
+                                  title={app.name}
+                                >
+                                  <AppIcon appId={app.id} appName={app.name} size={15} />
+                                </div>
+                                {appIdx < card.apps.length - 1 && (
+                                  <span className="text-[9px] text-slate-300 dark:text-slate-600 font-bold px-0.5 select-none">
+                                    →
+                                  </span>
+                                )}
+                              </React.Fragment>
+                            ))}
+                          </div>
+                          {card.badge && (
+                            <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/40">
+                              {card.badge}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Middle: Workflow Prompt Text */}
+                        <p className="text-[11px] leading-snug text-slate-700 dark:text-slate-300 font-medium line-clamp-2 group-hover/card:text-blue-600 dark:group-hover/card:text-blue-400 transition-colors">
+                          {card.text}
+                        </p>
+
+                        {/* Bottom: Action Hint */}
+                        <div className="mt-2 pt-1 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400 group-hover/card:text-blue-500 transition-colors">
+                          <span className="font-medium text-[10px]">Click to use</span>
+                          <span className="text-xs transition-transform group-hover/card:translate-x-1">→</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           ) : (
@@ -546,7 +657,7 @@ export function AIWorkflowAssistant({
                   ) : (
                     <span className="flex items-center space-x-1 text-blue-600 dark:text-blue-400 font-semibold">
                       <Sparkles className="h-3 w-3" />
-                      <span>AI Architect</span>
+                      <span>AI Builder</span>
                     </span>
                   )}
                   <span>• {msg.timestamp}</span>
@@ -724,19 +835,49 @@ export function AIWorkflowAssistant({
   }
 
   // =========================================================================
-  // VIEW 3: MINIMIZED FLOATING PILL
+  // VIEW 3: MINIMIZED FLOATING PILL WITH CLOSE ICON
   // =========================================================================
   if (mode === "minimized") {
     return (
-      <div className="absolute bottom-6 left-16 z-30 animate-in fade-in">
-        <button
-          onClick={() => onModeChange("left-docked")}
-          className="h-10 px-3.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold shadow-xl flex items-center space-x-2 transition-all hover:scale-105 cursor-pointer"
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-bottom-2 duration-200 select-none group">
+        {/* Ambient Gradient Outer Glow */}
+        <div className="absolute -inset-[3px] rounded-full ai-ambient-gradient opacity-35 dark:opacity-45 blur-sm pointer-events-none transition-opacity duration-300 group-hover:opacity-70" />
+
+        {/* Gradient Border Ring */}
+        <div className="absolute -inset-[1.5px] rounded-full ai-ambient-gradient opacity-70 dark:opacity-85 pointer-events-none transition-opacity duration-300 group-hover:opacity-100" />
+
+        {/* Pill Surface */}
+        <div
+          onClick={() => onModeChange("bottom-floating")}
+          className="relative z-10 flex items-center bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-xl rounded-full py-1.5 px-4 space-x-2.5 cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all"
         >
-          <Sparkles className="h-4 w-4 animate-pulse" />
-          <span>Open AI Architect</span>
-          <ChevronRight className="h-3.5 w-3.5" />
-        </button>
+          {/* Main button text to reopen AI Assistant (icon removed as requested) */}
+          <div
+            className="flex items-center space-x-1.5 text-xs font-semibold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+            title="Open AI Workflow Assistant"
+          >
+            <span className="font-bold tracking-tight">Build with AI</span>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-normal">
+              — Describe your workflow
+            </span>
+          </div>
+
+          <div className="w-[1px] h-4 bg-slate-200 dark:bg-slate-700 mx-0.5" />
+
+          {/* Close Icon Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              onModeChange("closed")
+            }}
+            className="h-6 w-6 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors cursor-pointer"
+            title="Close AI Assistant"
+            aria-label="Close AI Assistant"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
     )
   }
