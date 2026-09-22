@@ -56,6 +56,10 @@
   body {
     @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-blue-900 dark:selection:text-blue-100;
   }
+  textarea:focus,
+  textarea:focus-visible {
+    outline: none;
+  }
 }
 
 /* Custom subtle scrollbars */

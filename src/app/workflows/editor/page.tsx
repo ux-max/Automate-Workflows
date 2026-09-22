@@ -22,6 +22,7 @@ import {
   ZoomIn,
   ZoomOut,
   Maximize2,
+  Minimize2,
   Lock,
   Grid,
   Copy,
@@ -58,6 +59,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
 import { Drawer } from "@/components/ui/drawer"
+import { cn } from "@/lib/utils"
 import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { AppIcon } from "@/components/ui/app-icon"
 import { ConfirmModal } from "@/components/ui/confirm-modal"
@@ -758,6 +760,7 @@ function WorkflowEditorContent() {
   // Drawer Resizing & Custom Width States
   const [drawerWidth, setDrawerWidth] = useState<number>(640)
   const [isResizingDrawer, setIsResizingDrawer] = useState<boolean>(false)
+  const [isDrawerMaximized, setIsDrawerMaximized] = useState<boolean>(false)
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -1027,6 +1030,7 @@ function WorkflowEditorContent() {
     setActiveRouteId(null)
     setActiveTab("setup")
     setDrawerStep("app_select")
+    setIsDrawerMaximized(false)
     setStepDrawerOpen(true)
   }
 
@@ -1058,6 +1062,7 @@ function WorkflowEditorContent() {
     setActiveRouteId(null)
     setActiveTab("setup")
     setDrawerStep("app_select")
+    setIsDrawerMaximized(false)
     setStepDrawerOpen(true)
     showToast("Added new action step. Select an app from the catalog.")
   }
@@ -2608,6 +2613,7 @@ function WorkflowEditorContent() {
     } else {
       setDrawerStep("app_select")
     }
+    setIsDrawerMaximized(false)
     setStepDrawerOpen(true)
   }
 
@@ -2616,6 +2622,7 @@ function WorkflowEditorContent() {
     setActiveRouteId(routeId)
     setActiveTab("connections")
     setDrawerStep("setup_details")
+    setIsDrawerMaximized(false)
     setStepDrawerOpen(true)
   }
 
@@ -2644,6 +2651,7 @@ function WorkflowEditorContent() {
     setActiveRouteId(null)
     setActiveTab("setup")
     setDrawerStep("app_select")
+    setIsDrawerMaximized(false)
     setStepDrawerOpen(true)
   }
 
@@ -2693,6 +2701,7 @@ function WorkflowEditorContent() {
     setActiveRouteId(null)
     setActiveTab("setup")
     setDrawerStep("app_select")
+    setIsDrawerMaximized(false)
     setStepDrawerOpen(true)
   }
 
@@ -3497,7 +3506,17 @@ function WorkflowEditorContent() {
       </div>
 
       {/* Right Header Actions */}
-      <div className="flex items-center pb-3.5">
+      <div className="flex items-center space-x-1 pb-3.5">
+        <button
+          type="button"
+          onClick={() => setIsDrawerMaximized(!isDrawerMaximized)}
+          className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          title={isDrawerMaximized ? "Exit Fullscreen (Side Panel)" : "Maximize to Whole Screen"}
+          aria-label={isDrawerMaximized ? "Exit Fullscreen" : "Maximize to Whole Screen"}
+        >
+          {isDrawerMaximized ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+        </button>
+
         <button
           type="button"
           onClick={() => setStepDrawerOpen(false)}
@@ -4896,30 +4915,36 @@ function WorkflowEditorContent() {
         open={stepDrawerOpen}
         onOpenChange={(open) => {
           setStepDrawerOpen(open)
-          if (!open) setActiveRouteId(null)
+          if (!open) {
+            setActiveRouteId(null)
+            setIsDrawerMaximized(false)
+          }
         }}
         side="right"
         style={{ width: `${drawerWidth}px` }}
         header={drawerHeader}
         footer={drawerFooter}
-        className="max-w-[95vw] transition-[width] duration-75 ease-out relative"
+        isMaximized={isDrawerMaximized}
+        className={cn("transition-[width] duration-75 ease-out relative", !isDrawerMaximized && "max-w-[95vw]")}
       >
-        {/* INTERACTIVE DRAG HANDLE TO RESIZE DRAWER WIDTH */}
-        <div
-          onMouseDown={(e) => {
-            e.preventDefault()
-            setIsResizingDrawer(true)
-          }}
-          className={`absolute left-0 top-0 bottom-0 w-2.5 hover:w-3.5 -ml-1 z-50 cursor-col-resize flex items-center justify-center transition-all group select-none ${
-            isResizingDrawer ? "bg-blue-500/40 w-3.5" : "hover:bg-blue-500/20"
-          }`}
-          title="Click and drag left/right to resize drawer width"
-        >
-          <div className="w-1 h-12 rounded-full bg-slate-300 group-hover:bg-blue-600 transition-colors shadow-2xs flex flex-col items-center justify-center space-y-1 py-1">
-            <div className="w-0.5 h-1 bg-slate-400 rounded-full" />
-            <div className="w-0.5 h-1 bg-slate-400 rounded-full" />
+        {/* INTERACTIVE DRAG HANDLE TO RESIZE DRAWER WIDTH (Hidden when maximized) */}
+        {!isDrawerMaximized && (
+          <div
+            onMouseDown={(e) => {
+              e.preventDefault()
+              setIsResizingDrawer(true)
+            }}
+            className={`absolute left-0 top-0 bottom-0 w-2.5 hover:w-3.5 -ml-1 z-50 cursor-col-resize flex items-center justify-center transition-all group select-none ${
+              isResizingDrawer ? "bg-blue-500/40 w-3.5" : "hover:bg-blue-500/20"
+            }`}
+            title="Click and drag left/right to resize drawer width"
+          >
+            <div className="w-1 h-12 rounded-full bg-slate-300 group-hover:bg-blue-600 transition-colors shadow-2xs flex flex-col items-center justify-center space-y-1 py-1">
+              <div className="w-0.5 h-1 bg-slate-400 rounded-full" />
+              <div className="w-0.5 h-1 bg-slate-400 rounded-full" />
+            </div>
           </div>
-        </div>
+        )}
 
         {selectedStep && (
           <div className="space-y-6">
@@ -5371,10 +5396,14 @@ function WorkflowEditorContent() {
                   )}
                 </div>
 
-                {/* 3-Column Interactive Grid of App Cards */}
+                {/* Responsive Grid of App Cards - Spans across the whole screen / drawer without cutoff */}
                 <div
-                  className="grid grid-cols-3 gap-4 max-h-[460px] w-full overflow-y-auto p-2 border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 rounded-xl scrollbar-none [&::-webkit-scrollbar]:hidden"
-                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                  className={cn(
+                    "grid gap-4 w-full pt-1 pb-8",
+                    isDrawerMaximized
+                      ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+                      : "grid-cols-2 sm:grid-cols-3"
+                  )}
                 >
                   {filteredApps.map((app) => {
                     const isSelected = selectedStep.appId === app.id
@@ -5470,6 +5499,7 @@ function WorkflowEditorContent() {
                             status: "configured"
                           }))
                           setDrawerStep("setup_details")
+                          setIsDrawerMaximized(false)
                         }}
                         className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex flex-col items-center justify-center text-center space-y-2.5 relative min-h-[135px] ${
                           isSelected
@@ -5534,7 +5564,9 @@ function WorkflowEditorContent() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => setDrawerStep("app_select")}
+                    onClick={() => {
+                      setDrawerStep("app_select")
+                    }}
                     className="text-xs font-bold text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-950/40 space-x-1"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" />

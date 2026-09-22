@@ -15,6 +15,7 @@ interface DrawerProps {
   style?: React.CSSProperties
   footer?: React.ReactNode
   zIndex?: number
+  isMaximized?: boolean
 }
 
 const Drawer: React.FC<DrawerProps> = ({
@@ -30,6 +31,7 @@ const Drawer: React.FC<DrawerProps> = ({
   style,
   footer,
   zIndex = 50,
+  isMaximized = false,
 }) => {
   if (!open) return null
 
@@ -39,14 +41,28 @@ const Drawer: React.FC<DrawerProps> = ({
       <div 
         className={cn(
           "fixed inset-0 transition-opacity",
-          zIndex > 50 ? "bg-slate-950/30 backdrop-blur-[1px]" : "bg-transparent"
+          zIndex > 50 || isMaximized ? "bg-slate-950/40 backdrop-blur-[1px]" : "bg-transparent"
         )}
         onClick={() => onOpenChange(false)}
       />
 
       {side === "right" ? (
-        <div className="fixed top-4 bottom-4 right-4 flex pl-4" style={{ zIndex }}>
-          <div style={style} className={cn("w-[640px] max-w-[92vw] shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/90 dark:border-slate-800 shadow-2xl rounded-2xl flex flex-col overflow-hidden relative animate-in slide-in-from-right duration-300 text-slate-900 dark:text-slate-100", className)}>
+        <div 
+          className={cn(
+            "fixed flex transition-all duration-300",
+            isMaximized ? "inset-2 sm:inset-4 pl-0" : "top-4 bottom-4 right-4 pl-4"
+          )} 
+          style={{ zIndex }}
+        >
+          <div 
+            style={isMaximized ? undefined : style} 
+            className={cn(
+              "w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/90 dark:border-slate-800 shadow-2xl rounded-2xl flex flex-col overflow-hidden relative animate-in duration-300 text-slate-900 dark:text-slate-100",
+              !isMaximized ? "w-[640px] max-w-[92vw] shrink-0 slide-in-from-right" : "max-w-none slide-in-from-top-2",
+              className,
+              isMaximized && "max-w-none w-full"
+            )}
+          >
             {/* Header: custom header, or default title/description header, or none */}
             {header ? (
               header

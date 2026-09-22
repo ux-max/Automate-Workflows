@@ -340,10 +340,10 @@ export function AIWorkflowAssistant({
         {/* Animated Colorful Gradient Side Glow (Low Opacity Ambient Attention Grabber) */}
         <div className="relative group z-20">
           {/* Ambient Diffused Outer Glow */}
-          <div className="absolute -inset-[3px] rounded-[22px] ai-ambient-gradient opacity-25 dark:opacity-30 blur-md pointer-events-none transition-opacity duration-500 group-hover:opacity-45" />
+          <div className="absolute -inset-[3px] rounded-[22px] ai-ambient-gradient opacity-25 dark:opacity-30 blur-md pointer-events-none transition-opacity duration-500 group-hover:opacity-45 group-focus-within:opacity-60" />
 
           {/* Animated Colorful Border Ring Along the Sides */}
-          <div className="absolute -inset-[1.5px] rounded-[18px] ai-ambient-gradient opacity-40 dark:opacity-50 pointer-events-none transition-opacity duration-500 group-hover:opacity-65" />
+          <div className="absolute -inset-[1.5px] rounded-[18px] ai-ambient-gradient opacity-40 dark:opacity-50 pointer-events-none transition-opacity duration-500 group-hover:opacity-65 group-focus-within:opacity-85" />
 
           {/* Main Card Surface */}
           <div className="relative z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/60 dark:border-slate-800 shadow-xl rounded-2xl p-4 transition-all">
@@ -358,7 +358,8 @@ export function AIWorkflowAssistant({
                   ? `e.g. ${currentIdeaText}`
                   : "e.g. When a new lead fills Google Forms, send a Slack message..."
               }
-              className="w-full bg-transparent border-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400/90 dark:placeholder:text-slate-500 text-sm sm:text-base resize-none focus:outline-none min-h-[56px] leading-relaxed transition-all"
+              className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 focus-visible:ring-0 shadow-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400/90 dark:placeholder:text-slate-500 text-sm sm:text-base resize-none min-h-[56px] leading-relaxed transition-all"
+              style={{ outline: "none", boxShadow: "none" }}
             />
 
             {/* Bottom Toolbar Row */}
@@ -538,9 +539,12 @@ export function AIWorkflowAssistant({
                 {/* SENDER LABEL */}
                 <div className="flex items-center space-x-1.5 mb-1 text-[10px] font-semibold text-slate-400 px-1">
                   {msg.sender === "user" ? (
-                    <span>You</span>
+                    <span className="flex items-center space-x-1 text-blue-600 dark:text-blue-400 font-semibold">
+                      <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                      <span>You</span>
+                    </span>
                   ) : (
-                    <span className="flex items-center space-x-1 text-blue-600 dark:text-blue-400">
+                    <span className="flex items-center space-x-1 text-blue-600 dark:text-blue-400 font-semibold">
                       <Sparkles className="h-3 w-3" />
                       <span>AI Architect</span>
                     </span>
@@ -550,7 +554,7 @@ export function AIWorkflowAssistant({
 
                 {/* USER BUBBLE */}
                 {msg.sender === "user" && (
-                  <div className="max-w-[88%] bg-blue-600 text-white rounded-2xl rounded-tr-xs px-4 py-2.5 font-medium shadow-xs leading-relaxed">
+                  <div className="max-w-[92%] bg-gradient-to-br from-blue-50/95 via-indigo-50/50 to-blue-50/80 dark:from-blue-950/40 dark:via-slate-800/80 dark:to-indigo-950/30 border border-blue-200/90 dark:border-blue-800/70 text-slate-800 dark:text-slate-100 rounded-2xl rounded-tr-xs p-3.5 text-xs font-normal leading-relaxed shadow-2xs whitespace-pre-wrap break-words">
                     {msg.text}
                   </div>
                 )}
@@ -675,7 +679,8 @@ export function AIWorkflowAssistant({
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask AI to refine, add steps, or filter..."
-              className="w-full text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 pr-20 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all resize-none leading-relaxed"
+              className="w-full text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 pr-20 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all resize-none leading-relaxed"
+              style={{ outline: "none" }}
             />
 
             {/* Bottom-Right Icons: VOICE and SEND */}
