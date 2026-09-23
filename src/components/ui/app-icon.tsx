@@ -34,7 +34,15 @@ const APP_BRAND_MAP: Record<string, { slug: string; color: string; label: string
   stripe: { slug: "stripe", color: "635BFF", label: "Stripe" },
   salesforce: { slug: "salesforce", color: "00A1E0", label: "Salesforce" },
   discord: { slug: "discord", color: "5865F2", label: "Discord" },
-  zoom: { slug: "zoom", color: "2D8CFF", label: "Zoom" }
+  zoom: { slug: "zoom", color: "2D8CFF", label: "Zoom" },
+  github: { slug: "github", color: "181717", label: "GitHub" },
+  openai: { slug: "openai", color: "412991", label: "OpenAI" },
+  chatgpt: { slug: "openai", color: "412991", label: "OpenAI" },
+  drive: { slug: "googledrive", color: "4285F4", label: "Google Drive" },
+  googledrive: { slug: "googledrive", color: "4285F4", label: "Google Drive" },
+  teams: { slug: "microsoftteams", color: "6264A7", label: "Microsoft Teams" },
+  microsoftteams: { slug: "microsoftteams", color: "6264A7", label: "Microsoft Teams" },
+  zendesk: { slug: "zendesk", color: "03363D", label: "Zendesk" }
 }
 
 export function AppIcon({ appId, appName, className = "", size = 24 }: AppIconProps) {

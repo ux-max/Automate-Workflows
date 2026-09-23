@@ -18,7 +18,10 @@ import {
   Code2,
   Bell,
   ChevronsUpDown,
-  Folder
+  Folder,
+  SquarePen,
+  Plus,
+  ExternalLink
 } from "lucide-react"
 import { useFolders } from "@/context/FoldersContext"
 import { FoldersSubSidebar } from "@/components/layout/FoldersSubSidebar"
@@ -94,9 +97,9 @@ export function Sidebar() {
 
   const mainNavItems: MainNavItem[] = [
     {
-      href: "/dashboard",
-      label: "Dashboard",
-      icon: LayoutDashboard,
+      href: "/chat",
+      label: "Chat",
+      icon: SquarePen,
       animClass: "group-hover:scale-110 group-hover:rotate-6"
     },
     {
@@ -143,7 +146,7 @@ export function Sidebar() {
           }`}
         >
           <Link
-            href="/dashboard"
+            href="/chat"
             onClick={() => {
               if (isFoldersSubSidebarOpen) {
                 setIsFoldersSubSidebarOpen(false)
@@ -502,6 +505,8 @@ export function Sidebar() {
           </div>
         </div>
       </div>
+
+
 
       {/* Bottom User Workspace Profile Card */}
       <div className="p-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60">

@@ -56,8 +56,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Static Top Navbar - Stays fixed at top (Unified with Sidebar) */}
         <Navbar />
 
-        {/* Scrollable Middle Content Area with Inside Corner Radius */}
-        <main className="flex-1 overflow-y-auto min-h-0 bg-slate-100/70 dark:bg-slate-950 rounded-tl-[24px] border-t border-l border-slate-200/90 dark:border-slate-800/80 shadow-2xs transition-colors">
+        {/* Middle Content Area with Inside Corner Radius */}
+        <main
+          className={`flex-1 ${
+            pathname === "/chat" ? "overflow-hidden flex flex-col" : "overflow-y-auto"
+          } no-scrollbar min-h-0 bg-slate-100/70 dark:bg-slate-950 rounded-tl-[24px] border-t border-l border-slate-200/90 dark:border-slate-800/80 shadow-2xs transition-colors`}
+        >
           {children}
         </main>
       </div>

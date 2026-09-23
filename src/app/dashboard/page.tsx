@@ -46,6 +46,11 @@ import { INITIAL_WORKFLOWS, Workflow as WorkflowType } from "@/lib/data"
 
 export default function DashboardPage() {
   const router = useRouter()
+
+  React.useEffect(() => {
+    router.replace("/chat")
+  }, [router])
+
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const {

@@ -86,11 +86,19 @@ export interface Template {
   id: string
   title: string
   description: string
-  category: "Lead Capture" | "CRM Sync" | "Notifications" | "E-Commerce" | "Customer Support"
+  category: "Lead Capture" | "CRM Sync" | "Notifications" | "E-Commerce" | "Customer Support" | "Personal Productivity"
   apps: string[]
   triggerSummary: string
   actionSummary: string
   stepCount: number
+  about?: string
+  savings?: {
+    money?: string
+    time?: string
+  }
+  author?: string
+  setupGuide?: string[]
+  steps?: WorkflowStep[]
 }
 
 // 18 Launch Apps Specification (from Section 8.8 of PRD)
@@ -808,50 +816,328 @@ export const SEED_TEMPLATES: Template[] = [
     title: "New Form Submission → WhatsApp Welcome Message",
     description: "Instantly send a WhatsApp welcome message to leads submitting an Automate Form.",
     category: "Lead Capture",
-    apps: ["Automate Forms", "Automate Chats"],
+    apps: ["automate-forms", "automate-chats"],
     triggerSummary: "Automate Forms: New Submission",
     actionSummary: "Automate Chats: Send Template Message",
-    stepCount: 2
+    stepCount: 2,
+    savings: {
+      money: "$780/year",
+      time: "24 hours"
+    },
+    about: "Instantly welcome new leads by sending a personalized WhatsApp message the second they submit an inquiry through your Automate Form. This workflow guarantees a response time under 1 minute, increasing conversion rates by over 40% and keeping potential customers engaged without requiring manual follow-ups.",
+    author: "Automate Workflows Team • Updated Recently",
+    setupGuide: [
+      "Select or create your Automate Form with contact fields (Name, Phone, Email).",
+      "Connect your Automate Chats WhatsApp Business number.",
+      "Map form fields into your pre-approved WhatsApp welcome template message.",
+      "Test the trigger and activate your workflow."
+    ],
+    steps: [
+      {
+        id: "step_1",
+        type: "trigger",
+        appId: "automate-forms",
+        appName: "Automate Forms",
+        eventId: "new_submission",
+        eventName: "1. New Form Submission",
+        status: "configured",
+        fieldMappings: { form_id: "lead_inquiry_form" }
+      },
+      {
+        id: "step_2",
+        type: "action",
+        appId: "automate-chats",
+        appName: "Automate Chats",
+        eventId: "send_template",
+        eventName: "2. Send WhatsApp Welcome Message",
+        status: "configured",
+        fieldMappings: { template_name: "welcome_intro_v1" }
+      }
+    ]
   },
   {
     id: "tpl_2",
     title: "Form Submission → WhatsApp Message + HubSpot Contact Creation",
     description: "Capture leads, send a personalized WhatsApp intro, and record contact details in HubSpot CRM.",
     category: "CRM Sync",
-    apps: ["Automate Forms", "Automate Chats", "HubSpot"],
+    apps: ["automate-forms", "automate-chats", "hubspot"],
     triggerSummary: "Automate Forms: New Submission",
     actionSummary: "Automate Chats + HubSpot Create Contact",
-    stepCount: 3
+    stepCount: 3,
+    savings: {
+      money: "$1,450/year",
+      time: "38 hours"
+    },
+    about: "When an inbound lead fills out a form, this automation immediately registers or updates their record in HubSpot CRM with tags and lifecycle stage, then reaches out to them on WhatsApp with a personalized welcome message. Eliminates manual data entry between your marketing and sales stacks.",
+    author: "Automate Workflows Team • Updated Recently",
+    setupGuide: [
+      "Connect your Automate Form account and select the target form.",
+      "Authenticate your HubSpot CRM OAuth account.",
+      "Link your Automate Chats WhatsApp Business account.",
+      "Configure field mappings for Lead Name, Email, and Phone number.",
+      "Turn on the automation and verify with a test submission."
+    ],
+    steps: [
+      {
+        id: "step_1",
+        type: "trigger",
+        appId: "automate-forms",
+        appName: "Automate Forms",
+        eventId: "new_submission",
+        eventName: "1. New Form Submission",
+        status: "configured",
+        fieldMappings: { form_id: "demo_request_form" }
+      },
+      {
+        id: "step_2",
+        type: "action",
+        appId: "hubspot",
+        appName: "HubSpot",
+        eventId: "create_update_contact",
+        eventName: "2. Create or Update HubSpot Contact",
+        status: "configured",
+        fieldMappings: { email: "{{step_1.email}}", firstname: "{{step_1.name}}" }
+      },
+      {
+        id: "step_3",
+        type: "action",
+        appId: "automate-chats",
+        appName: "Automate Chats",
+        eventId: "send_template",
+        eventName: "3. Send WhatsApp Intro Message",
+        status: "configured",
+        fieldMappings: { recipient: "{{step_1.phone}}" }
+      }
+    ]
   },
   {
     id: "tpl_3",
     title: "Shopify New Order → Slack Channel Alert & Google Sheets Log",
     description: "Notify sales team on Slack and record order details in Google Sheets spreadsheet.",
     category: "E-Commerce",
-    apps: ["Shopify", "Slack", "Google Sheets"],
+    apps: ["shopify", "slack", "google-sheets"],
     triggerSummary: "Shopify: New Order Created",
     actionSummary: "Slack + Google Sheets Add Row",
-    stepCount: 3
+    stepCount: 3,
+    savings: {
+      money: "$2,100/year",
+      time: "52 hours"
+    },
+    about: "Keep your sales, operations, and fulfillment teams perfectly synchronized. Every time a new order is paid in your Shopify store, this automation automatically posts a formatted order summary into your team's Slack #orders channel and appends a real-time record in a Google Sheets tracking spreadsheet for bookkeeping.",
+    author: "Automate Workflows Team • Updated Recently",
+    setupGuide: [
+      "Connect your Shopify store using your API credentials or OAuth.",
+      "Authenticate Slack and choose the target notification channel (#orders).",
+      "Connect Google Sheets and select your sales spreadsheet and worksheet tab.",
+      "Map order number, customer name, total amount, and line items.",
+      "Activate the workflow to start capturing sales in real-time."
+    ],
+    steps: [
+      {
+        id: "step_1",
+        type: "trigger",
+        appId: "shopify",
+        appName: "Shopify",
+        eventId: "order_created",
+        eventName: "1. New Order Paid",
+        status: "configured",
+        fieldMappings: { store_id: "main_store" }
+      },
+      {
+        id: "step_2",
+        type: "action",
+        appId: "slack",
+        appName: "Slack",
+        eventId: "send_channel_message",
+        eventName: "2. Post Alert to #orders Channel",
+        status: "configured",
+        fieldMappings: { channel: "#orders", text: "New Order {{step_1.order_number}} for {{step_1.total_price}}" }
+      },
+      {
+        id: "step_3",
+        type: "action",
+        appId: "google-sheets",
+        appName: "Google Sheets",
+        eventId: "add_row",
+        eventName: "3. Append Row to Sales Ledger",
+        status: "configured",
+        fieldMappings: { spreadsheetId: "sales_ledger_2026", sheetName: "Orders" }
+      }
+    ]
   },
   {
     id: "tpl_4",
     title: "Freshdesk Urgent Ticket → WhatsApp Escalation",
     description: "Alert on-call tech support engineers on WhatsApp when high-priority tickets are created.",
     category: "Customer Support",
-    apps: ["Freshdesk", "Automate Chats"],
+    apps: ["freshdesk", "automate-chats"],
     triggerSummary: "Freshdesk: New Ticket",
     actionSummary: "Automate Chats: Send Session Message",
-    stepCount: 2
+    stepCount: 2,
+    savings: {
+      money: "$920/year",
+      time: "18 hours"
+    },
+    about: "Escalate critical customer support issues with zero lag. When a high-priority ticket is created or updated in Freshdesk, this workflow instantly sends an emergency escalation notification to your on-call engineers via WhatsApp so severe incidents are triaged in seconds.",
+    author: "Automate Workflows Team • Updated Recently",
+    setupGuide: [
+      "Connect your Freshdesk domain and API key.",
+      "Set up the trigger criteria to match Urgent / High severity tickets.",
+      "Authenticate your Automate Chats WhatsApp account.",
+      "Configure recipient phone numbers for the on-call support team.",
+      "Save and test with a sample urgent ticket."
+    ],
+    steps: [
+      {
+        id: "step_1",
+        type: "trigger",
+        appId: "freshdesk",
+        appName: "Freshdesk",
+        eventId: "new_ticket",
+        eventName: "1. High Priority Ticket Filed",
+        status: "configured",
+        fieldMappings: { priority: "urgent" }
+      },
+      {
+        id: "step_2",
+        type: "action",
+        appId: "automate-chats",
+        appName: "Automate Chats",
+        eventId: "send_session_message",
+        eventName: "2. Dispatch WhatsApp Alert to On-Call",
+        status: "configured",
+        fieldMappings: { message: "CRITICAL: Ticket #{{step_1.ticket_id}} filed: {{step_1.subject}}" }
+      }
+    ]
   },
   {
     id: "tpl_5",
     title: "Catch Webhook → Multi-App Dispatch",
     description: "Generic HTTP POST endpoint to ingest JSON payloads from any legacy software.",
     category: "Notifications",
-    apps: ["Webhook — Catch Hook", "Slack", "Gmail"],
+    apps: ["webhook", "filter", "slack", "gmail"],
     triggerSummary: "Webhook Catch Hook",
     actionSummary: "Slack DM + Gmail Send Email",
-    stepCount: 3
+    stepCount: 4,
+    savings: {
+      money: "$1,150/year",
+      time: "30 hours"
+    },
+    about: "A universal HTTP endpoint designed to ingest JSON payloads from third-party services, custom backends, or legacy software. Once received, the payload is filtered for valid status and dispatched simultaneously to Slack team channels and via Gmail notifications to responsible stakeholders.",
+    author: "Automate Workflows Team • Updated Recently",
+    setupGuide: [
+      "Copy the unique Webhook endpoint URL generated for this workflow.",
+      "Send a sample JSON test payload from your external app or Postman.",
+      "Set your filtering condition (e.g. status === 'active' or amount > 100).",
+      "Connect Slack and Gmail to dispatch notifications.",
+      "Activate the webhook listener."
+    ],
+    steps: [
+      {
+        id: "step_1",
+        type: "trigger",
+        appId: "webhook",
+        appName: "Webhook",
+        eventId: "catch_hook",
+        eventName: "1. Catch Inbound JSON Webhook",
+        status: "configured",
+        fieldMappings: {}
+      },
+      {
+        id: "step_2",
+        type: "action",
+        appId: "filter",
+        appName: "Filter",
+        eventId: "condition_filter",
+        eventName: "2. Validate Payload Conditions",
+        status: "configured",
+        fieldMappings: { condition: "{{step_1.status}} == 'success'" }
+      },
+      {
+        id: "step_3",
+        type: "action",
+        appId: "slack",
+        appName: "Slack",
+        eventId: "send_channel_message",
+        eventName: "3. Notify Team in Slack",
+        status: "configured",
+        fieldMappings: { channel: "#alerts" }
+      },
+      {
+        id: "step_4",
+        type: "action",
+        appId: "gmail",
+        appName: "Gmail",
+        eventId: "send_email",
+        eventName: "4. Send Confirmation Email",
+        status: "configured",
+        fieldMappings: { to: "team@example.com" }
+      }
+    ]
+  },
+  {
+    id: "tpl_6",
+    title: "Daily Schedule & Task Briefing",
+    description: "Every weekday morning, gather weather, Google Calendar meetings, and tasks into a consolidated briefing.",
+    category: "Personal Productivity",
+    apps: ["schedule", "http", "calendar", "gmail"],
+    triggerSummary: "Schedule: Every Weekday at 8:00 AM",
+    actionSummary: "Weather + Google Calendar + Gmail Morning Digest",
+    stepCount: 4,
+    savings: {
+      money: "$1,260/year",
+      time: "46 hours"
+    },
+    about: "This automation acts like a personal daily assistant that prepares a clear morning overview for you. Every weekday morning at a chosen time, it automatically gathers the most important information you need to start your day without opening multiple apps. First, it checks the weather forecast for your location and summarizes today's expected conditions. Then, it looks at your Google Calendar to see what meetings or events you have scheduled for the day. After that, it reviews your pending tasks to collect all items that are due today and emails you a clean, formatted briefing via Gmail.",
+    author: "Automate Workflows Team • Jan 18",
+    setupGuide: [
+      "Configure the daily trigger schedule (e.g. 8:00 AM every weekday).",
+      "Set your city location coordinates for the weather forecast API.",
+      "Connect your Google Calendar account to pull today's events.",
+      "Authenticate your Gmail address to receive the daily briefing."
+    ],
+    steps: [
+      {
+        id: "step_1",
+        type: "trigger",
+        appId: "schedule",
+        appName: "Schedule",
+        eventId: "cron_schedule",
+        eventName: "1. Every Day (8:00 AM)",
+        status: "configured",
+        fieldMappings: { cron: "0 8 * * 1-5" }
+      },
+      {
+        id: "step_2",
+        type: "action",
+        appId: "http",
+        appName: "HTTP",
+        eventId: "http_get",
+        eventName: "2. Get Forecast Weather API",
+        status: "configured",
+        fieldMappings: { url: "https://api.weather.com/v1/forecast" }
+      },
+      {
+        id: "step_3",
+        type: "action",
+        appId: "calendar",
+        appName: "Google Calendar",
+        eventId: "get_events",
+        eventName: "3. Get Today Events",
+        status: "configured",
+        fieldMappings: { timeMin: "today_start", timeMax: "today_end" }
+      },
+      {
+        id: "step_4",
+        type: "action",
+        appId: "gmail",
+        appName: "Gmail",
+        eventId: "send_email",
+        eventName: "4. Send Daily Briefing Email",
+        status: "configured",
+        fieldMappings: { subject: "Morning Briefing - {{date}}" }
+      }
+    ]
   }
 ]
 

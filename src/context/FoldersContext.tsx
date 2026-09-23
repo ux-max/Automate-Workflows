@@ -49,12 +49,12 @@ function FoldersProviderInner({ children }: { children: React.ReactNode }) {
       const decoded = decodeURIComponent(urlFolder)
       setSelectedFolder(decoded)
       setIsFoldersSubSidebarOpen(true)
-    } else if (pathname === "/dashboard" || pathname === "/workflows") {
-      // If navigating to base dashboard/workflows without folder query param, stay on All Folders
+    } else if (pathname === "/chat" || pathname === "/workflows") {
+      // If navigating to base chat/workflows without folder query param, stay on All Folders
       if (!urlFolder && selectedFolder !== "All Folders" && !searchParams.has("folder")) {
         setSelectedFolder("All Folders")
       }
-      if (pathname === "/dashboard") {
+      if (pathname === "/chat") {
         setIsFoldersSubSidebarOpen(false)
       }
     } else if (!pathname.startsWith("/workflows")) {

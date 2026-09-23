@@ -63,7 +63,7 @@ import { cn } from "@/lib/utils"
 import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { AppIcon } from "@/components/ui/app-icon"
 import { ConfirmModal } from "@/components/ui/confirm-modal"
-import { MVP_APPS, INITIAL_USER_CONNECTIONS, INITIAL_WORKFLOWS, WorkflowStep, UserConnection } from "@/lib/data"
+import { MVP_APPS, INITIAL_USER_CONNECTIONS, INITIAL_WORKFLOWS, SEED_TEMPLATES, WorkflowStep, UserConnection } from "@/lib/data"
 import { getAppActionSchema, ActionField, AppActionSchema, APP_SCHEMAS_MAP } from "@/lib/action-schemas"
 import { VariablePicker, DEFAULT_SAMPLE_DATA } from "@/components/workflow/VariablePicker"
 import { VariablePillInput } from "@/components/workflow/VariablePillInput"
@@ -82,12 +82,15 @@ function WorkflowEditorContent() {
   const wfId = searchParams.get("id")
   const paramName = searchParams.get("name")
   const initialAppId = searchParams.get("app")
+  const templateId = searchParams.get("template")
+  const matchedTemplate = templateId ? SEED_TEMPLATES.find((t) => t.id === templateId) : null
   const isExplicitNew = searchParams.get("new") === "true" || searchParams.get("empty") === "true"
   const existingWorkflow = wfId ? INITIAL_WORKFLOWS.find((w) => w.id === wfId) : null
-  const isNew = isExplicitNew || !wfId || !existingWorkflow
+  const isNew = !matchedTemplate && (isExplicitNew || !wfId || !existingWorkflow)
 
   const [workflowName, setWorkflowName] = useState(() => {
     if (paramName) return decodeURIComponent(paramName)
+    if (matchedTemplate) return matchedTemplate.title
     if (existingWorkflow) return existingWorkflow.name
     return "Untitled Workflow"
   })
@@ -115,6 +118,7 @@ function WorkflowEditorContent() {
 
   // AI Workflow Builder Interface State
   const [aiPanelMode, setAiPanelMode] = useState<"bottom-floating" | "left-docked" | "minimized" | "closed">(() => {
+    if (matchedTemplate) return "minimized"
     if (isNew && !initialAppId) return "bottom-floating"
     return "closed"
   })
@@ -175,6 +179,9 @@ function WorkflowEditorContent() {
 
   // Canvas Steps State
   const [steps, setSteps] = useState<WorkflowStep[]>(() => {
+    if (matchedTemplate && matchedTemplate.steps && matchedTemplate.steps.length > 0) {
+      return matchedTemplate.steps
+    }
     if (initialAppId) {
       const allInitial = typeof window !== "undefined" ? [...MVP_APPS, ...developerAppsToAppConnections(getDeveloperApps())] : MVP_APPS
       const matchedApp = allInitial.find((a) => a.id === initialAppId)
@@ -213,6 +220,35 @@ function WorkflowEditorContent() {
     }
     prevHasTriggerRef.current = hasTrigger
   }, [steps])
+
+  // Load AI Generated Workflow from Chat Session (if navigated from /chat)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const pendingRaw = sessionStorage.getItem("pending_ai_workflow")
+      if (pendingRaw) {
+        try {
+          const parsed = JSON.parse(pendingRaw)
+          sessionStorage.removeItem("pending_ai_workflow")
+          if (parsed.workflowName) {
+            setWorkflowName(parsed.workflowName)
+          }
+          if (Array.isArray(parsed.steps) && parsed.steps.length > 0) {
+            setSteps(parsed.steps)
+            setAiPanelMode("minimized")
+            if (parsed.chatMessages) {
+              setAiChatMessages(parsed.chatMessages)
+            }
+            if (parsed.plan) {
+              setAiLastPlan(parsed.plan)
+            }
+            showToast(`Loaded AI workflow "${parsed.workflowName || 'Workflow'}" (${parsed.steps.length} steps)`, "success")
+          }
+        } catch (e) {
+          console.error("Failed to load pending_ai_workflow", e)
+        }
+      }
+    }
+  }, [])
 
   // Canvas Side Rail Toolbar State
   const [activeSideTool, setActiveSideTool] = useState<string | null>(null)

@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useState, useMemo } from "react"
-import { useRouter } from "next/navigation"
+import React, { useState, useMemo, useEffect, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import {
   BookOpen,
   Search,
@@ -30,9 +30,13 @@ import { ConfirmModal } from "@/components/ui/confirm-modal"
 import { useTableSelection, TableCheckbox } from "@/components/ui/table-bulk-actions"
 import { SearchControlBar } from "@/components/ui/search-control-bar"
 import { SEED_TEMPLATES, Template, MVP_APPS } from "@/lib/data"
+import { TemplateDetailPreview } from "@/components/templates/TemplateDetailPreview"
 
-export default function TemplatesPage() {
+function TemplatesPageContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const templateParam = searchParams.get("template")
+
   const [templates, setTemplates] = useState<Template[]>(SEED_TEMPLATES)
   const [searchQuery, setSearchQuery] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("all")
@@ -40,13 +44,29 @@ export default function TemplatesPage() {
   const [starredRows, setStarredRows] = useState<Record<string, boolean>>({})
   const [activeMenuTplId, setActiveMenuTplId] = useState<string | null>(null)
 
-  // Screen 10 State: Template Preview Modal
+  // Selected Template for Detail & Flow Preview Screen (Image 1 Layout)
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null)
-  const [previewOpen, setPreviewOpen] = useState(false)
+
+  // Sync with URL query parameter
+  useEffect(() => {
+    if (templateParam) {
+      const matched = templates.find((t) => t.id === templateParam)
+      if (matched) {
+        setSelectedTemplate(matched)
+      }
+    } else {
+      setSelectedTemplate(null)
+    }
+  }, [templateParam, templates])
 
   const handleOpenPreview = (tpl: Template) => {
     setSelectedTemplate(tpl)
-    setPreviewOpen(true)
+    router.push(`/templates?template=${tpl.id}`)
+  }
+
+  const handleBackToCatalog = () => {
+    setSelectedTemplate(null)
+    router.push("/templates")
   }
 
   const handleUseTemplate = (tplId: string) => {
@@ -108,6 +128,19 @@ export default function TemplatesPage() {
     } else if (deleteModalState.tplId) {
       setTemplates((prev) => prev.filter((t) => t.id !== deleteModalState.tplId))
     }
+  }
+
+  // If a template is selected, show the Template Detail & Flow Preview Screen (Image 1 Layout)
+  if (selectedTemplate) {
+    return (
+      <div className="p-3 sm:p-4 bg-slate-100/80 dark:bg-slate-950 min-h-[calc(100vh-4rem)] font-sans select-none relative">
+        <TemplateDetailPreview
+          template={selectedTemplate}
+          onBack={handleBackToCatalog}
+          onUseTemplate={handleUseTemplate}
+        />
+      </div>
+    )
   }
 
   return (
@@ -452,49 +485,6 @@ export default function TemplatesPage() {
           </Card>
         )}
 
-        {/* Screen 10: Template Preview Modal */}
-        <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-          <DialogHeader>
-            <DialogTitle>{selectedTemplate?.title}</DialogTitle>
-            <DialogDescription>{selectedTemplate?.description}</DialogDescription>
-          </DialogHeader>
-
-          {selectedTemplate && (
-            <div className="space-y-4 my-2">
-              <div className="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg space-y-1">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
-                  Category & Complexity:
-                </span>
-                <div className="flex items-center space-x-2">
-                  <Badge variant="blue">{selectedTemplate.category}</Badge>
-                  <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">• {selectedTemplate.stepCount} configured steps</span>
-                </div>
-              </div>
-
-              <div className="p-4 bg-blue-50/40 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/50 rounded-xl space-y-3">
-                <div className="flex items-center space-x-2 text-xs font-semibold text-slate-800 dark:text-slate-100">
-                  <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  <span>Workflow Architecture Overview</span>
-                </div>
-                <div className="text-xs space-y-1.5 text-slate-700 dark:text-slate-300">
-                  <p><span className="font-semibold text-slate-900 dark:text-slate-100">Trigger:</span> {selectedTemplate.triggerSummary}</p>
-                  <p><span className="font-semibold text-slate-900 dark:text-slate-100">Action:</span> {selectedTemplate.actionSummary}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPreviewOpen(false)}>
-              Close
-            </Button>
-            {/* Primary Blue Button */}
-            <Button onClick={() => selectedTemplate && handleUseTemplate(selectedTemplate.id)}>
-              Clone & Build Workflow
-            </Button>
-          </DialogFooter>
-        </Dialog>
-
         {/* Reusable Alert Confirmation Modal for Template Deletion */}
         <ConfirmModal
           open={deleteModalState.open}
@@ -513,5 +503,13 @@ export default function TemplatesPage() {
         />
       </div>
     </div>
+  )
+}
+
+export default function TemplatesPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-slate-500 text-sm">Loading templates...</div>}>
+      <TemplatesPageContent />
+    </Suspense>
   )
 }
