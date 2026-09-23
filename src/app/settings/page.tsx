@@ -2011,6 +2011,16 @@ export default function SettingsPage() {
                           Cross-comparison of active capabilities for built-in platform roles.
                         </p>
                       </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSystemRolesDrawerOpen(true)}
+                        className="space-x-1.5 text-xs h-8 cursor-pointer w-fit"
+                      >
+                        <Info className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+                        <span>System Roles Guide</span>
+                      </Button>
                     </div>
 
                     <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-x-auto bg-white dark:bg-slate-900 shadow-2xs">
@@ -2023,7 +2033,9 @@ export default function SettingsPage() {
                             {systemRoles.map((r) => (
                               <TableHead
                                 key={r.id}
-                                className="text-center min-w-[130px] text-xs font-semibold text-slate-700 dark:text-slate-300"
+                                onClick={() => setSystemRolesDrawerOpen(true)}
+                                className="text-center min-w-[130px] text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer hover:bg-slate-100/80 dark:hover:bg-slate-700/60 transition-colors"
+                                title="Click to view detailed role guide in drawer"
                               >
                                 <div className="flex flex-col items-center gap-0.5">
                                   <span>{r.name}</span>

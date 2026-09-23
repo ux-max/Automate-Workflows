@@ -11,11 +11,10 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useTheme } from "@/context/ThemeContext"
+import { ThemeToggle } from "@/components/ui/ThemeToggle"
 
 export function Navbar() {
   const pathname = usePathname()
-  const { theme, toggleTheme } = useTheme()
   const [globalSearch, setGlobalSearch] = useState("")
 
   // Hide top app header completely on Canvas Editor screen or Auth/Onboarding pages
@@ -65,19 +64,10 @@ export function Navbar() {
           </Link>
 
           {/* Theme Switcher Toggle - Positioned immediately adjacent to Profile Avatar */}
-          <button
-            type="button"
-            onClick={(e) => toggleTheme(e)}
-            className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-600 dark:text-slate-300 cursor-pointer"
-            title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            aria-label="Toggle Theme"
-          >
-            {theme === "dark" ? (
-              <Sun className="h-5 w-5 text-amber-400 hover:rotate-45 transition-transform" />
-            ) : (
-              <Moon className="h-5 w-5 text-slate-600 hover:-rotate-12 transition-transform" />
-            )}
-          </button>
+          <ThemeToggle
+            className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300"
+            iconClassName="h-5 w-5"
+          />
 
           {/* Profile Avatar */}
           <Link

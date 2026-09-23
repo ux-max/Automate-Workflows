@@ -71,13 +71,14 @@ import { ConditionRow, PriorVariableOption } from "@/components/workflow/Conditi
 import { isUIWebhookApp, getWebhookAppGuide, getWebhookEventGuide } from "@/lib/webhook-guides"
 import { HumanFormFieldsBuilder } from "@/components/workflow/HumanFormFieldsBuilder"
 import { EmailApprovalPreviewModal } from "@/components/workflow/EmailApprovalPreviewModal"
+import { ThemeToggle } from "@/components/ui/ThemeToggle"
 import { useTheme } from "@/context/ThemeContext"
 import { getDeveloperApps, developerAppsToAppConnections } from "@/lib/developer-data"
 import { AIWorkflowAssistant } from "@/components/workflow/AIWorkflowAssistant"
 import { GeneratedWorkflowPlan, ChatMessage } from "@/lib/ai-workflow-generator"
 
 function WorkflowEditorContent() {
-  const { theme, toggleTheme } = useTheme()
+  const { theme } = useTheme()
   const searchParams = useSearchParams()
   const wfId = searchParams.get("id")
   const paramName = searchParams.get("name")
@@ -3643,19 +3644,10 @@ function WorkflowEditorContent() {
           {/* Right Group */}
           <div className="flex items-center space-x-2 shrink-0">
             {/* Dark Mode Theme Toggle */}
-            <button
-              type="button"
-              onClick={(e) => toggleTheme(e)}
-              className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer shadow-2xs"
-              title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-              aria-label="Toggle Theme"
-            >
-              {theme === "dark" ? (
-                <Sun className="h-4 w-4 text-amber-400 transition-transform duration-700" />
-              ) : (
-                <Moon className="h-4 w-4 text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-transform duration-700" />
-              )}
-            </button>
+            <ThemeToggle
+              className="h-9 w-9 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 shadow-2xs"
+              iconClassName="h-4 w-4"
+            />
 
             <Button size="sm" className="font-bold text-xs space-x-1.5 px-4 h-9 shadow-xs">
               <span>Edit draft</span>
@@ -6040,7 +6032,7 @@ function WorkflowEditorContent() {
           approveButtonLabel={selectedStep.fieldMappings?.["approve_button_label"] || "Approve"}
           rejectButtonLabel={selectedStep.fieldMappings?.["reject_button_label"] || "Reject"}
           timeoutDuration={selectedStep.fieldMappings?.["timeout_duration"] || "24_hours"}
-          onSendPreview={(targetEmail) => handleSendPreviewMessage(targetEmail)}
+          onSendPreview={(targetEmail: string) => handleSendPreviewMessage(targetEmail)}
         />
       )}
     </div>

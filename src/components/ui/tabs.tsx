@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { motion } from "framer-motion"
 
 interface TabsContextValue {
   value: string
@@ -73,14 +74,23 @@ export function TabsTrigger({
       type="button"
       onClick={() => context.onValueChange(value)}
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+        "relative inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
         isActive
-          ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs font-semibold"
-          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50/50 dark:hover:bg-slate-700/50",
+          ? "text-slate-900 dark:text-slate-100 font-semibold"
+          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100",
         className
       )}
     >
-      {children}
+      {isActive && (
+        <motion.div
+          layoutId="active-tabs-indicator"
+          className="absolute inset-0 rounded-sm bg-white dark:bg-slate-900 shadow-xs pointer-events-none"
+          transition={{ type: "spring", stiffness: 450, damping: 35 }}
+        />
+      )}
+      <span className="relative z-10 inline-flex items-center justify-center">
+        {children}
+      </span>
     </button>
   )
 }

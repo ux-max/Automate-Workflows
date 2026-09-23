@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { getDeveloperAppById } from "@/lib/developer-data"
 import { DeveloperApp } from "@/lib/developer-types"
+import { motion } from "framer-motion"
 
 interface AppBuilderSubSidebarProps {
   isOpen: boolean
@@ -151,7 +152,7 @@ export function AppBuilderSubSidebar({ isOpen, onClose }: AppBuilderSubSidebarPr
       {/* Sub-Sidebar Top Header (Aligned with Main Sidebar & Navbar: h-16) */}
       <div className="h-16 flex items-center justify-between px-3.5 bg-white dark:bg-slate-900 shrink-0 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center space-x-2.5 min-w-0">
-          <div className="h-9 w-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100/90 dark:border-blue-900/60 shrink-0 shadow-2xs">
+          <div className="h-9 w-9 rounded-xl bg-blue-50 dark:bg-white/10 text-blue-600 dark:text-white flex items-center justify-center border border-blue-100/90 dark:border-white/10 shrink-0 shadow-2xs">
             <Code2 className="h-4.5 w-4.5" />
           </div>
           <div className="flex flex-col truncate">
@@ -165,7 +166,7 @@ export function AppBuilderSubSidebar({ isOpen, onClose }: AppBuilderSubSidebarPr
                 v{app?.version || "1.0.0"}
               </span>
               <span className="text-slate-300 dark:text-slate-600">•</span>
-              <span className="text-[9px] font-semibold text-blue-600 dark:text-blue-400 uppercase">
+              <span className="text-[9px] font-semibold text-blue-600 dark:text-white uppercase">
                 {app?.status ? app.status.replace("_", " ") : "dev"}
               </span>
             </div>
@@ -224,24 +225,37 @@ export function AppBuilderSubSidebar({ isOpen, onClose }: AppBuilderSubSidebarPr
                   key={step.tab}
                   type="button"
                   onClick={() => handleSelectStep(step.tab)}
-                  className={`w-full group relative flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${
+                  className={`w-full group relative flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-colors duration-200 active:scale-[0.98] text-left cursor-pointer ${
                     isActive
-                      ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
-                      : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/70 border border-transparent"
+                      ? "text-blue-600 dark:text-white font-semibold"
+                      : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/70"
                   }`}
                   title={step.label}
                 >
-                  {/* Left Active Accent Indicator */}
+                  {/* Sliding Active Pill Background */}
                   {isActive && (
-                    <span className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-blue-600 rounded-r-full" />
+                    <motion.div
+                      layoutId="appbuilder-active-pill"
+                      className="absolute inset-0 rounded-lg bg-blue-50/90 dark:bg-white/[0.08] border border-blue-100 dark:border-white/[0.12] shadow-2xs pointer-events-none"
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
                   )}
 
-                  <div className="flex items-center space-x-2.5 min-w-0 flex-1">
+                  {/* Left Active Accent Indicator */}
+                  {isActive && (
+                    <motion.span
+                      layoutId="appbuilder-active-indicator"
+                      className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-blue-600 dark:bg-white rounded-r-full z-10 pointer-events-none"
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
+                  )}
+
+                  <div className="relative z-10 flex items-center space-x-2.5 min-w-0 flex-1">
                     <Icon
                       className={`h-4 w-4 shrink-0 transition-transform duration-300 ease-out ${step.animClass} ${
                         isActive
-                          ? "text-blue-600 dark:text-blue-400 scale-105"
-                          : "text-slate-400 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200"
+                          ? "text-blue-600 dark:text-white scale-105"
+                          : "text-slate-400 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-white"
                       }`}
                     />
                     <span className="truncate">{step.label}</span>
@@ -249,9 +263,9 @@ export function AppBuilderSubSidebar({ isOpen, onClose }: AppBuilderSubSidebarPr
 
                   {step.count !== undefined && (
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono shrink-0 ml-1.5 ${
+                      className={`relative z-10 text-[10px] px-1.5 py-0.2 rounded-full font-mono shrink-0 ml-1.5 ${
                         isActive
-                          ? "bg-blue-200/80 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-medium"
+                          ? "bg-blue-200/80 dark:bg-white/10 text-blue-800 dark:text-white font-medium"
                           : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium"
                       }`}
                     >
@@ -261,9 +275,9 @@ export function AppBuilderSubSidebar({ isOpen, onClose }: AppBuilderSubSidebarPr
 
                   {step.badge && step.count === undefined && (
                     <span
-                      className={`text-[9px] px-1.5 py-0.2 rounded font-mono uppercase shrink-0 ml-1.5 ${
+                      className={`relative z-10 text-[9px] px-1.5 py-0.2 rounded font-mono uppercase shrink-0 ml-1.5 ${
                         isActive
-                          ? "bg-blue-200/80 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-medium"
+                          ? "bg-blue-200/80 dark:bg-white/10 text-blue-800 dark:text-white font-medium"
                           : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium"
                       }`}
                     >

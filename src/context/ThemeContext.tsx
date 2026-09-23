@@ -1,7 +1,10 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect } from "react"
+import { flushSync } from "react-dom"
 import { usePathname } from "next/navigation"
+
+import gsap from "gsap"
 
 export type Theme = "light" | "dark"
 
@@ -95,24 +98,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     const root = document.documentElement
 
-    // Check if View Transition API is supported and user does not prefer reduced motion
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-
-    const hasViewTransition =
-      typeof document !== "undefined" &&
-      "startViewTransition" in document &&
-      !prefersReducedMotion
-
-    if (!hasViewTransition) {
-      // Direct switch without view transition animation
-      setThemeState(newTheme)
-      localStorage.setItem(STORAGE_KEY, newTheme)
-      applyTheme(newTheme)
-      return
-    }
-
     // Determine click/event coordinates for shutter aperture center
     let x = window.innerWidth - 75
     let y = 30
@@ -142,43 +127,63 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       Math.max(y, window.innerHeight - y)
     )
 
-    // Add temporary class to suppress conflicting component transitions and flickering
-    root.classList.add("theme-transitioning")
+    // Check if View Transition API is supported and user does not prefer reduced motion
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
-    // Start View Transition
+    const hasViewTransition =
+      typeof document !== "undefined" &&
+      "startViewTransition" in document &&
+      !prefersReducedMotion
+
+    if (!hasViewTransition) {
+      flushSync(() => {
+        setThemeState(newTheme)
+        localStorage.setItem(STORAGE_KEY, newTheme)
+        applyTheme(newTheme)
+      })
+      if (typeof document !== "undefined") {
+        gsap.fromTo(document.body, { opacity: 0.85 }, { opacity: 1, duration: 0.25, ease: "power1.out" })
+      }
+      return
+    }
+
+    // Temporarily disable element CSS transitions so snapshot captures 100% final colors instantly
+    root.classList.add("disable-theme-transitions")
+
+    // Set initial coordinate variables for CSS fallback
+    root.style.setProperty("--aperture-x", `${x}px`)
+    root.style.setProperty("--aperture-y", `${y}px`)
+
+    // Start View Transition with flushSync to guarantee React has committed the new DOM before the snapshot is taken
     const transition = (document as any).startViewTransition(() => {
-      setThemeState(newTheme)
-      localStorage.setItem(STORAGE_KEY, newTheme)
-      applyTheme(newTheme)
+      flushSync(() => {
+        setThemeState(newTheme)
+        localStorage.setItem(STORAGE_KEY, newTheme)
+        applyTheme(newTheme)
+      })
     })
 
-    transition.ready
-      .then(() => {
-        // Animate circular aperture clip-path on the new theme layer with relaxed, silky smooth timing
-        const animation = root.animate(
-          {
-            clipPath: [
-              `circle(0px at ${x}px ${y}px)`,
-              `circle(${endRadius}px at ${x}px ${y}px)`
-            ]
-          },
-          {
-            duration: 750,
-            easing: "cubic-bezier(0.25, 0.9, 0.3, 1)",
-            pseudoElement: "::view-transition-new(root)"
-          }
-        )
-
-        animation.onfinish = () => {
-          root.classList.remove("theme-transitioning")
+    transition.ready.then(() => {
+      root.animate(
+        {
+          clipPath: [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${Math.ceil(endRadius) + 40}px at ${x}px ${y}px)`
+          ]
+        },
+        {
+          duration: 650,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+          fill: "forwards",
+          pseudoElement: "::view-transition-new(root)"
         }
-      })
-      .catch(() => {
-        root.classList.remove("theme-transitioning")
-      })
+      )
+    })
 
     transition.finished.finally(() => {
-      root.classList.remove("theme-transitioning")
+      root.classList.remove("disable-theme-transitions")
     })
   }
 

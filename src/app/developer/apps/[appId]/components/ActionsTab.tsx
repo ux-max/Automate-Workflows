@@ -1672,7 +1672,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
             open={Boolean(openFieldSettingsId)}
             onOpenChange={(open) => !open && setOpenFieldSettingsId(null)}
             side="right"
-            zIndex={60}
+            zIndex={80}
             className="w-[780px] max-w-[94vw]"
             title={`Parameter Settings for ${activeField.key || "Parameter"}`}
             description="Configure display label, data type, and validation rules for this parameter."
@@ -2209,7 +2209,7 @@ export function ActionsTab({ app, onChange }: ActionsTabProps) {
             open={Boolean(openHeaderSettingsId)}
             onOpenChange={(open) => !open && setOpenHeaderSettingsId(null)}
             side="right"
-            zIndex={60}
+            zIndex={80}
             className="w-[780px] max-w-[94vw]"
             title={`Header Settings for ${activeHeader.key || "Header"}`}
             description="Configure header key name, value mapping, and instructions."

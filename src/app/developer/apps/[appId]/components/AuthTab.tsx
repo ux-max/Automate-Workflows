@@ -1382,7 +1382,7 @@ export function AuthTab({ app, onChange, onSave }: AuthTabProps) {
             open={Boolean(openParamSettingsId)}
             onOpenChange={(open) => !open && setOpenParamSettingsId(null)}
             side="right"
-            zIndex={60}
+            zIndex={70}
             className="w-[780px] max-w-[94vw]"
             title={`Parameter Settings for ${activeParam.key || "Parameter"}`}
             description="Configure display label, placeholder text, and validation rules for this authentication parameter."

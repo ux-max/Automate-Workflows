@@ -7,7 +7,6 @@ import {
   FolderPlus,
   Layers,
   Search,
-  ChevronLeft,
   X
 } from "lucide-react"
 import { useFolders } from "@/context/FoldersContext"
@@ -21,6 +20,7 @@ import {
   DialogDescription,
   DialogFooter
 } from "@/components/ui/dialog"
+import { motion } from "framer-motion"
 
 export function FoldersSubSidebar() {
   const {
@@ -70,7 +70,7 @@ export function FoldersSubSidebar() {
       {/* Sub-Sidebar Top Header (Aligned with Main Sidebar & Navbar: h-16) */}
       <div className="h-16 flex items-center justify-between px-4 bg-white dark:bg-slate-900 shrink-0 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center space-x-2.5 min-w-0">
-          <div className="h-9 w-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100/90 dark:border-blue-900/60 shrink-0 shadow-2xs">
+          <div className="h-9 w-9 rounded-xl bg-blue-50 dark:bg-white/10 text-blue-600 dark:text-white flex items-center justify-center border border-blue-100/90 dark:border-white/10 shrink-0 shadow-2xs">
             <Folder className="h-4.5 w-4.5" />
           </div>
           <div className="flex flex-col truncate">
@@ -78,25 +78,15 @@ export function FoldersSubSidebar() {
               <span className="text-xs font-semibold text-slate-900 dark:text-white tracking-tight leading-none">
                 Folders
               </span>
-              <Badge variant="blue" className="text-[9px] font-medium px-1.5 py-0">
+              <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-white/10 text-blue-700 dark:text-white border border-blue-200 dark:border-white/20">
                 {folders.length}
-              </Badge>
+              </span>
             </div>
             <span className="text-[10px] text-slate-400 font-medium mt-0.5">
               Browse & organize
             </span>
           </div>
         </div>
-
-        {/* Close Sub-Sidebar Button */}
-        <button
-          type="button"
-          onClick={() => setIsFoldersSubSidebarOpen(false)}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
-          title="Close Folders Panel"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </button>
       </div>
 
       {/* Folders List Container (Seamless white body unified with header and navbar) */}
@@ -107,14 +97,14 @@ export function FoldersSubSidebar() {
             type="button"
             size="sm"
             variant="outline"
-            className="w-full text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-blue-200 dark:hover:border-blue-800 shadow-2xs space-x-1.5 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 cursor-pointer h-8"
+            className="w-full text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-blue-200 dark:hover:border-white/20 shadow-2xs space-x-1.5 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 cursor-pointer h-8"
             onClick={() => {
               setNewFolderName("")
               setErrorText("")
               setCreateModalOpen(true)
             }}
           >
-            <FolderPlus className="h-3.5 w-3.5 text-blue-600 shrink-0" />
+            <FolderPlus className="h-3.5 w-3.5 text-blue-600 dark:text-white shrink-0" />
             <span>New Folder</span>
           </Button>
 
@@ -146,32 +136,45 @@ export function FoldersSubSidebar() {
           <button
             type="button"
             onClick={() => selectFolderAndNavigate("All Folders")}
-            className={`w-full group relative flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+            className={`w-full group relative flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors duration-200 active:scale-[0.98] cursor-pointer ${
               selectedFolder === "All Folders"
-                ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
+                ? "text-blue-600 dark:text-white font-semibold"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/60"
             }`}
           >
-            {/* Left Active Accent Indicator */}
+            {/* Sliding Active Pill Background */}
             {selectedFolder === "All Folders" && (
-              <span className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-blue-600 rounded-r-full" />
+              <motion.div
+                layoutId="folders-active-pill"
+                className="absolute inset-0 rounded-lg bg-blue-50/90 dark:bg-white/[0.08] border border-blue-100 dark:border-white/[0.12] shadow-2xs pointer-events-none"
+                transition={{ type: "spring", stiffness: 380, damping: 32 }}
+              />
             )}
 
-            <div className="flex items-center space-x-2.5 min-w-0 flex-1">
+            {/* Left Active Accent Indicator */}
+            {selectedFolder === "All Folders" && (
+              <motion.span
+                layoutId="folders-active-indicator"
+                className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-blue-600 dark:bg-white rounded-r-full z-10 pointer-events-none"
+                transition={{ type: "spring", stiffness: 380, damping: 32 }}
+              />
+            )}
+
+            <div className="relative z-10 flex items-center space-x-2.5 min-w-0 flex-1">
               <Layers
                 className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
                   selectedFolder === "All Folders"
-                    ? "text-blue-600 scale-105"
-                    : "text-slate-400 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
+                    ? "text-blue-600 dark:text-white scale-105"
+                    : "text-slate-400 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-white"
                 }`}
               />
               <span className="truncate">All Folders</span>
             </div>
 
             <span
-              className={`text-[10px] font-mono px-2 py-0.5 rounded-full border shrink-0 ${
+              className={`relative z-10 text-[10px] font-mono px-2 py-0.5 rounded-full border shrink-0 ${
                 selectedFolder === "All Folders"
-                  ? "bg-blue-100/70 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 font-medium"
+                  ? "bg-blue-100/70 dark:bg-white/10 text-blue-700 dark:text-white border-blue-200 dark:border-white/20 font-medium"
                   : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700"
               }`}
             >
@@ -204,33 +207,46 @@ export function FoldersSubSidebar() {
                   key={fName}
                   type="button"
                   onClick={() => selectFolderAndNavigate(fName)}
-                  className={`w-full group relative flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${
+                  className={`w-full group relative flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors duration-200 active:scale-[0.98] text-left cursor-pointer ${
                     isActive
-                      ? "bg-blue-50/90 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold border border-blue-100 dark:border-blue-900/60 shadow-2xs"
+                      ? "text-blue-600 dark:text-white font-semibold"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/60"
                   }`}
                   title={fName}
                 >
-                  {/* Left Active Accent Indicator */}
+                  {/* Sliding Active Pill Background */}
                   {isActive && (
-                    <span className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-blue-600 rounded-r-full" />
+                    <motion.div
+                      layoutId="folders-active-pill"
+                      className="absolute inset-0 rounded-lg bg-blue-50/90 dark:bg-white/[0.08] border border-blue-100 dark:border-white/[0.12] shadow-2xs pointer-events-none"
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
                   )}
 
-                  <div className="flex items-center space-x-2.5 min-w-0 flex-1 mr-2">
+                  {/* Left Active Accent Indicator */}
+                  {isActive && (
+                    <motion.span
+                      layoutId="folders-active-indicator"
+                      className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-blue-600 dark:bg-white rounded-r-full z-10 pointer-events-none"
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
+                  )}
+
+                  <div className="relative z-10 flex items-center space-x-2.5 min-w-0 flex-1 mr-2">
                     <IconComponent
                       className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
                         isActive
-                          ? "text-blue-600 scale-105"
-                          : "text-slate-400 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
+                          ? "text-blue-600 dark:text-white scale-105"
+                          : "text-slate-400 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-white"
                       }`}
                     />
                     <span className="truncate">{fName}</span>
                   </div>
 
                   <span
-                    className={`text-[10px] font-mono px-2 py-0.5 rounded-full border shrink-0 ${
+                    className={`relative z-10 text-[10px] font-mono px-2 py-0.5 rounded-full border shrink-0 ${
                       isActive
-                        ? "bg-blue-100/70 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 font-medium"
+                        ? "bg-blue-100/70 dark:bg-white/10 text-blue-700 dark:text-white border-blue-200 dark:border-white/20 font-medium"
                         : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700"
                     }`}
                   >

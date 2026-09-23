@@ -10,7 +10,11 @@ module.exports = {
     extend: {
       colors: {
         slate: {
-          850: "#141e33",
+          700: "#2e2e2e",
+          800: "#1a1a1a",
+          850: "#141414",
+          900: "#111111",
+          950: "#090909",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

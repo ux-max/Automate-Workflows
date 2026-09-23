@@ -27,24 +27,24 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --background: 0 0% 3.5%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 5.5%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 5.5%;
+    --popover-foreground: 0 0% 95%;
     --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --primary-foreground: 0 0% 5%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 0 0% 12%;
+    --accent-foreground: 0 0% 95%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --destructive-foreground: 0 0% 95%;
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
     --ring: 224.3 76.3% 48%;
   }
 }
@@ -102,29 +102,36 @@
    Smooth Camera Aperture / Shutter Wipe Theme Transition
    ========================================================= */
 
-/* Prevent conflicting sub-element transitions and flickering during theme switch */
-.theme-transitioning,
-.theme-transitioning *,
-.theme-transitioning *::before,
-.theme-transitioning *::after {
+/* Temporarily disable CSS transitions during snapshot capture so colors snap to final values instantly */
+.disable-theme-transitions,
+.disable-theme-transitions *,
+.disable-theme-transitions *::before,
+.disable-theme-transitions *::after {
   transition: none !important;
 }
 
-/* Disable default cross-fade in View Transitions so custom aperture shutter runs cleanly */
+/* Ensure smooth non-flickering aperture wipe */
+::view-transition-image-pair(root) {
+  isolation: isolate;
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
 
-/* Position new theme layer above old layer so shutter aperture expands cleanly over viewport */
 ::view-transition-old(root) {
   z-index: 1;
 }
 
 ::view-transition-new(root) {
   z-index: 9999;
+  /* Initial 0px clip-path strictly prevents the 1-frame unclipped flash before transition.ready executes */
+  clip-path: circle(0px at var(--aperture-x, 90vw) var(--aperture-y, 30px));
 }
+
+
 
 /* =========================================================
    AI Interface Ambient Colorful Animated Gradient
@@ -339,7 +346,7 @@
 }
 
 .dark .marquee-blur-top {
-  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.65) 55%, rgba(15, 23, 42, 0) 100%);
+  background: linear-gradient(to bottom, rgba(9, 9, 9, 0.95) 0%, rgba(9, 9, 9, 0.65) 55%, rgba(9, 9, 9, 0) 100%);
 }
 
 .marquee-blur-bottom {
@@ -356,5 +363,23 @@
 }
 
 .dark .marquee-blur-bottom {
-  background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.65) 55%, rgba(15, 23, 42, 0) 100%);
+  background: linear-gradient(to top, rgba(9, 9, 9, 0.95) 0%, rgba(9, 9, 9, 0.65) 55%, rgba(9, 9, 9, 0) 100%);
+}
+
+/* =========================================================
+   Smooth Tab & Route Transition Animation
+   ========================================================= */
+@keyframes tab-fade-in {
+  0% {
+    opacity: 0.75;
+    transform: translateY(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-tab-fade {
+  animation: tab-fade-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }

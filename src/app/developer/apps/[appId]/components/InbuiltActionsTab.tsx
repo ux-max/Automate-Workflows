@@ -2708,7 +2708,7 @@ export function InbuiltActionsTab({ app, onChange }: InbuiltActionsTabProps) {
             open={Boolean(openParamSettingsId)}
             onOpenChange={(open) => !open && setOpenParamSettingsId(null)}
             side="right"
-            zIndex={70}
+            zIndex={80}
             className="w-[660px] max-w-[94vw]"
             title="Set Response Parameter Details"
             description="Configure dynamic dependencies, response parameter mapping, test values, and validation rules."
