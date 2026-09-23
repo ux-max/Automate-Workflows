@@ -35,7 +35,7 @@ import { INITIAL_USER_CONNECTIONS, CONNECTABLE_APPS, UserConnection } from "@/li
 export default function ConnectionsPage() {
   const [connections, setConnections] = useState<UserConnection[]>(INITIAL_USER_CONNECTIONS)
   const [searchQuery, setSearchQuery] = useState("")
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid")
+  const [viewMode, setViewMode] = useState<"grid" | "table">("table")
   const [starredRows, setStarredRows] = useState<Record<string, boolean>>({})
   const [activeMenuConnId, setActiveMenuConnId] = useState<string | null>(null)
 

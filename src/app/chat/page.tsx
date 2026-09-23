@@ -15,7 +15,6 @@ import {
   ChevronUp,
   ArrowRight,
   CheckCircle2,
-  Play,
   Copy,
   Download,
   ExternalLink,
@@ -776,14 +775,6 @@ export default function ChatPage() {
                             {/* Action Toolbar */}
                             <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
                               <div className="flex items-center gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => handleSimulateTest(msg.plan!)}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium transition-colors cursor-pointer"
-                                >
-                                  <Play className="w-3.5 h-3.5 text-emerald-600" />
-                                  <span>Simulate Run</span>
-                                </button>
                                 <button
                                   type="button"
                                   onClick={() => handleCopySchema(msg.plan!)}
