@@ -518,7 +518,9 @@ export function Sidebar() {
                   />
 
                   {!isCollapsed && (
-                    <span className="ml-3 truncate">Create Custom App</span>
+                    <span className="relative z-10 ml-3 truncate">
+                      Create Custom App
+                    </span>
                   )}
 
                   {/* Tooltip in Collapsed Mode */}
