@@ -35,6 +35,8 @@ import {
   RotateCw,
   XCircle,
   Info,
+  Upload,
+  Camera,
   X
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -459,9 +461,42 @@ export default function SettingsPage() {
   }, [searchParams])
 
   // Profile Form State
-  const [name, setName] = useState("Himanshu Product Lead")
-  const [email, setEmail] = useState("himanshu@automate.com")
+  const [firstName, setFirstName] = useState("Himanshu")
+  const [lastName, setLastName] = useState("Pundir")
+  const [email, setEmail] = useState("himanshupundir506@gmail.com")
+  const [company, setCompany] = useState("")
+  const [profileRole, setProfileRole] = useState("IT")
+  const [timezone, setTimezone] = useState("Asia/Kolkata")
+  const [name, setName] = useState("Himanshu Pundir")
+  const [avatarImage, setAvatarImage] = useState<string | null>(null)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
   const [savedToast, setSavedToast] = useState(false)
+  const [isSavingProfile, setIsSavingProfile] = useState(false)
+
+  // Load avatar from localStorage if available
+  useEffect(() => {
+    try {
+      const savedAvatar = localStorage.getItem("user_profile_avatar")
+      if (savedAvatar) {
+        setAvatarImage(savedAvatar)
+      }
+    } catch {
+      // ignore
+    }
+  }, [])
+
+  // Change Email Modal State
+  const [changeEmailModalOpen, setChangeEmailModalOpen] = useState(false)
+  const [newEmailInput, setNewEmailInput] = useState("")
+  const [emailModalError, setEmailModalError] = useState("")
+
+  const profileInitials = useMemo(() => {
+    const f = firstName.trim().charAt(0)
+    const l = lastName.trim().charAt(0)
+    if (f && l) return `${f}${l}`.toUpperCase()
+    if (f) return f.toUpperCase()
+    return "HP"
+  }, [firstName, lastName])
 
   // Notification State
   const [notifyOnFailure, setNotifyOnFailure] = useState(true)
@@ -928,8 +963,66 @@ export default function SettingsPage() {
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault()
+    setIsSavingProfile(true)
+    const fullName = `${firstName} ${lastName}`.trim() || firstName
+    setName(fullName)
+    setTimeout(() => {
+      setIsSavingProfile(false)
+      setSavedToast(true)
+      setTimeout(() => setSavedToast(false), 3500)
+    }, 300)
+  }
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image must be smaller than 5MB.")
+        return
+      }
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const result = reader.result as string
+        setAvatarImage(result)
+        try {
+          localStorage.setItem("user_profile_avatar", result)
+        } catch {
+          // ignore
+        }
+        setSavedToast(true)
+        setTimeout(() => setSavedToast(false), 3000)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleRemoveAvatar = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setAvatarImage(null)
+    try {
+      localStorage.removeItem("user_profile_avatar")
+    } catch {
+      // ignore
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
     setSavedToast(true)
     setTimeout(() => setSavedToast(false), 3000)
+  }
+
+  const handleConfirmChangeEmail = (e: React.FormEvent) => {
+    e.preventDefault()
+    setEmailModalError("")
+    const trimmed = newEmailInput.trim()
+    if (!trimmed || !trimmed.includes("@") || !trimmed.includes(".")) {
+      setEmailModalError("Please enter a valid email address.")
+      return
+    }
+    setEmail(trimmed)
+    setChangeEmailModalOpen(false)
+    setSavedToast(true)
+    setTimeout(() => setSavedToast(false), 3500)
   }
 
   const handleCopyTag = (keyName: string, e?: React.MouseEvent) => {
@@ -1114,45 +1207,219 @@ export default function SettingsPage() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           {/* TAB 1: Profile & Account (Screen 21) */}
           <TabsContent value="account" className="space-y-6 animate-in fade-in zoom-in-95">
-            <Card className="border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs">
-              <CardHeader>
-                <CardTitle className="text-lg text-slate-900 dark:text-slate-100">Personal Profile Information</CardTitle>
-                <CardDescription className="text-xs text-slate-500 dark:text-slate-400">Update your name, primary email address, and authentication method.</CardDescription>
+            <Card className="border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs">
+              <CardHeader className="pb-4 border-b border-slate-100 dark:border-slate-800">
+                <CardTitle className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+                  My profile
+                </CardTitle>
+                <CardDescription className="text-xs text-slate-500 dark:text-slate-400">
+                  Manage your personal details, workspace role, and regional timezone preferences.
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSaveProfile} className="space-y-4 max-w-md">
+              <CardContent className="pt-6">
+                <form onSubmit={handleSaveProfile} className="space-y-5 max-w-xl">
+                  {/* Profile Picture Upload Section */}
+                  <div className="flex items-center space-x-4 pb-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/png, image/jpeg, image/webp, image/gif"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                    />
+
+                    {/* Interactive Avatar with upload hover overlay */}
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="relative group cursor-pointer shrink-0"
+                      title="Click to upload profile picture from system"
+                    >
+                      <div className="h-14 w-14 rounded-full bg-sky-100 dark:bg-sky-950/70 border border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-300 flex items-center justify-center font-bold text-base shadow-2xs overflow-hidden select-none transition-transform duration-200 group-hover:scale-105">
+                        {avatarImage ? (
+                          <img
+                            src={avatarImage}
+                            alt="Profile"
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          profileInitials
+                        )}
+                      </div>
+                      <div className="absolute inset-0 rounded-full bg-slate-900/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
+                        <Camera className="h-4 w-4 text-white" />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col space-y-1">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline inline-flex items-center space-x-1.5 cursor-pointer"
+                        >
+                          <Upload className="h-3.5 w-3.5" />
+                          <span>Change profile picture</span>
+                        </button>
+
+                        {avatarImage && (
+                          <>
+                            <span className="text-slate-300 dark:text-slate-600 text-xs">•</span>
+                            <button
+                              type="button"
+                              onClick={handleRemoveAvatar}
+                              className="text-xs font-medium text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 cursor-pointer transition-colors"
+                            >
+                              Remove
+                            </button>
+                          </>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                        Upload directly from your system (JPG, PNG or GIF up to 5MB)
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Email Field with CHANGE EMAIL */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-slate-700 dark:text-slate-200">Full Name</label>
+                    <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                      Email <span className="font-normal text-slate-400 dark:text-slate-500">(required)</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <Input
+                        type="email"
+                        value={email}
+                        readOnly
+                        className="pr-36 h-10 text-xs font-medium text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 cursor-default"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setNewEmailInput(email)
+                          setEmailModalError("")
+                          setChangeEmailModalOpen(true)
+                        }}
+                        className="absolute right-2 px-3 py-1.5 text-[11px] font-bold text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors uppercase tracking-wider cursor-pointer"
+                      >
+                        CHANGE EMAIL
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* First Name Field */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                      First name <span className="font-normal text-slate-400 dark:text-slate-500">(required)</span>
+                    </label>
                     <Input
                       type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
                       required
+                      placeholder="First name"
+                      className="h-10 text-xs font-medium text-slate-900 dark:text-slate-100"
                     />
                   </div>
 
+                  {/* Last Name Field */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-slate-700 dark:text-slate-200">Account Email</label>
+                    <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                      Last name
+                    </label>
                     <Input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Last name"
+                      className="h-10 text-xs font-medium text-slate-900 dark:text-slate-100"
                     />
                   </div>
 
-                  <div className="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 rounded-lg space-y-2">
-                    <div className="flex items-center justify-between text-xs font-semibold text-slate-900 dark:text-slate-100">
-                      <span>Connected Google SSO</span>
-                      <Badge variant="success">Active</Badge>
-                    </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Linked to google-oauth: himanshu@automate.com</p>
+                  {/* Company Field */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                      Company
+                    </label>
+                    <Input
+                      type="text"
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
+                      placeholder=""
+                      className="h-10 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
+                    />
                   </div>
 
-                  <Button type="submit" className="space-x-2">
-                    <Save className="h-4 w-4" />
-                    <span>Save Account Profile</span>
-                  </Button>
+                  {/* Role Field */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                      Role
+                    </label>
+                    <Select
+                      value={profileRole}
+                      onValueChange={setProfileRole}
+                      className="h-10 text-xs font-medium"
+                      options={[
+                        { value: "IT", label: "IT" },
+                        { value: "Engineering", label: "Engineering" },
+                        { value: "Product", label: "Product" },
+                        { value: "Design", label: "Design" },
+                        { value: "Operations", label: "Operations" },
+                        { value: "Marketing", label: "Marketing" },
+                        { value: "Sales", label: "Sales" },
+                        { value: "Security", label: "Security & Compliance" },
+                        { value: "Executive", label: "Executive / Leadership" },
+                        { value: "Other", label: "Other" }
+                      ]}
+                    />
+                  </div>
+
+                  {/* Timezone Field */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                      Timezone
+                    </label>
+                    <Select
+                      value={timezone}
+                      onValueChange={setTimezone}
+                      className="h-10 text-xs font-medium"
+                      options={[
+                        { value: "Asia/Kolkata", label: "(GMT+05:30) Asia/Kolkata" },
+                        { value: "UTC", label: "(GMT+00:00) UTC" },
+                        { value: "America/New_York", label: "(GMT-05:00) America/New_York (EST)" },
+                        { value: "America/Chicago", label: "(GMT-06:00) America/Chicago (CST)" },
+                        { value: "America/Denver", label: "(GMT-07:00) America/Denver (MST)" },
+                        { value: "America/Los_Angeles", label: "(GMT-08:00) America/Los_Angeles (PST)" },
+                        { value: "Europe/London", label: "(GMT+00:00) Europe/London (GMT/BST)" },
+                        { value: "Europe/Paris", label: "(GMT+01:00) Europe/Paris (CET)" },
+                        { value: "Europe/Berlin", label: "(GMT+01:00) Europe/Berlin (CET)" },
+                        { value: "Asia/Dubai", label: "(GMT+04:00) Asia/Dubai (GST)" },
+                        { value: "Asia/Singapore", label: "(GMT+08:00) Asia/Singapore (SGT)" },
+                        { value: "Asia/Tokyo", label: "(GMT+09:00) Asia/Tokyo (JST)" },
+                        { value: "Australia/Sydney", label: "(GMT+10:00) Australia/Sydney (AEST)" }
+                      ]}
+                    />
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Used when we handle time with no explicit timezone.
+                    </p>
+                  </div>
+
+                  {/* Save Changes Button */}
+                  <div className="pt-2">
+                    <Button
+                      type="submit"
+                      disabled={isSavingProfile}
+                      className="px-6 font-semibold text-xs h-10 shadow-sm"
+                    >
+                      {isSavingProfile ? (
+                        <>
+                          <RotateCw className="h-3.5 w-3.5 animate-spin mr-2" />
+                          <span>Saving changes...</span>
+                        </>
+                      ) : (
+                        <span>Save changes</span>
+                      )}
+                    </Button>
+                  </div>
                 </form>
               </CardContent>
             </Card>
@@ -2316,6 +2583,60 @@ export default function SettingsPage() {
             )}
           </TabsContent>
         </Tabs>
+
+        {/* Modal Dialog: Change Email Address */}
+        <Dialog open={changeEmailModalOpen} onOpenChange={setChangeEmailModalOpen}>
+          <DialogHeader>
+            <DialogTitle>Change Email Address</DialogTitle>
+            <DialogDescription>
+              Update your account login and primary contact email address.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleConfirmChangeEmail} className="space-y-4 my-2">
+            {emailModalError && (
+              <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-lg text-xs text-red-600 dark:text-red-400 flex items-center space-x-2">
+                <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />
+                <span>{emailModalError}</span>
+              </div>
+            )}
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Current Email</label>
+              <Input
+                type="email"
+                value={email}
+                disabled
+                className="bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-not-allowed"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">New Email Address</label>
+              <Input
+                type="email"
+                placeholder="e.g. name@company.com"
+                value={newEmailInput}
+                onChange={(e) => setNewEmailInput(e.target.value)}
+                required
+                autoFocus
+              />
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setChangeEmailModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">
+                Update Email
+              </Button>
+            </DialogFooter>
+          </form>
+        </Dialog>
 
         {/* Modal Dialog: Add / Edit Variable */}
         <Dialog open={addVarModalOpen} onOpenChange={setAddVarModalOpen}>
