@@ -29,7 +29,7 @@ export function SettingsSubSidebar({ isOpen, onClose }: SettingsSubSidebarProps)
 
   if (!isOpen) return null
 
-  const currentTab = searchParams.get("tab") || "variables"
+  const currentTab = searchParams.get("tab") || "account"
 
   const settingsOptions = [
     {

@@ -17,7 +17,6 @@ import {
   User,
   Code2,
   Bell,
-  ChevronsUpDown,
   Folder,
   SquarePen,
   Plus,
@@ -587,61 +586,6 @@ export function Sidebar() {
             })()}
           </div>
         </div>
-      </div>
-
-
-
-      {/* Bottom User Workspace Profile Card */}
-      <div className="p-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60">
-        {!isCollapsed ? (
-          <Link
-            href="/settings?tab=account"
-            onClick={() => {
-              if (isFoldersSubSidebarOpen) {
-                setIsFoldersSubSidebarOpen(false)
-              }
-              setIsSettingsSubSidebarOpen(true)
-            }}
-            className="flex items-center justify-between p-2 rounded-xl hover:bg-white dark:hover:bg-slate-800 border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition-all group"
-          >
-            <div className="flex items-center space-x-2.5 min-w-0">
-              <div className="relative">
-                <div className="h-8 w-8 rounded-full bg-slate-800 text-white flex items-center justify-center font-semibold text-xs shrink-0 shadow-2xs border border-slate-300 dark:border-slate-600 transition-transform duration-300 group-hover:scale-105">
-                  H
-                </div>
-                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  Himanshu Pundir
-                </p>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">Product Lead (Pro)</p>
-              </div>
-            </div>
-            <ChevronsUpDown className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-          </Link>
-        ) : (
-          <div className="flex justify-center py-1">
-            <Link
-              href="/settings?tab=account"
-              onClick={() => {
-                if (isFoldersSubSidebarOpen) {
-                  setIsFoldersSubSidebarOpen(false)
-                }
-                setIsSettingsSubSidebarOpen(true)
-              }}
-              className="relative group"
-            >
-              <div className="h-8 w-8 rounded-full bg-slate-800 text-white flex items-center justify-center font-semibold text-xs shrink-0 shadow-2xs border border-slate-300 transition-transform duration-300 group-hover:scale-110">
-                H
-              </div>
-              <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-white" />
-              <div className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[11px] font-medium px-2.5 py-1.5 rounded-lg shadow-xl z-50 whitespace-nowrap pointer-events-none">
-                Himanshu Pundir (Product Lead)
-              </div>
-            </Link>
-          </div>
-        )}
       </div>
     </aside>
 
