@@ -59,10 +59,12 @@ export function TabsTrigger({
   value,
   children,
   className,
+  indicatorClassName,
 }: {
   value: string
   children: React.ReactNode
   className?: string
+  indicatorClassName?: string
 }) {
   const context = React.useContext(TabsContext)
   if (!context) throw new Error("TabsTrigger must be used within Tabs")
@@ -84,7 +86,7 @@ export function TabsTrigger({
       {isActive && (
         <motion.div
           layoutId="active-tabs-indicator"
-          className="absolute inset-0 rounded-sm bg-white dark:bg-slate-900 shadow-xs pointer-events-none"
+          className={cn("absolute inset-0 rounded-sm bg-white dark:bg-slate-900 shadow-xs pointer-events-none", indicatorClassName)}
           transition={{ type: "spring", stiffness: 450, damping: 35 }}
         />
       )}

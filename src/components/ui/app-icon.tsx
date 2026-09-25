@@ -42,7 +42,14 @@ const APP_BRAND_MAP: Record<string, { slug: string; color: string; label: string
   googledrive: { slug: "googledrive", color: "4285F4", label: "Google Drive" },
   teams: { slug: "microsoftteams", color: "6264A7", label: "Microsoft Teams" },
   microsoftteams: { slug: "microsoftteams", color: "6264A7", label: "Microsoft Teams" },
-  zendesk: { slug: "zendesk", color: "03363D", label: "Zendesk" }
+  zendesk: { slug: "zendesk", color: "03363D", label: "Zendesk" },
+  googledocs: { slug: "googledocs", color: "4285F4", label: "Google Docs" },
+  docs: { slug: "googledocs", color: "4285F4", label: "Google Docs" },
+  youtube: { slug: "youtube", color: "FF0000", label: "YouTube" },
+  asana: { slug: "asana", color: "F06A6A", label: "Asana" },
+  todoist: { slug: "todoist", color: "E44332", label: "Todoist" },
+  planner: { slug: "microsoft", color: "0078D4", label: "Planner" },
+  weather: { slug: "accuweather", color: "F8971D", label: "Weather" }
 }
 
 export function AppIcon({ appId, appName, className = "", size = 24 }: AppIconProps) {
@@ -57,6 +64,132 @@ export function AppIcon({ appId, appName, className = "", size = 24 }: AppIconPr
         <path d="M8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312z" fill="#36C5F0"/>
         <path d="M18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312z" fill="#2EB67D"/>
         <path d="M15.165 18.956a2.528 2.528 0 0 1 2.523 2.521A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.523v-2.52h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z" fill="#ECB22E"/>
+      </svg>
+    )
+  }
+
+  // 2. OFFICIAL NOTION VECTOR SVG (2-layer: authentic white notebook body + sharp black monogram)
+  if (id === "notion" || id.includes("notion")) {
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 100 100"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={`shrink-0 ${className}`}
+      >
+        {/* Layer 1: Notebook Body Shape filled with pure White */}
+        <path
+          d="M6.017 4.313l55.333 -4.087c6.797 -0.583 8.543 -0.19 12.817 2.917l17.663 12.443c2.913 2.14 3.883 2.723 3.883 5.053v68.243c0 4.277 -1.553 6.807 -6.99 7.193L24.467 99.967c-4.08 0.193 -6.023 -0.39 -8.16 -3.113L3.3 79.94c-2.333 -3.113 -3.3 -5.443 -3.3 -8.167V11.113c0 -3.497 1.553 -6.413 6.017 -6.8z"
+          fill="#FFFFFF"
+        />
+        {/* Layer 2: Official Black Outer Binding, 3D Folds, and "N" Monogram */}
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M61.35 0.227l-55.333 4.087C1.553 4.7 0 7.617 0 11.113v60.66c0 2.723 0.967 5.053 3.3 8.167l13.007 16.913c2.137 2.723 4.08 3.307 8.16 3.113l64.257 -3.89c5.433 -0.387 6.99 -2.917 6.99 -7.193V20.64c0 -2.21 -0.873 -2.847 -3.443 -4.733L74.167 3.143c-4.273 -3.107 -6.02 -3.5 -12.817 -2.917zM25.92 19.523c-5.247 0.353 -6.437 0.433 -9.417 -1.99L8.927 11.507c-0.77 -0.78 -0.383 -1.753 1.557 -1.947l53.193 -3.887c4.467 -0.39 6.793 1.167 8.54 2.527l9.123 6.61c0.39 0.197 1.36 1.36 0.193 1.36l-54.933 3.307 -0.68 0.047zM19.803 88.3V30.367c0 -2.53 0.777 -3.697 3.103 -3.893L86 22.78c2.14 -0.193 3.107 1.167 3.107 3.693v57.547c0 2.53 -0.39 4.67 -3.883 4.863l-60.377 3.5c-3.493 0.193 -5.043 -0.97 -5.043 -4.083zm59.6 -54.827c0.387 1.75 0 3.5 -1.75 3.7l-2.91 0.577v42.773c-2.527 1.36 -4.853 2.137 -6.797 2.137 -3.107 0 -3.883 -0.973 -6.21 -3.887l-19.03 -29.94v28.967l6.02 1.363s0 3.5 -4.857 3.5l-13.39 0.777c-0.39 -0.78 0 -2.723 1.357 -3.11l3.497 -0.97v-38.3L30.48 40.667c-0.39 -1.75 0.58 -4.277 3.3 -4.473l14.367 -0.967 19.8 30.327v-26.83l-5.047 -0.58c-0.39 -2.143 1.163 -3.7 3.103 -3.89l13.4 -0.78z"
+          fill="#000000"
+        />
+      </svg>
+    )
+  }
+
+  // 3. ORIGINAL OPENAI / CHATGPT VECTOR SVG
+  if (id.includes("openai") || id.includes("chatgpt")) {
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 256 260"
+        fill="currentColor"
+        xmlns="http://www.w3.org/2000/svg"
+        className={`shrink-0 text-slate-900 dark:text-white ${className}`}
+      >
+        <path d="M239.184 106.203a64.72 64.72 0 0 0-5.576-53.103C219.452 28.459 191 15.784 163.213 21.74A65.586 65.586 0 0 0 52.096 45.22a64.72 64.72 0 0 0-43.23 31.36c-14.31 24.602-11.061 55.634 8.033 76.74a64.67 64.67 0 0 0 5.525 53.102c14.174 24.65 42.644 37.324 70.446 31.36a64.72 64.72 0 0 0 48.754 21.744c28.481.025 53.714-18.361 62.414-45.481a64.77 64.77 0 0 0 43.229-31.36c14.137-24.558 10.875-55.423-8.083-76.483m-97.56 136.338a48.4 48.4 0 0 1-31.105-11.255l1.535-.87l51.67-29.825a8.6 8.6 0 0 0 4.247-7.367v-72.85l21.845 12.636c.218.111.37.32.409.563v60.367c-.056 26.818-21.783 48.545-48.601 48.601M37.158 197.93a48.35 48.35 0 0 1-5.781-32.589l1.534.921l51.722 29.826a8.34 8.34 0 0 0 8.441 0l63.181-36.425v25.221a.87.87 0 0 1-.358.665l-52.335 30.184c-23.257 13.398-52.97 5.431-66.404-17.803M23.549 85.38a48.5 48.5 0 0 1 25.58-21.333v61.39a8.29 8.29 0 0 0 4.195 7.316l62.874 36.272l-21.845 12.636a.82.82 0 0 1-.767 0L41.353 151.53c-23.211-13.454-31.171-43.144-17.804-66.405zm179.466 41.695l-63.08-36.63L161.73 77.86a.82.82 0 0 1 .768 0l52.233 30.184a48.6 48.6 0 0 1-7.316 87.635v-61.391a8.54 8.54 0 0 0-4.4-7.213m21.742-32.69l-1.535-.922l-51.619-30.081a8.39 8.39 0 0 0-8.492 0L99.98 99.808V74.587a.72.72 0 0 1 .307-.665l52.233-30.133a48.652 48.652 0 0 1 72.236 50.391zM88.061 139.097l-21.845-12.585a.87.87 0 0 1-.41-.614V65.685a48.652 48.652 0 0 1 79.757-37.346l-1.535.87l-51.67 29.825a8.6 8.6 0 0 0-4.246 7.367zm11.868-25.58L128.067 97.3l28.188 16.218v32.434l-28.086 16.218l-28.188-16.218z" />
+      </svg>
+    )
+  }
+
+  // 4. ORIGINAL MICROSOFT TEAMS VECTOR SVG
+  if (id.includes("teams") || id.includes("microsoftteams")) {
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 256 239"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={`shrink-0 ${className}`}
+      >
+        <defs>
+          <linearGradient id="msTeamsGrad" x1="17.372%" x2="82.628%" y1="-6.51%" y2="106.51%">
+            <stop offset="0%" stopColor="#5A62C3" />
+            <stop offset="50%" stopColor="#4D55BD" />
+            <stop offset="100%" stopColor="#3940AB" />
+          </linearGradient>
+        </defs>
+        {/* Right avatar silhouette */}
+        <circle cx="223.256" cy="50.605" r="26.791" fill="#5059C9" />
+        <path
+          fill="#5059C9"
+          d="M178.563 89.302h66.125c6.248 0 11.312 5.065 11.312 11.312v60.231c0 22.96-18.613 41.574-41.573 41.574h-.197c-22.96.003-41.576-18.607-41.579-41.568V95.215a5.91 5.91 0 0 1 5.912-5.913"
+        />
+        {/* Main avatar silhouette */}
+        <circle cx="139.907" cy="38.698" r="38.698" fill="#7B83EB" />
+        <path
+          fill="#7B83EB"
+          d="M191.506 89.302H82.355c-6.173.153-11.056 5.276-10.913 11.449v68.697c-.862 37.044 28.445 67.785 65.488 68.692c37.043-.907 66.35-31.648 65.489-68.692v-68.697c.143-6.173-4.74-11.296-10.913-11.449"
+        />
+        {/* Teams Front Tile */}
+        <path
+          fill="url(#msTeamsGrad)"
+          d="M10.913 53.581h109.15c6.028 0 10.914 4.886 10.914 10.913v109.151c0 6.027-4.886 10.913-10.913 10.913H10.913C4.886 184.558 0 179.672 0 173.645V64.495C0 58.466 4.886 53.58 10.913 53.58"
+        />
+        {/* Teams "T" monogram */}
+        <path fill="#FFFFFF" d="M94.208 95.125h-21.82v59.416H58.487V95.125H36.769V83.599h57.439z" />
+      </svg>
+    )
+  }
+
+  // 5. ORIGINAL MICROSOFT PLANNER VECTOR SVG
+  if (id.includes("planner")) {
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={`shrink-0 ${className}`}
+      >
+        <defs>
+          <linearGradient id="msPlannerGrad1" x1="6.38724" y1="3.74167" x2="2.15779" y2="12.777" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#8752E0" />
+            <stop offset="1" stopColor="#541278" />
+          </linearGradient>
+          <linearGradient id="msPlannerGrad2" x1="18.3701" y1="0" x2="9.85717" y2="20.4192" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#DB45E0" />
+            <stop offset="0.677" stopColor="#A829AE" />
+            <stop offset="1" stopColor="#8F28B3" />
+          </linearGradient>
+          <linearGradient id="msPlannerGrad3" x1="18.2164" y1="7.92626" x2="10.5237" y2="22.9363" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#3DCBFF" />
+            <stop offset="1" stopColor="#4A40D4" />
+          </linearGradient>
+        </defs>
+        <path
+          d="M8.25809 15.7412C7.22488 16.7744 5.54971 16.7744 4.5165 15.7412L0.774909 11.9996C-0.258303 10.9664 -0.258303 9.29129 0.774908 8.25809L4.5165 4.51655C5.54971 3.48335 7.22488 3.48335 8.25809 4.51655L11.9997 8.2581C13.0329 9.29129 13.0329 10.9664 11.9997 11.9996L8.25809 15.7412Z"
+          fill="url(#msPlannerGrad1)"
+        />
+        <path
+          d="M0.774857 11.9999C1.80809 13.0331 3.48331 13.0331 4.51655 11.9999L15.7417 0.774926C16.7749 -0.258304 18.4501 -0.258309 19.4834 0.774914L23.225 4.51655C24.2583 5.54977 24.2583 7.22496 23.225 8.25819L11.9999 19.4832C10.9667 20.5164 9.29146 20.5164 8.25822 19.4832L0.774857 11.9999Z"
+          fill="url(#msPlannerGrad2)"
+        />
+        <path
+          d="M4.51642 15.7413C5.54966 16.7746 7.22487 16.7746 8.25812 15.7413L15.7415 8.25803C16.7748 7.2248 18.45 7.2248 19.4832 8.25803L23.2249 11.9997C24.2582 13.0329 24.2582 14.7081 23.2249 15.7413L15.7415 23.2246C14.7083 24.2579 13.033 24.2579 11.9998 23.2246L4.51642 15.7413Z"
+          fill="url(#msPlannerGrad3)"
+        />
       </svg>
     )
   }
@@ -111,6 +244,38 @@ export function AppIcon({ appId, appName, className = "", size = 24 }: AppIconPr
           d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m-3.53 3.41c-.2 0-.42.01-.61.02-.24.01-.52.09-.76.35-.24.26-.94.92-.94 2.24s.96 2.6 1.09 2.78c.13.17 1.86 2.85 4.52 3.99.63.27 1.13.43 1.51.56.63.2 1.21.17 1.66.11.51-.08 1.56-.64 1.78-1.26.22-.62.22-1.15.15-1.26-.06-.11-.24-.18-.51-.31-.27-.14-1.58-.78-1.83-.87-.24-.09-.42-.14-.6.13-.18.27-.69.87-.85 1.05-.16.18-.31.2-.58.07-.27-.14-1.15-.42-2.19-1.35-.81-.72-1.35-1.61-1.51-1.88-.16-.27-.02-.42.12-.55.12-.12.27-.31.4-.47.13-.15.18-.26.27-.43.09-.18.04-.33-.02-.47-.07-.13-.6-1.45-.82-1.99-.22-.52-.44-.45-.61-.46h-.52Z"
           fill="#25D366"
         />
+      </svg>
+    )
+  }
+
+  // OFFICIAL SALESFORCE VECTOR SVG
+  if (id.includes("salesforce")) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 256 180" fill="none" className={`shrink-0 ${className}`}>
+        <path
+          fill="#00A1E0"
+          d="M106.553 19.651c8.248-8.594 19.731-13.924 32.43-13.924c16.883 0 31.612 9.414 39.455 23.389a54.5 54.5 0 0 1 22.3-4.74c30.449 0 55.134 24.9 55.134 55.615c0 30.719-24.685 55.62-55.134 55.62c-2.31 0-4.577-.149-6.804-.43a50.8 50.8 0 0 1-40.407 20.082c-15.02 0-28.536-6.495-37.94-16.892a47.3 47.3 0 0 1-27.144 8.52c-26.31 0-47.636-21.326-47.636-47.636c0-18.49 10.536-34.52 25.867-42.423a47.8 47.8 0 0 1-1.378-11.455c0-26.31 21.326-47.636 47.636-47.636c13.791 0 26.216 5.865 34.987 15.289"
+        />
+      </svg>
+    )
+  }
+
+  // OFFICIAL PIPEDRIVE VECTOR SVG
+  if (id.includes("pipedrive")) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={`shrink-0 ${className}`}>
+        <circle cx="12" cy="12" r="11" fill="#040926" />
+        <path d="M8.5 5.5h4.2a3.8 3.8 0 0 1 3.8 3.8c0 2.1-1.7 3.8-3.8 3.8H11v5.4H8.5V5.5zm2.5 5.2h1.7a1.4 1.4 0 0 0 1.4-1.4 1.4 1.4 0 0 0-1.4-1.4H11v2.8z" fill="#28A745" />
+      </svg>
+    )
+  }
+
+  // OFFICIAL FRESHDESK VECTOR SVG
+  if (id.includes("freshdesk")) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={`shrink-0 ${className}`}>
+        <rect width="24" height="24" rx="6" fill="#00B8D9" />
+        <path d="M12 4a8 8 0 0 0-8 8c0 2.21.895 4.21 2.343 5.657L5 20l3.343-1.343A7.95 7.95 0 0 0 12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8zm-3 7a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm6 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" fill="#FFFFFF" />
       </svg>
     )
   }
@@ -223,12 +388,13 @@ export function AppIcon({ appId, appName, className = "", size = 24 }: AppIconPr
 
   // Use official CDN SVG logo if brand is recognized and imgError is false
   if (brand && !imgError) {
+    const isDarkInvert = brand.color === "000000" || brand.color === "181717" || brand.color === "262627" || brand.color === "040926"
     return (
       <img
         src={`https://cdn.simpleicons.org/${brand.slug}/${brand.color}`}
         alt={brand.label}
         style={{ width: `${size}px`, height: `${size}px` }}
-        className={`shrink-0 object-contain ${className}`}
+        className={`shrink-0 object-contain ${isDarkInvert ? "dark:invert" : ""} ${className}`}
         onError={() => setImgError(true)}
         loading="eager"
       />
