@@ -473,12 +473,27 @@ export default function SettingsPage() {
   const [savedToast, setSavedToast] = useState(false)
   const [isSavingProfile, setIsSavingProfile] = useState(false)
 
-  // Load avatar from localStorage if available
+  // Load avatar and profile details from localStorage if available
   useEffect(() => {
     try {
       const savedAvatar = localStorage.getItem("user_profile_avatar")
       if (savedAvatar) {
         setAvatarImage(savedAvatar)
+      }
+      const savedFirst = localStorage.getItem("user_profile_firstName")
+      if (savedFirst) setFirstName(savedFirst)
+      const savedLast = localStorage.getItem("user_profile_lastName")
+      if (savedLast) setLastName(savedLast)
+      const savedEmail = localStorage.getItem("user_profile_email")
+      if (savedEmail) setEmail(savedEmail)
+      const savedCompany = localStorage.getItem("user_profile_company")
+      if (savedCompany) setCompany(savedCompany)
+      const savedRole = localStorage.getItem("user_profile_role")
+      if (savedRole) setProfileRole(savedRole)
+      const savedTz = localStorage.getItem("user_profile_timezone")
+      if (savedTz) setTimezone(savedTz)
+      if (savedFirst || savedLast) {
+        setName(`${savedFirst || ""} ${savedLast || ""}`.trim())
       }
     } catch {
       // ignore
@@ -966,6 +981,16 @@ export default function SettingsPage() {
     setIsSavingProfile(true)
     const fullName = `${firstName} ${lastName}`.trim() || firstName
     setName(fullName)
+    try {
+      localStorage.setItem("user_profile_firstName", firstName)
+      localStorage.setItem("user_profile_lastName", lastName)
+      localStorage.setItem("user_profile_email", email)
+      localStorage.setItem("user_profile_company", company)
+      localStorage.setItem("user_profile_role", profileRole)
+      localStorage.setItem("user_profile_timezone", timezone)
+    } catch {
+      // ignore
+    }
     setTimeout(() => {
       setIsSavingProfile(false)
       setSavedToast(true)

@@ -28,7 +28,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // For Auth & Onboarding: Render standalone, full-screen canvas without App Sidebar or Navbar
   if (isAuthRoute) {
     return (
-      <div className="flex-1 h-full w-full overflow-y-auto bg-slate-50 text-slate-900 transition-colors">
+      <div className="flex-1 h-full w-full overflow-y-auto bg-slate-50 dark:bg-[#09090b] text-slate-900 dark:text-slate-100 transition-colors">
         {children}
       </div>
     )

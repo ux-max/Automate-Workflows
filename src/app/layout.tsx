@@ -14,30 +14,24 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="h-full overflow-hidden" suppressHydrationWarning>
+    <html lang="en" className="h-full overflow-hidden dark" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                const path = window.location.pathname;
-                const isAuth = /^\\/(login|signup|onboarding|forgot-password|verify-email)/.test(path);
-                if (!isAuth) {
-                  const storedTheme = localStorage.getItem('automate_theme');
-                  if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.classList.add('dark');
-                  } else {
-                    document.documentElement.classList.remove('dark');
-                  }
-                } else {
+                const storedTheme = localStorage.getItem('automate_theme');
+                if (storedTheme === 'light') {
                   document.documentElement.classList.remove('dark');
+                } else {
+                  document.documentElement.classList.add('dark');
                 }
               } catch (e) {}
             `,
           }}
         />
       </head>
-      <body suppressHydrationWarning className="h-screen w-screen overflow-hidden bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex font-sans antialiased">
+      <body suppressHydrationWarning className="h-screen w-screen overflow-hidden bg-white dark:bg-[#09090b] text-slate-900 dark:text-slate-100 flex font-sans antialiased">
         <ThemeProvider>
           <AppShell>{children}</AppShell>
         </ThemeProvider>

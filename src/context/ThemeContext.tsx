@@ -24,34 +24,13 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 const STORAGE_KEY = "automate_theme"
 
-const AUTH_ROUTES = [
-  "/login",
-  "/signup",
-  "/onboarding",
-  "/forgot-password",
-  "/verify-email"
-]
-
-function isAuthPath(pathname?: string | null): boolean {
-  if (!pathname) return false
-  return AUTH_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`))
-}
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light")
+  const [theme, setThemeState] = useState<Theme>("dark")
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
-  const isAuth = isAuthPath(pathname)
 
   const applyTheme = (newTheme: Theme) => {
     const root = document.documentElement
-    const currentPath = typeof window !== "undefined" ? window.location.pathname : pathname
-    // If currently on any Auth or Onboarding route, NEVER apply dark theme
-    if (isAuthPath(currentPath)) {
-      root.classList.remove("dark")
-      return
-    }
-
     if (newTheme === "dark") {
       root.classList.add("dark")
     } else {
@@ -60,38 +39,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    // Read stored preference or fall back to system dark mode preference
+    // Read stored preference: default to dark unless explicitly saved as light
     const stored = localStorage.getItem(STORAGE_KEY) as Theme | null
-    let initialTheme: Theme = "light"
-    if (stored === "light" || stored === "dark") {
-      initialTheme = stored
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      initialTheme = "dark"
-    } else {
-      initialTheme = "light"
-    }
+    const initialTheme: Theme = stored === "light" ? "light" : "dark"
     setThemeState(initialTheme)
-
-    if (isAuth) {
-      document.documentElement.classList.remove("dark")
-    } else {
-      applyTheme(initialTheme)
-    }
+    applyTheme(initialTheme)
     setMounted(true)
   }, [])
 
-  // Whenever navigating between routes:
-  // - If entering Login/Signup/Onboarding: ensure light mode is strictly enforced
-  // - If exiting back to dashboard/editor/workflows: automatically restore the user's active theme
+  // Whenever navigating between routes or theme changes, ensure root class matches current active theme
   useEffect(() => {
     if (!mounted) return
-
-    if (isAuth) {
-      document.documentElement.classList.remove("dark")
-    } else {
-      applyTheme(theme)
-    }
-  }, [pathname, isAuth, theme, mounted])
+    applyTheme(theme)
+  }, [pathname, theme, mounted])
 
   const switchThemeWithShutter = (newTheme: Theme, event?: ThemeToggleEvent) => {
     if (newTheme === theme) return
