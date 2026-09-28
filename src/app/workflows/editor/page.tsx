@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useRef, Suspense } from "react"
+import React, { useState, useEffect, useRef, useMemo, Suspense } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import {
@@ -76,6 +76,8 @@ import { useTheme } from "@/context/ThemeContext"
 import { getDeveloperApps, developerAppsToAppConnections } from "@/lib/developer-data"
 import { AIWorkflowAssistant } from "@/components/workflow/AIWorkflowAssistant"
 import { GeneratedWorkflowPlan, ChatMessage } from "@/lib/ai-workflow-generator"
+import { CustomActionItem } from "@/lib/custom-action-types"
+import { getCustomActions } from "@/lib/custom-action-storage"
 
 function WorkflowEditorContent() {
   const { theme } = useTheme()
@@ -112,6 +114,24 @@ function WorkflowEditorContent() {
       setDevApps(developerAppsToAppConnections(getDeveloperApps()))
     }
   }, [])
+
+  // Action Builder Custom Actions Integration (Live Private Actions)
+  const [customActionsList, setCustomActionsList] = useState<any[]>([])
+
+  const refreshCustomActions = React.useCallback(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const actions = getCustomActions()
+        setCustomActionsList(actions.filter((a) => a.status === "live"))
+      } catch (e) {
+        console.error("Failed to load custom actions in editor", e)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    refreshCustomActions()
+  }, [refreshCustomActions])
 
   const ALL_AVAILABLE_APPS = React.useMemo(() => {
     return [...MVP_APPS, ...devApps]
@@ -804,6 +824,12 @@ function WorkflowEditorContent() {
   const [stepDrawerOpen, setStepDrawerOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<"setup" | "connections">("setup")
   const [copiedWebhook, setCopiedWebhook] = useState(false)
+
+  useEffect(() => {
+    if (appCategoryFilter === "Private Actions" || stepDrawerOpen) {
+      refreshCustomActions()
+    }
+  }, [appCategoryFilter, stepDrawerOpen, refreshCustomActions])
   const [appSearchQuery, setAppSearchQuery] = useState("")
   const [responseFormat, setResponseFormat] = useState<"simple" | "advance" | "raw">("simple")
 
@@ -854,6 +880,21 @@ function WorkflowEditorContent() {
   const activeRoute = selectedStep?.routes?.find((r: any) => r.id === activeRouteId)
   const effectiveAppId = activeRoute ? activeRoute.appId : selectedStep?.appId
   const selectedApp = ALL_AVAILABLE_APPS.find((a) => a.id === effectiveAppId)
+
+  const isStepPrivateAction = (s?: WorkflowStep | null) => {
+    if (!s) return false
+    return Boolean(
+      (s as any).isCustomAction ||
+      (s as any).customActionId ||
+      customActionsList.some(
+        (ca) =>
+          ca.actionId === s.eventId ||
+          ca.id === (s as any).customActionId ||
+          ca.actionName.toLowerCase() === (s.eventName || "").toLowerCase()
+      )
+    )
+  }
+  const isSelectedStepPrivateAction = isStepPrivateAction(selectedStep)
 
   const activeStepConnection = userConnections.find(
     (c) => c.id === selectedStep?.connectionId
@@ -3456,9 +3497,23 @@ function WorkflowEditorContent() {
     if (appCategoryFilter === "Utilities") return matchesSearch && app.category === "Utilities"
     if (appCategoryFilter === "SaaS Apps") return matchesSearch && app.category !== "Flow Control" && app.category !== "Utilities" && !(app as any).isDeveloperApp
     if (appCategoryFilter === "My Custom Apps (Dev)") return matchesSearch && (app as any).isDeveloperApp
+    if (appCategoryFilter === "Private Actions") return false
 
     return matchesSearch
   })
+
+  const filteredCustomActions = useMemo(() => {
+    const q = appSearchQuery.toLowerCase().trim()
+    return customActionsList
+      .filter((ca) => ca.status === "live")
+      .filter((ca) => {
+        if (!q) return true
+        return (
+          ca.actionName.toLowerCase().includes(q) ||
+          ca.description.toLowerCase().includes(q)
+        )
+      })
+  }, [customActionsList, appSearchQuery])
 
   const isConfiguringFields = !!selectedStep && (isAuthOptionalApp || (isStepConnected && connectionMode === "existing"))
   const showDrawerFooter = activeTab === "connections" && isConfiguringFields
@@ -4246,6 +4301,10 @@ function WorkflowEditorContent() {
                         <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-800 shrink-0">
                           <Plus className="h-5 w-5" />
                         </div>
+                      ) : isStepPrivateAction(step) ? (
+                        <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200/80 dark:border-blue-900/60 shrink-0 shadow-2xs">
+                          <Zap className="h-5 w-5 text-blue-600 dark:text-blue-400 fill-blue-500/20" />
+                        </div>
                       ) : (
                         <AppIcon appId={step.appId} appName={step.appName} size={40} />
                       )}
@@ -4254,7 +4313,13 @@ function WorkflowEditorContent() {
                           {idx + 1}. {step.type === "trigger" ? "Trigger" : "Action"}
                         </span>
                         <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-tight flex items-center space-x-2">
-                          <span>{isUnconfigured ? (step.type === "trigger" ? "Select Trigger App" : "Select Action App") : step.appName}</span>
+                          <span>{isUnconfigured ? (step.type === "trigger" ? "Select Trigger App" : "Select Action App") : isStepPrivateAction(step) ? (step.eventName || step.appName) : step.appName}</span>
+                          {isStepPrivateAction(step) && (
+                            <span className="inline-flex items-center space-x-1 text-[8px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/90 dark:border-emerald-800 px-1 py-0.2 rounded">
+                              <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+                              <span>Live</span>
+                            </span>
+                          )}
                           {step.appId === "router" && (
                             <Badge variant="blue" className="text-[9px] font-bold px-1.5 py-0">Router</Badge>
                           )}
@@ -4266,7 +4331,7 @@ function WorkflowEditorContent() {
                           )}
                         </h4>
                         <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate max-w-[150px]">
-                          {isUnconfigured ? "Click to choose app from catalog" : step.eventName}
+                          {isUnconfigured ? "Click to choose app from catalog" : isStepPrivateAction(step) ? "Private Action" : step.eventName}
                         </p>
                       </div>
                     </div>
@@ -4751,6 +4816,10 @@ function WorkflowEditorContent() {
                         <div className="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-800 shadow-xs">
                           <Plus className="h-6 w-6" />
                         </div>
+                      ) : isStepPrivateAction(step) ? (
+                        <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200/80 dark:border-blue-900/60 shadow-2xs">
+                          <Zap className="h-7 w-7 text-blue-600 dark:text-blue-400 fill-blue-500/20" />
+                        </div>
                       ) : (
                         <HorizontalAppSquircle
                           appId={step.appId}
@@ -4766,10 +4835,10 @@ function WorkflowEditorContent() {
                           {idx + 1}. {step.type === "trigger" ? "Trigger" : "Action"}
                         </span>
                         <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 tracking-tight leading-snug truncate">
-                          {isUnconfigured ? (step.type === "trigger" ? "Select Trigger" : "Select Action") : step.appName}
+                          {isUnconfigured ? (step.type === "trigger" ? "Select Trigger" : "Select Action") : isStepPrivateAction(step) ? (step.eventName || step.appName) : step.appName}
                         </h4>
                         <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate w-full">
-                          {isUnconfigured ? "Click to choose" : step.eventName}
+                          {isUnconfigured ? "Click to choose" : isStepPrivateAction(step) ? "Private Action" : step.eventName}
                         </p>
                       </div>
 
@@ -4998,16 +5067,24 @@ function WorkflowEditorContent() {
                 {/* Header with App Info & Back Button */}
                 <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/90 dark:border-slate-800 rounded-2xl">
                   <div className="flex items-center space-x-3.5">
-                    <AppIcon
-                      appId={selectedStep.appId === "router" && currentTargetedBranch ? "filter" : (effectiveAppId || selectedStep.appId)}
-                      appName={selectedStep.appId === "router" && currentTargetedBranch ? "Filter" : selectedStep.appName}
-                      size={40}
-                    />
+                    {isSelectedStepPrivateAction ? (
+                      <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-900/60 flex items-center justify-center shrink-0 shadow-2xs">
+                        <Zap className="h-5 w-5 text-blue-600 dark:text-blue-400 fill-blue-500/20" />
+                      </div>
+                    ) : (
+                      <AppIcon
+                        appId={selectedStep.appId === "router" && currentTargetedBranch ? "filter" : (effectiveAppId || selectedStep.appId)}
+                        appName={selectedStep.appId === "router" && currentTargetedBranch ? "Filter" : selectedStep.appName}
+                        size={40}
+                      />
+                    )}
                     <div>
                       <div className="flex items-center space-x-2">
                         <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-tight">
                           {selectedStep.appId === "router" && currentTargetedBranch
                             ? `${currentTargetedBranch.name} • Filter Rules`
+                            : isSelectedStepPrivateAction
+                            ? `${selectedStep.eventName || "Private Action"} Connections`
                             : `${selectedStep.appName} Connections`}
                         </h4>
                         {selectedStep.appId === "router" && currentTargetedBranch ? (
@@ -5383,8 +5460,7 @@ function WorkflowEditorContent() {
                     )}
                   </>
                 )}
-              </div>
-            ) : (
+              </div>) : (
               <>
                 {/* 2-STEP WIZARD VIEW 1: APP SELECTION GRID */}
                 {drawerStep === "app_select" && (
@@ -5395,216 +5471,377 @@ function WorkflowEditorContent() {
                       Step 1: Choose App
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      Select an app from SaaS integrations, Flow Control, or Utilities
+                      {appCategoryFilter === "Private Actions"
+                        ? "Select from custom integrations deployed via Action Builder"
+                        : "Select an app from SaaS integrations, Flow Control, or Utilities"}
                     </p>
                   </div>
                   <span className="text-[11px] text-slate-400 dark:text-slate-400 font-medium bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full">
-                    {filteredApps.length} Apps available
+                    {appCategoryFilter === "Private Actions"
+                      ? `${filteredCustomActions.length} Private Actions available`
+                      : `${filteredApps.length} Apps available`}
                   </span>
                 </div>
 
                 {/* Category Pills Bar */}
-                <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 scrollbar-none">
-                  {["All", "Flow Control", "Utilities", "SaaS Apps", "My Custom Apps (Dev)"].map((cat) => (
+                <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 no-scrollbar">
+                  {["All", "Flow Control", "Utilities", "SaaS Apps", "My Custom Apps (Dev)", "Private Actions"].map((cat) => (
                     <button
                       key={cat}
+                      type="button"
                       onClick={() => setAppCategoryFilter(cat)}
-                      className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                      className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center space-x-1.5 ${
                         appCategoryFilter === cat
                           ? "bg-blue-600 text-white shadow-xs"
                           : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                       }`}
                     >
-                      {cat}
+                      <span>{cat}</span>
+                      {cat === "Private Actions" && customActionsList.filter((ca) => ca.status === "live").length > 0 && (
+                        <span
+                          className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-medium ${
+                            appCategoryFilter === cat
+                              ? "bg-white/20 text-white"
+                              : "bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800"
+                          }`}
+                        >
+                          {customActionsList.filter((ca) => ca.status === "live").length}
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>
 
-                {/* App Search Bar */}
-                <div className="relative flex items-center">
-                  <Search className="h-4 w-4 text-slate-400 absolute left-3" />
-                  <Input
-                    type="text"
-                    placeholder="Search app by name or category..."
-                    value={appSearchQuery}
-                    onChange={(e) => setAppSearchQuery(e.target.value)}
-                    className="pl-9 text-xs bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 text-slate-800 dark:text-slate-200 h-9"
-                  />
-                  {appSearchQuery && (
-                    <button
-                      onClick={() => setAppSearchQuery("")}
-                      className="absolute right-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
+                {/* Search Bar & Quick Action Builder Link */}
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1 flex items-center">
+                    <Search className="h-4 w-4 text-slate-400 absolute left-3" />
+                    <Input
+                      type="text"
+                      placeholder={
+                        appCategoryFilter === "Private Actions"
+                          ? "Search live private actions..."
+                          : "Search app by name or category..."
+                      }
+                      value={appSearchQuery}
+                      onChange={(e) => setAppSearchQuery(e.target.value)}
+                      className="pl-9 text-xs bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 text-slate-800 dark:text-slate-200 h-9"
+                    />
+                    {appSearchQuery && (
+                      <button
+                        onClick={() => setAppSearchQuery("")}
+                        className="absolute right-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  {appCategoryFilter === "Private Actions" && (
+                    <Link href="/custom-actions">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs font-semibold h-9 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 space-x-1.5 hover:text-blue-600 cursor-pointer shrink-0"
+                      >
+                        <Sparkles className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+                        <span>Action Builder</span>
+                      </Button>
+                    </Link>
                   )}
                 </div>
 
-                {/* Responsive Grid of App Cards - Spans across the whole screen / drawer without cutoff */}
-                <div
-                  className={cn(
-                    "grid gap-4 w-full pt-1 pb-8",
-                    isDrawerMaximized
-                      ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
-                      : "grid-cols-2 sm:grid-cols-3"
-                  )}
-                >
-                  {filteredApps.map((app) => {
-                    const isSelected = selectedStep.appId === app.id
-                    
-                    // Check if selectedStep is at the end of its respective execution chain (main workflow, Route A, Route B, or nested branch)
-                    let isLastStepOfChain = false
-                    let chainHasRouter = false
+                {appCategoryFilter === "Private Actions" && filteredCustomActions.length === 0 ? (
+                  <div className="p-8 text-center bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl space-y-4 shadow-2xs my-2">
+                    <div className="h-12 w-12 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-900 flex items-center justify-center mx-auto shadow-2xs">
+                      <Zap className="h-6 w-6 stroke-[2]" />
+                    </div>
+                    <div className="space-y-1 max-w-sm mx-auto">
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                        {customActionsList.length === 0 ? "No Live Private Actions Yet" : "No Matching Private Actions"}
+                      </h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                        {customActionsList.length === 0
+                          ? "Build custom API actions with AI in the Action Builder. Once deployed live, they will appear here ready to use in your workflow."
+                          : "Try adjusting your search query."}
+                      </p>
+                    </div>
+                    {customActionsList.length === 0 && (
+                      <div className="pt-1">
+                        <Link href="/custom-actions">
+                          <Button
+                            size="sm"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs space-x-1.5 shadow-2xs cursor-pointer"
+                          >
+                            <Sparkles className="h-3.5 w-3.5" />
+                            <span>Open Action Builder</span>
+                            <ExternalLink className="h-3 w-3 ml-0.5 opacity-80" />
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* Responsive Grid of App Cards - Spans across the whole screen / drawer without cutoff */
+                  <div
+                    className={cn(
+                      "grid gap-4 w-full pt-1 pb-8",
+                      isDrawerMaximized
+                        ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+                        : "grid-cols-2 sm:grid-cols-3"
+                    )}
+                  >
+                    {appCategoryFilter === "Private Actions"
+                      ? filteredCustomActions.map((ca: CustomActionItem) => {
+                          const isSelected =
+                            selectedStep.eventId === ca.actionId ||
+                            (selectedStep as any).customActionId === ca.id
 
-                    const rootIndex = steps.findIndex((s) => s.id === selectedStep.id)
-                    if (rootIndex !== -1) {
-                      isLastStepOfChain = rootIndex === steps.length - 1 && steps.length > 1
-                      chainHasRouter = steps.some((s) => s.appId === "router" && s.id !== selectedStep.id)
-                    } else {
-                      const rAIndex = routeASteps.findIndex((s) => s.id === selectedStep.id)
-                      if (rAIndex !== -1) {
-                        isLastStepOfChain = rAIndex === routeASteps.length - 1
-                        chainHasRouter = routeASteps.some((s) => s.appId === "router" && s.id !== selectedStep.id)
-                      } else {
-                        const rBIndex = routeBSteps.findIndex((s) => s.id === selectedStep.id)
-                        if (rBIndex !== -1) {
-                          isLastStepOfChain = rBIndex === routeBSteps.length - 1
-                          chainHasRouter = routeBSteps.some((s) => s.appId === "router" && s.id !== selectedStep.id)
+                          return (
+                            <div
+                              key={ca.id}
+                              draggable
+                              onDragStart={(e) => {
+                                e.dataTransfer.setData(
+                                  "application/json",
+                                  JSON.stringify({ type: "custom-action", appId: ca.appId, actionId: ca.actionId, actionName: ca.actionName })
+                                )
+                                e.dataTransfer.effectAllowed = "copy"
+                              }}
+                              onClick={() => {
+                                const existingConn = userConnections.find((c) => c.appId === ca.appId)
+                                updateSelectedStep((s) => ({
+                                  ...s,
+                                  appId: ca.appId,
+                                  appName: ca.appName,
+                                  eventId: ca.actionId,
+                                  eventName: ca.actionName,
+                                  connectionId: existingConn ? existingConn.id : undefined,
+                                  isNewStep: false,
+                                  status: "configured",
+                                  isCustomAction: true,
+                                  customActionId: ca.id
+                                }))
+                                setDrawerStep("setup_details")
+                                setIsDrawerMaximized(false)
+                                showToast(`Connected private action "${ca.actionName}"! Configure its parameters below.`)
+                              }}
+                              className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex flex-col items-center justify-center text-center space-y-2.5 relative min-h-[135px] ${
+                                isSelected
+                                  ? "border-blue-600 bg-blue-50/70 dark:bg-blue-950/60 shadow-sm ring-2 ring-blue-100 dark:ring-blue-950"
+                                  : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-xs bg-white dark:bg-slate-900"
+                              }`}
+                            >
+                              <div className="flex items-center justify-center h-14 w-14 my-0.5">
+                                <div className="h-14 w-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-900/60 flex items-center justify-center shadow-2xs">
+                                  <Zap className="h-7 w-7 text-blue-600 dark:text-blue-400 fill-blue-500/20" />
+                                </div>
+                              </div>
+
+                              <div className="space-y-0.5 w-full px-1">
+                                <h5
+                                  className={`text-xs font-bold leading-tight line-clamp-2 ${
+                                    isSelected ? "text-blue-900 dark:text-blue-300 font-bold" : "text-slate-800 dark:text-slate-100"
+                                  }`}
+                                  title={ca.actionName}
+                                >
+                                  {ca.actionName}
+                                </h5>
+                                <span className="text-[9px] text-slate-500 dark:text-slate-400 block font-medium">
+                                  Private Action
+                                </span>
+                                <span className="inline-flex items-center space-x-1 text-[9px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/90 dark:border-emerald-800 px-1.5 py-0.5 rounded shadow-2xs mt-1">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                  <span>Live</span>
+                                </span>
+                              </div>
+
+                              {isSelected && (
+                                <div className="absolute top-2.5 right-2.5 h-4 w-4 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                                  <Check className="h-3 w-3 stroke-[3]" />
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })
+                      : filteredApps.map((app) => {
+                        const isSelected = selectedStep.appId === app.id
+                        
+                        // Check if selectedStep is at the end of its respective execution chain (main workflow, Route A, Route B, or nested branch)
+                        let isLastStepOfChain = false
+                        let chainHasRouter = false
+
+                        const rootIndex = steps.findIndex((s) => s.id === selectedStep.id)
+                        if (rootIndex !== -1) {
+                          isLastStepOfChain = rootIndex === steps.length - 1 && steps.length > 1
+                          chainHasRouter = steps.some((s) => s.appId === "router" && s.id !== selectedStep.id)
                         } else {
-                          for (const bList of Object.values(branchSteps)) {
-                            const bIdx = bList.findIndex((s) => s.id === selectedStep.id)
-                            if (bIdx !== -1) {
-                              isLastStepOfChain = bIdx === bList.length - 1
-                              chainHasRouter = bList.some((s) => s.appId === "router" && s.id !== selectedStep.id)
-                              break
+                          const rAIndex = routeASteps.findIndex((s) => s.id === selectedStep.id)
+                          if (rAIndex !== -1) {
+                            isLastStepOfChain = rAIndex === routeASteps.length - 1
+                            chainHasRouter = routeASteps.some((s) => s.appId === "router" && s.id !== selectedStep.id)
+                          } else {
+                            const rBIndex = routeBSteps.findIndex((s) => s.id === selectedStep.id)
+                            if (rBIndex !== -1) {
+                              isLastStepOfChain = rBIndex === routeBSteps.length - 1
+                              chainHasRouter = routeBSteps.some((s) => s.appId === "router" && s.id !== selectedStep.id)
+                            } else {
+                              for (const bList of Object.values(branchSteps)) {
+                                const bIdx = bList.findIndex((s) => s.id === selectedStep.id)
+                                if (bIdx !== -1) {
+                                  isLastStepOfChain = bIdx === bList.length - 1
+                                  chainHasRouter = bList.some((s) => s.appId === "router" && s.id !== selectedStep.id)
+                                  break
+                                }
+                              }
                             }
                           }
                         }
-                      }
-                    }
 
-                    const isExistingConfiguredNode = selectedStep.status === "configured" || (!selectedStep.isNewStep && selectedStep.appId !== "")
-                    const isRouterBlocked = app.id === "router" && (!isLastStepOfChain || chainHasRouter || isExistingConfiguredNode)
+                        const isExistingConfiguredNode = selectedStep.status === "configured" || (!selectedStep.isNewStep && selectedStep.appId !== "")
+                        const isRouterBlocked = app.id === "router" && (!isLastStepOfChain || chainHasRouter || isExistingConfiguredNode)
 
-                    return (
-                      <div
-                        key={app.id}
-                        draggable
-                        onDragStart={(e) => {
-                          e.dataTransfer.setData("application/json", JSON.stringify({ type: "app", appId: app.id, appName: app.name }))
-                          e.dataTransfer.effectAllowed = "copy"
-                        }}
-                        onClick={() => {
-                          if (app.id === "router" && isRouterBlocked) {
-                            showToast("Router Node can only be added at the end of a workflow or route branch.", "warning")
-                            return
-                          }
+                        return (
+                          <div
+                            key={app.id}
+                            draggable
+                            onDragStart={(e) => {
+                              e.dataTransfer.setData("application/json", JSON.stringify({ type: "app", appId: app.id, appName: app.name }))
+                              e.dataTransfer.effectAllowed = "copy"
+                            }}
+                            onClick={() => {
+                              if (app.id === "router" && isRouterBlocked) {
+                                showToast("Router Node can only be added at the end of a workflow or route branch.", "warning")
+                                return
+                              }
 
-                          const isTrigger = selectedStep.type === "trigger" || selectedStepId === steps[0]?.id
-                          const firstEvent = isTrigger ? (app.triggers[0] || app.actions[0]) : (app.actions[0] || app.triggers[0])
-                          const defaultRoutes = app.id === "router" ? [
-                            { id: `rt_1_${Date.now()}`, name: "Route A", appId: "filter", appName: "Filter", eventId: "apply_filter_rules", eventName: "Filter Values (Route A)" },
-                            { id: `rt_2_${Date.now()}`, name: "Route B", appId: "filter", appName: "Filter", eventId: "apply_filter_rules", eventName: "Filter Values (Route B)" }
-                          ] : undefined
+                              const isTrigger = selectedStep.type === "trigger" || selectedStepId === steps[0]?.id
+                              const firstEvent = isTrigger ? (app.triggers[0] || app.actions[0]) : (app.actions[0] || app.triggers[0])
+                              const defaultRoutes = app.id === "router" ? [
+                                { id: `rt_1_${Date.now()}`, name: "Route A", appId: "filter", appName: "Filter", eventId: "apply_filter_rules", eventName: "Filter Values (Route A)" },
+                                { id: `rt_2_${Date.now()}`, name: "Route B", appId: "filter", appName: "Filter", eventId: "apply_filter_rules", eventName: "Filter Values (Route B)" }
+                              ] : undefined
 
-                          const existingConn = userConnections.find((c) => c.appId === app.id)
+                              const existingConn = userConnections.find((c) => c.appId === app.id)
 
-                          if (app.id === "router") {
-                            setRouterBranchKeys((prev) => ({
-                              ...prev,
-                              [selectedStep.id]: prev[selectedStep.id] || ["a", "b"]
-                            }))
-                            updateSelectedStep((s) => ({
-                              ...s,
-                              appId: app.id,
-                              appName: app.name,
-                              eventId: firstEvent?.id || "",
-                              eventName: firstEvent?.name || (isTrigger ? "Catch Webhook" : "Perform Action"),
-                              connectionId: existingConn ? existingConn.id : (app.authType === "Internal SSO" ? `conn_${app.id}` : undefined),
-                              routes: defaultRoutes,
-                              isNewStep: false,
-                              status: "configured"
-                            }))
-                            setStepDrawerOpen(false)
-                            setActiveRouteId(null)
-                            showToast("Router node added with branches. Click on any Filter node to configure its rules.")
-                            return
-                          }
+                              if (app.id === "router") {
+                                setRouterBranchKeys((prev) => ({
+                                  ...prev,
+                                  [selectedStep.id]: prev[selectedStep.id] || ["a", "b"]
+                                }))
+                                updateSelectedStep((s) => ({
+                                  ...s,
+                                  appId: app.id,
+                                  appName: app.name,
+                                  eventId: firstEvent?.id || "",
+                                  eventName: firstEvent?.name || (isTrigger ? "Catch Webhook" : "Perform Action"),
+                                  connectionId: existingConn ? existingConn.id : (app.authType === "Internal SSO" ? `conn_${app.id}` : undefined),
+                                  routes: defaultRoutes,
+                                  isNewStep: false,
+                                  status: "configured"
+                                }))
+                                setStepDrawerOpen(false)
+                                setActiveRouteId(null)
+                                showToast("Router node added with branches. Click on any Filter node to configure its rules.")
+                                return
+                              }
 
-                          updateSelectedStep((s) => ({
-                            ...s,
-                            appId: app.id,
-                            appName: app.name,
-                            eventId: firstEvent?.id || "",
-                            eventName: firstEvent?.name || (isTrigger ? "Catch Webhook" : "Perform Action"),
-                            connectionId: existingConn ? existingConn.id : (app.authType === "Internal SSO" ? `conn_${app.id}` : undefined),
-                            routes: defaultRoutes,
-                            isNewStep: false,
-                            status: "configured"
-                          }))
-                          setDrawerStep("setup_details")
-                          setIsDrawerMaximized(false)
-                          if (isTrigger || selectedStep.type === "trigger") {
-                            setAiPanelMode("minimized")
-                          }
-                        }}
-                        className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex flex-col items-center justify-center text-center space-y-2.5 relative min-h-[135px] ${
-                          isSelected
-                            ? "border-blue-600 bg-blue-50/70 dark:bg-blue-950/60 shadow-sm ring-2 ring-blue-100 dark:ring-blue-950"
-                            : isRouterBlocked
-                            ? "border-slate-200 dark:border-slate-800 hover:border-amber-300 dark:hover:border-amber-600 hover:bg-amber-50/20 dark:hover:bg-amber-950/20 bg-white dark:bg-slate-900"
-                            : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-xs bg-white dark:bg-slate-900"
-                        }`}
-                        title={isRouterBlocked ? "Router Node can only be added at the end of a workflow or route branch." : undefined}
-                      >
-                        <div className="flex items-center justify-center h-14 w-14 my-0.5">
-                          <AppIcon appId={app.id} appName={app.name} size={56} />
-                        </div>
+                              updateSelectedStep((s) => ({
+                                ...s,
+                                appId: app.id,
+                                appName: app.name,
+                                eventId: firstEvent?.id || "",
+                                eventName: firstEvent?.name || (isTrigger ? "Catch Webhook" : "Perform Action"),
+                                connectionId: existingConn ? existingConn.id : (app.authType === "Internal SSO" ? `conn_${app.id}` : undefined),
+                                routes: defaultRoutes,
+                                isNewStep: false,
+                                status: "configured"
+                              }))
+                              setDrawerStep("setup_details")
+                              setIsDrawerMaximized(false)
+                              if (isTrigger || selectedStep.type === "trigger") {
+                                setAiPanelMode("minimized")
+                              }
+                            }}
+                            className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex flex-col items-center justify-center text-center space-y-2.5 relative min-h-[135px] ${
+                              isSelected
+                                ? "border-blue-600 bg-blue-50/70 dark:bg-blue-950/60 shadow-sm ring-2 ring-blue-100 dark:ring-blue-950"
+                                : isRouterBlocked
+                                ? "border-slate-200 dark:border-slate-800 hover:border-amber-300 dark:hover:border-amber-600 hover:bg-amber-50/20 dark:hover:bg-amber-950/20 bg-white dark:bg-slate-900"
+                                : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-xs bg-white dark:bg-slate-900"
+                            }`}
+                            title={isRouterBlocked ? "Router Node can only be added at the end of a workflow or route branch." : undefined}
+                          >
+                            <div className="flex items-center justify-center h-14 w-14 my-0.5">
+                              <AppIcon appId={app.id} appName={app.name} size={56} />
+                            </div>
 
-                        <div className="space-y-0.5">
-                          <h5 className={`text-xs font-bold leading-tight ${isSelected ? "text-blue-900 dark:text-blue-300 font-bold" : "text-slate-800 dark:text-slate-100"}`}>
-                            {app.name}
-                          </h5>
-                          <span className="text-[9px] text-slate-500 dark:text-slate-400 block font-medium">
-                            {app.category}
-                          </span>
-                          {(app as any).isDeveloperApp && (
-                            <span className="inline-block text-[9px] font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 border border-purple-200/90 dark:border-purple-800 px-1.5 py-0.5 rounded shadow-2xs mt-1">
-                              Private (Dev)
-                            </span>
-                          )}
-                          {isRouterBlocked && (
-                            <span className="inline-block text-[9px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 border border-amber-200/90 dark:border-amber-800 px-1.5 py-0.5 rounded shadow-2xs mt-1">
-                              End of branch only
-                            </span>
-                          )}
-                        </div>
+                            <div className="space-y-0.5">
+                              <h5 className={`text-xs font-bold leading-tight ${isSelected ? "text-blue-900 dark:text-blue-300 font-bold" : "text-slate-800 dark:text-slate-100"}`}>
+                                {app.name}
+                              </h5>
+                              <span className="text-[9px] text-slate-500 dark:text-slate-400 block font-medium">
+                                {app.category}
+                              </span>
+                              {(app as any).isDeveloperApp && (
+                                <span className="inline-block text-[9px] font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 border border-purple-200/90 dark:border-purple-800 px-1.5 py-0.5 rounded shadow-2xs mt-1">
+                                  Private (Dev)
+                                </span>
+                              )}
+                              {isRouterBlocked && (
+                                <span className="inline-block text-[9px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 border border-amber-200/90 dark:border-amber-800 px-1.5 py-0.5 rounded shadow-2xs mt-1">
+                                  End of branch only
+                                </span>
+                              )}
+                            </div>
 
-                        {isSelected && (
-                          <div className="absolute top-2.5 right-2.5 h-4 w-4 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-xs">
-                            <Check className="h-3 w-3 stroke-[3]" />
+                            {isSelected && (
+                              <div className="absolute top-2.5 right-2.5 h-4 w-4 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                                <Check className="h-3 w-3 stroke-[3]" />
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
+                        )
+                      })}
+                    </div>
+                )}
               </div>
             )}
 
             {/* 2-STEP WIZARD VIEW 2: CONFIGURE STEP DETAILS FORM */}
             {drawerStep === "setup_details" && (
               <div className="space-y-5 animate-in fade-in duration-200">
-                {/* Selected App Badge Header with ← Change App Button */}
+                {/* Selected App / Private Action Header with Change Action Button */}
                 <div className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 rounded-xl">
                   <div className="flex items-center space-x-3">
-                    <AppIcon appId={effectiveAppId || selectedStep.appId} appName={activeRoute ? activeRoute.appName : selectedStep.appName} size={36} />
+                    {isSelectedStepPrivateAction ? (
+                      <div className="h-9 w-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-900/60 flex items-center justify-center shrink-0 shadow-2xs">
+                        <Zap className="h-5 w-5 text-blue-600 dark:text-blue-400 fill-blue-500/20" />
+                      </div>
+                    ) : (
+                      <AppIcon appId={effectiveAppId || selectedStep.appId} appName={activeRoute ? activeRoute.appName : selectedStep.appName} size={36} />
+                    )}
                     <div>
-                      <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-100 leading-none">
-                        {activeRoute ? `${activeRoute.appName} (${activeRoute.name})` : selectedStep.appName}
-                      </h4>
+                      <div className="flex items-center space-x-2">
+                        <h4 className="text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight">
+                          {isSelectedStepPrivateAction
+                            ? (selectedStep.eventName || selectedStep.eventId)
+                            : activeRoute
+                            ? `${activeRoute.appName} (${activeRoute.name})`
+                            : selectedStep.appName}
+                        </h4>
+                        {isSelectedStepPrivateAction && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 flex items-center space-x-1">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span>Live in Workflows</span>
+                          </span>
+                        )}
+                      </div>
                       <span className="text-[10px] text-blue-600 dark:text-blue-400 font-medium">
-                        {activeRoute ? "Route Filter Setup" : selectedApp?.category || "Integration"}
+                        {isSelectedStepPrivateAction
+                          ? "Private Action"
+                          : activeRoute
+                          ? "Route Filter Setup"
+                          : selectedApp?.category || "Integration"}
                       </span>
                     </div>
                   </div>
@@ -5613,16 +5850,19 @@ function WorkflowEditorContent() {
                     variant="outline"
                     onClick={() => {
                       setDrawerStep("app_select")
+                      if (isSelectedStepPrivateAction) {
+                        setAppCategoryFilter("Private Actions")
+                      }
                     }}
-                    className="text-xs font-bold text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-950/40 space-x-1"
+                    className="text-xs font-bold text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-950/40 space-x-1 cursor-pointer"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" />
-                    <span>Change App</span>
+                    <span>{isSelectedStepPrivateAction ? "Change Action" : "Change App"}</span>
                   </Button>
                 </div>
 
-                {/* App Event Selection Dropdown (For All Apps including Flow Control & Utilities) */}
-                {selectedApp && (selectedApp.actions.length > 0 || selectedApp.triggers.length > 0) && (
+                {/* App Event Selection (Only for standard apps, Private Action is already set) */}
+                {!isSelectedStepPrivateAction && selectedApp && (selectedApp.actions.length > 0 || selectedApp.triggers.length > 0) && (
                   <div className="space-y-1.5 p-3.5 bg-blue-50/50 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/60 rounded-xl">
                     <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between">
                       <span>{selectedStep.type === "trigger" ? "Select App Trigger" : "Select App Action"}</span>
@@ -5740,7 +5980,7 @@ function WorkflowEditorContent() {
                                   ? `${selectedStep.appName} Webhook Ready`
                                   : isAuthOptionalApp
                                   ? `${selectedStep.appName} Ready`
-                                  : `${selectedStep.appName} Connected`}
+                                  : isSelectedStepPrivateAction ? `${selectedStep.eventName || "Private Action"} Connected` : `${selectedStep.appName} Connected`}
                               </h4>
                               <Badge variant="blue" className="text-[10px] font-bold py-0.5 px-2">
                                 {isUIWebhookTrigger ? "Webhook Mode" : "Active"}

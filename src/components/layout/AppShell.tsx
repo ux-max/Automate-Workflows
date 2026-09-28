@@ -59,13 +59,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Middle Content Area with Inside Corner Radius */}
         <main
           className={`flex-1 ${
-            pathname === "/chat" ? "overflow-hidden flex flex-col" : "overflow-y-auto"
+            pathname === "/chat" || pathname.startsWith("/custom-actions")
+              ? "overflow-hidden flex flex-col"
+              : "overflow-y-auto"
           } no-scrollbar min-h-0 bg-slate-100/70 dark:bg-slate-950 rounded-tl-[24px] border-t border-l border-slate-200/90 dark:border-slate-800/80 shadow-2xs transition-colors`}
         >
           <div
             key={pathname}
             className={`w-full min-h-0 animate-tab-fade ${
-              pathname === "/chat" ? "h-full flex flex-col flex-1" : "min-h-full flex flex-col flex-1"
+              pathname === "/chat" || pathname.startsWith("/custom-actions")
+                ? "h-full flex flex-col flex-1"
+                : "min-h-full flex flex-col flex-1"
             }`}
           >
             {children}

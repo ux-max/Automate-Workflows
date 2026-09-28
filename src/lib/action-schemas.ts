@@ -1,3 +1,5 @@
+import { getCustomActions } from "./custom-action-storage"
+
 export interface SchemaOption {
   value: string
   label: string
@@ -4035,6 +4037,39 @@ export function getAppActionSchema(
 ): AppActionSchema {
   const normAppId = appId?.toLowerCase() || ""
   const normEventId = (eventId || "").toLowerCase()
+
+  // 0. Check if action was created & deployed via Action Builder
+  if (typeof window !== "undefined") {
+    try {
+      const customActions = getCustomActions()
+      const matched = customActions.find(
+        (ca) =>
+          ca.status === "live" &&
+          (ca.actionId === normEventId ||
+            (ca.appId === normAppId && ca.actionId === normEventId) ||
+            ca.actionName.toLowerCase() === (eventName || "").toLowerCase() ||
+            `⚡ ${ca.actionName} [Custom AI]`.toLowerCase() === (eventName || "").toLowerCase())
+      )
+      if (matched) {
+        return {
+          appId: matched.appId,
+          actionId: matched.actionId,
+          actionName: matched.actionName,
+          description: matched.description,
+          fields: matched.fields,
+          sampleOutput: matched.testHistory?.[0]?.responsePayload || {
+            success: true,
+            app: matched.appName,
+            action: matched.actionName,
+            executed_at: new Date().toISOString()
+          }
+        }
+      }
+    } catch {
+      // Fallback to built-in schemas
+    }
+  }
+
   const customOp = (
     currentMappings?.transform_type ||
     currentMappings?.date_operation ||

@@ -20,7 +20,8 @@ import {
   Folder,
   SquarePen,
   Plus,
-  ExternalLink
+  ExternalLink,
+  History
 } from "lucide-react"
 import { useFolders } from "@/context/FoldersContext"
 import { FoldersSubSidebar } from "@/components/layout/FoldersSubSidebar"
@@ -118,6 +119,12 @@ export function Sidebar() {
     {
       href: "/history",
       label: "History",
+      icon: History,
+      animClass: "group-hover:-rotate-45 group-hover:scale-110"
+    },
+    {
+      href: "/custom-actions",
+      label: "Action Builder",
       icon: Zap,
       animClass: "group-hover:scale-125 group-hover:rotate-12"
     },

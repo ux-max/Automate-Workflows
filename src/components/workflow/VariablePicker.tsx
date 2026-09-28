@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { Search, X, Hash, Type, Calendar, Database, Check, ChevronRight, Variable } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -142,6 +143,12 @@ export function VariablePicker({
   title,
   subtitle,
 }: VariablePickerProps) {
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const [searchQuery, setSearchQuery] = React.useState("")
   const [selectedStepFilter, setSelectedStepFilter] = React.useState<string | null>(null)
   const [recentlySelected, setRecentlySelected] = React.useState<string | null>(null)
@@ -204,7 +211,7 @@ export function VariablePicker({
     })
   }, [priorSteps])
 
-  if (!isOpen) return null
+  if (!isOpen || !mounted) return null
 
   // Filter variables by search query
   const filteredSteps = stepsWithVariables
@@ -233,13 +240,15 @@ export function VariablePicker({
     }, 150)
   }
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150"
+      style={{ zIndex: 150 }}
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xl bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-150"
+        className="w-full max-w-xl bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-150 relative z-[151]"
+        style={{ zIndex: 151 }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -460,6 +469,7 @@ export function VariablePicker({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
