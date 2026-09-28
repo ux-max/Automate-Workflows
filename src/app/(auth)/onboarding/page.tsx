@@ -252,7 +252,7 @@ export default function OnboardingPage() {
             onClick={() => router.push("/chat")}
             className="text-xs font-semibold border-slate-200/90 dark:border-slate-800 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-white/70 dark:bg-slate-900/70 backdrop-blur-xs hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full px-3.5 h-8 shadow-2xs transition-all flex items-center gap-1.5 group cursor-pointer"
           >
-            <span>Skip Onboarding</span>
+            <span>Skip this step</span>
             <ArrowRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white group-hover:translate-x-0.5 transition-all" />
           </Button>
         </div>
@@ -336,11 +336,10 @@ export default function OnboardingPage() {
                     variant="ghost"
                     size="icon"
                     onClick={toggleVoiceInput}
-                    className={`h-8 w-8 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
-                      isListening
+                    className={`h-8 w-8 rounded-lg flex items-center justify-center transition-all cursor-pointer ${isListening
                         ? "bg-red-500 text-white hover:bg-red-600 animate-pulse shadow-sm"
                         : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
-                    }`}
+                      }`}
                     title={isListening ? "Listening... click to stop" : "Voice input"}
                     aria-label="Voice Input"
                   >
@@ -357,11 +356,10 @@ export default function OnboardingPage() {
                       type="button"
                       disabled={!inputText.trim() || isBuilding}
                       onClick={() => handlePromptSubmit()}
-                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 transition-all shadow-xs cursor-pointer ${
-                        inputText.trim() && !isBuilding
+                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center space-x-1.5 transition-all shadow-xs cursor-pointer ${inputText.trim() && !isBuilding
                           ? "bg-blue-600 hover:bg-blue-700 text-white active:scale-95 shadow-md shadow-blue-500/20"
                           : ""
-                      }`}
+                        }`}
                     >
                       {isBuilding ? (
                         <>
