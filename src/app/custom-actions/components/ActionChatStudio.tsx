@@ -94,6 +94,16 @@ const ACTION_SUGGESTION_CARDS = [
   }
 ]
 
+// Dynamic prompt ideas that cycle with a realistic typewriter typing effect
+const ACTION_PROMPT_TYPING_IDEAS = [
+  "Describe what you want to automate, e.g. Delete sheet in Google Sheets...",
+  "Paste a cURL command: curl -X POST https://api.crm.com/v1/contacts...",
+  "Create an action to send an ephemeral Slack alert to a user...",
+  "Create a custom webhook with HMAC SHA-256 signature...",
+  "Cancel an unfulfilled customer order in Shopify by order ID...",
+  "POST contact details to our internal CRM webhook..."
+]
+
 export function ActionChatStudio({
   action,
   onSendMessage,
@@ -108,6 +118,48 @@ export function ActionChatStudio({
   const [expandedThinking, setExpandedThinking] = useState<Record<string, boolean>>({})
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Dynamic Animated Typing State for Input Placeholder
+  const [ideaIndex, setIdeaIndex] = useState(0)
+  const [currentIdeaText, setCurrentIdeaText] = useState("")
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [cursorVisible, setCursorVisible] = useState(true)
+
+  // Cursor blink interval (blinks every 500ms)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCursorVisible((prev) => !prev)
+    }, 500)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Typewriter typing animation effect
+  useEffect(() => {
+    if (inputText) return // Pause animation when user starts typing
+
+    const fullText = ACTION_PROMPT_TYPING_IDEAS[ideaIndex]
+    const typingSpeed = isDeleting ? 16 : 34
+    const pauseDelay = isDeleting ? 350 : 3200
+
+    if (!isDeleting && currentIdeaText === fullText) {
+      const timeout = setTimeout(() => setIsDeleting(true), pauseDelay)
+      return () => clearTimeout(timeout)
+    } else if (isDeleting && currentIdeaText === "") {
+      setIsDeleting(false)
+      setIdeaIndex((prev) => (prev + 1) % ACTION_PROMPT_TYPING_IDEAS.length)
+      return
+    }
+
+    const timeout = setTimeout(() => {
+      setCurrentIdeaText(
+        isDeleting
+          ? fullText.substring(0, currentIdeaText.length - 1)
+          : fullText.substring(0, currentIdeaText.length + 1)
+      )
+    }, typingSpeed)
+
+    return () => clearTimeout(timeout)
+  }, [currentIdeaText, isDeleting, ideaIndex, inputText])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -196,7 +248,7 @@ export function ActionChatStudio({
                   Himanshu.
                 </h1>
                 <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed max-w-lg font-normal">
-                  Turn any API into a workflow action. Describe the endpoint, payload, or integration, and I&apos;ll write the TypeScript handler and parameters.
+                  Create custom actions in seconds. Just describe what you want to automate or paste an API / cURL, and I&apos;ll build everything ready to use in your workflows — no coding required.
                 </p>
               </div>
 
@@ -493,7 +545,11 @@ export function ActionChatStudio({
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="e.g. Create a Google Sheets action to delete sheet, or Slack ephemeral message..."
+                placeholder={
+                  currentIdeaText
+                    ? `${currentIdeaText}${cursorVisible ? "|" : ""}`
+                    : "Describe what you want to automate or paste a cURL command..."
+                }
                 className="w-full bg-transparent border-0 border-none outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 focus-visible:ring-0 shadow-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400/90 dark:placeholder:text-slate-500 text-sm resize-none min-h-[50px] leading-relaxed transition-all"
                 style={{ outline: "none", boxShadow: "none" }}
               />

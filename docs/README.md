@@ -24,6 +24,12 @@
 | 16 | [**Developer Platform Hub & Custom Apps**](./developer-platform/README.md) | **Developer Platform** | **App Builder, Auth Schemes, Webhooks, In-Built Actions (English & Hinglish Guides)** |
 | 17 | [**Master Guide to In-Built Actions (English)**](./developer-platform/en/09-complete-inbuilt-actions-working-guide.md) | **In-Built Actions** | **6 Action Types, Multi-Step Execution Timings, Payload Hydration, Dynamic Dropdowns** |
 | 18 | [**In-Built Actions Ka Master Guide (Hinglish)**](./developer-platform/hinglish/09-inbuilt-actions-ka-complete-working-guide.md) | **In-Built Actions** | **Complete Hinglish Reference: Dropdown Mapping, Webhook Hydration, 0 Task Credits** |
+| 19 | [**Action Builder & Custom Actions Master Guide (English)**](./14-action-builder-and-custom-actions.md) | **Action Builder** | **AI-Generated TypeScript Handlers, Sandbox Test Runner, Private Actions Tab & Canvas Integration** |
+| 20 | [**Action Builder Ka Complete Guide (Hinglish)**](./14-action-builder-and-custom-actions-hinglish.md) | **Action Builder** | **Hinglish Reference: AI Prompting, Live Deployment, Variable Mapping, Zero-Lock-In** |
+| 21 | [**Action Builder UI/UX Master Reference (English)**](./15-complete-action-builder-ui-ux-breakdown.md) | **Action Builder UI/UX** | **Granular Tab-by-Tab, Button-by-Button, Drawer-by-Drawer & Modal Reference with Interaction Matrices** |
+| 22 | [**Action Builder UI/UX Master Guide (Hinglish)**](./15-complete-action-builder-ui-ux-breakdown-hinglish.md) | **Action Builder UI/UX** | **Complete Hinglish Element Dictionary: Har Panel, Drawer, Button, Input aur Variable Picker Ka Working** |
+| 23 | [**Complete Automate Workflows Platform Master Guide (English)**](./16-complete-automate-workflows-platform-guide.md) | **Platform Master Guide** | **End-to-End System Manual: Tab-by-Tab, Button-by-Button, Drawer-by-Drawer Across All Pages & Modules** |
+| 24 | [**Poori Automate Workflows Application Ka Master Guide (Hinglish)**](./16-complete-automate-workflows-platform-guide-hinglish.md) | **Platform Master Guide** | **Complete Hinglish Reference: Har Page, Har Tab, Har Button, Sub-Sidebar aur Drawer Ki Working** |
 
 ---
 
