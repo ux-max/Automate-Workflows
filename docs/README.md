@@ -30,6 +30,8 @@
 | 22 | [**Action Builder UI/UX Master Guide (Hinglish)**](./15-complete-action-builder-ui-ux-breakdown-hinglish.md) | **Action Builder UI/UX** | **Complete Hinglish Element Dictionary: Har Panel, Drawer, Button, Input aur Variable Picker Ka Working** |
 | 23 | [**Complete Automate Workflows Platform Master Guide (English)**](./16-complete-automate-workflows-platform-guide.md) | **Platform Master Guide** | **End-to-End System Manual: Tab-by-Tab, Button-by-Button, Drawer-by-Drawer Across All Pages & Modules** |
 | 24 | [**Poori Automate Workflows Application Ka Master Guide (Hinglish)**](./16-complete-automate-workflows-platform-guide-hinglish.md) | **Platform Master Guide** | **Complete Hinglish Reference: Har Page, Har Tab, Har Button, Sub-Sidebar aur Drawer Ki Working** |
+| 25 | [**AI Agent Node Complete Guide (English)**](./17-ai-agent-node-complete-guide.md) | **AI Agents** | **Autonomous ReAct Loop, Multi-Tool Ingestion, Session Memory, Guardrails & Blueprints** |
+| 26 | [**AI Agent Node Ka Complete Master Guide (Hinglish)**](./17-ai-agent-node-complete-guide-hinglish.md) | **AI Agents** | **Complete Hinglish Guide: Har Field Ki Detail, Kyu aur Kab Use Karein, Real-World Blueprints** |
 
 ---
 

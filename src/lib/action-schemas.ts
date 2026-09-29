@@ -3985,14 +3985,104 @@ export const ROUTER_FALLBACK_SCHEMA: AppActionSchema = {
       supportsMapping: true
     }
   ],
-  sampleOutput: { branch: "fallback", triggered: true }
-}
+  sampleOutput: { route: "fallback", executed: true }
+};
+
+// --- AI AGENT NODE ACTION SCHEMAS ---
+export const AI_AGENT_SCHEMA: AppActionSchema = {
+  appId: "ai-agent",
+  actionId: "autonomous_goal_solver",
+  actionName: "Autonomous Goal Solver",
+  description: "Dynamically plans, selects tools, and executes multi-step objectives with reasoning and guardrails",
+  fields: [
+    {
+      id: "agent_role",
+      label: "Agent Role & Persona",
+      type: "text",
+      required: true,
+      defaultValue: "Lead Qualification & Support Specialist",
+      placeholder: "e.g. Senior Customer Success Specialist",
+      helperText: "Defines the agent's behavior, tone, and domain expertise",
+      supportsMapping: true
+    },
+    {
+      id: "model",
+      label: "Primary Intelligence Model",
+      type: "select",
+      required: true,
+      defaultValue: "gpt-4o",
+      options: [
+        { value: "gpt-4o", label: "OpenAI GPT-4o (Recommended — Fast & Multimodal)" },
+        { value: "claude-3-5-sonnet", label: "Anthropic Claude 3.5 Sonnet (Recommended — Deep Reasoning)" },
+        { value: "gemini-1-5-pro", label: "Google Gemini 1.5 Pro (2M Context Window)" },
+        { value: "gpt-4o-mini", label: "OpenAI GPT-4o Mini (Cost-Optimized & Rapid)" }
+      ],
+      helperText: "LLM powering the agent's reasoning loop and tool dispatch",
+      supportsMapping: false
+    },
+    {
+      id: "instructions",
+      label: "System Instructions / Guardrail Policy",
+      type: "textarea",
+      required: true,
+      defaultValue: "You are an autonomous AI Agent. Analyze the input goal, select the appropriate tools, and execute them step-by-step. If a sensitive action (like refunding or deleting) is required, ensure guardrails are satisfied.",
+      placeholder: "Enter step-by-step instructions or rules for the agent to follow...",
+      helperText: "Strict rules, persona constraints, and decision policies",
+      supportsMapping: true
+    },
+    {
+      id: "task_prompt",
+      label: "Goal / Task Description",
+      type: "textarea",
+      required: true,
+      placeholder: "Evaluate ticket {{step_1.ticket_id}} from {{step_1.customer_email}} and resolve or escalate.",
+      helperText: "The user objective to solve. Supports dynamic workflow variables.",
+      supportsMapping: true
+    },
+    {
+      id: "session_id",
+      label: "Memory Session Identifier",
+      type: "text",
+      placeholder: "{{step_1.sender_id}} or {{step_1.customer_email}}",
+      helperText: "Maps memory history across conversations for this specific user or session",
+      supportsMapping: true
+    },
+    {
+      id: "max_iterations",
+      label: "Maximum Tool Loop Iterations",
+      type: "number",
+      defaultValue: 5,
+      helperText: "Prevents infinite loops by capping maximum reasoning steps (Default: 5)",
+      supportsMapping: false
+    },
+    {
+      id: "require_human_approval",
+      label: "Require Human in the Loop for Sensitive Actions",
+      type: "boolean",
+      defaultValue: true,
+      helperText: "Halts workflow execution and notifies approver if the agent triggers high-risk tools",
+      supportsMapping: false
+    }
+  ],
+  sampleOutput: {
+    agent_id: "agent_8f93a102",
+    status: "COMPLETED",
+    goal: "Resolve customer inquiry regarding order shipment and status",
+    model_used: "gpt-4o",
+    iterations_used: 3,
+    tools_executed: ["Shopify: get_order_status", "Slack: send_notification"],
+    final_output: "Order #98124 is out for delivery with FedEx (tracking: TRK-9812). Notified user and team.",
+    session_id: "cust_alex@example.com",
+    confidence_score: 0.98
+  }
+};
 
 // -------------------------------------------------------------
 // 4. COMPLETE REGISTRY MAP & DYNAMIC FALLBACK GENERATOR
 // -------------------------------------------------------------
 
 export const APP_SCHEMAS_MAP: Record<string, AppActionSchema> = {
+  "ai-agent": AI_AGENT_SCHEMA,
   "calendly": CALENDLY_BOOKING_SCHEMA,
   "google-calendar": GOOGLE_CALENDAR_SCHEMA,
   "google-sheets": GOOGLE_SHEETS_SCHEMA,
@@ -4341,6 +4431,11 @@ export function getAppActionSchema(
       return GOOGLE_FORMS_SETTINGS_SCHEMA
     }
     return GOOGLE_FORMS_CREATE_SCHEMA
+  }
+
+  // 28. AI Agent Node
+  if (normAppId === "ai-agent" || normAppId === "aiagent") {
+    return AI_AGENT_SCHEMA
   }
 
   // Check static map ONLY if actionId matches or no specific action requested

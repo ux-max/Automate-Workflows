@@ -28,7 +28,7 @@ function escapeHtml(text: string): string {
 
 function renderTokenPillHTML(tok: string): string {
   const escapedTok = escapeHtml(tok)
-  return `<span class="inline-flex items-center space-x-1.5 text-[11px] font-mono bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 font-bold px-1.5 py-0.5 my-0.5 mx-0.5 rounded-md border border-blue-200 dark:border-blue-800/70 shadow-2xs select-none align-middle" data-token="${escapedTok}" contenteditable="false"><span>${escapedTok}</span><span data-remove="true" class="text-blue-400 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded p-0.5 ml-0.5 cursor-pointer inline-flex items-center justify-center transition-colors" title="Remove ${escapedTok}"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span></span>`
+  return `<span class="inline-flex items-center space-x-1.5 text-[11px] font-medium bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 font-semibold px-2 py-0.5 my-0.5 mx-0.5 rounded-md border border-blue-200 dark:border-blue-800/70 shadow-2xs select-none align-middle" data-token="${escapedTok}" contenteditable="false"><span>${escapedTok}</span><span data-remove="true" class="text-blue-400 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded p-0.5 ml-0.5 cursor-pointer inline-flex items-center justify-center transition-colors" title="Remove ${escapedTok}"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span></span>`
 }
 
 function valueToHTML(val: string): string {
@@ -176,7 +176,7 @@ export function VariablePillInput({
     >
       {isEmpty && (
         <div
-          className={`absolute left-2.5 top-2.5 text-xs text-slate-400 dark:text-slate-500 font-mono pointer-events-none select-none truncate ${
+          className={`absolute left-2.5 top-2.5 text-xs text-slate-400 dark:text-slate-500 font-normal pointer-events-none select-none truncate ${
             showPressSlashButton ? "pr-22" : "pr-2.5"
           }`}
         >
@@ -206,7 +206,7 @@ export function VariablePillInput({
         onInput={handleInput}
         onKeyDown={handleKeyDown}
         onPaste={handlePaste}
-        className={`w-full text-xs font-mono text-slate-900 dark:text-slate-100 focus:outline-none leading-relaxed p-2.5 ${
+        className={`w-full text-xs font-normal text-slate-800 dark:text-slate-100 focus:outline-none leading-relaxed p-2.5 ${
           showPressSlashButton ? "pr-22" : "pr-2.5"
         } ${minHeight} max-h-[160px] overflow-y-auto break-words whitespace-pre-wrap select-text`}
       />
@@ -223,7 +223,7 @@ export function VariablePillInput({
           title="Insert variable (or Press / on keyboard)"
         >
           <span className="text-[10px] font-semibold text-slate-400 group-hover:text-blue-500">Press</span>
-          <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-900 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 border border-slate-200/90 dark:border-slate-700 group-hover:border-blue-300 rounded text-slate-700 dark:text-slate-200 group-hover:text-blue-700 font-mono font-bold text-[10px] leading-none shadow-2xs">
+          <kbd className="px-1.5 py-0.5 bg-white dark:bg-slate-900 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 border border-slate-200/90 dark:border-slate-700 group-hover:border-blue-300 rounded text-slate-700 dark:text-slate-200 group-hover:text-blue-700 font-semibold text-[10px] leading-none shadow-2xs">
             /
           </kbd>
         </button>

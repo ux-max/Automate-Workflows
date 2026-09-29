@@ -31,6 +31,45 @@ export interface RouteBranch {
   steps?: WorkflowStep[]
 }
 
+export interface ToolApprovalSettings {
+  approverEmail: string
+  approvalTitle?: string
+  approvalNotes?: string
+  approveButtonLabel?: string
+  rejectButtonLabel?: string
+  timeoutDuration?: "1_hour" | "24_hours" | "7_days"
+}
+
+export interface AIAgentToolConfig {
+  id: string
+  name: string
+  type: "app_action" | "private_action" | "custom_webhook"
+  appId: string
+  appName: string
+  actionId: string
+  actionName: string
+  description: string
+  requireApproval?: boolean
+  approvalSettings?: ToolApprovalSettings
+  enabled: boolean
+}
+
+export interface AIAgentConfig {
+  model: "gpt-4o" | "claude-3-5-sonnet" | "gemini-1-5-pro" | "gpt-4o-mini"
+  role: string
+  instructions: string
+  taskPrompt: string
+  tools: AIAgentToolConfig[]
+  memoryType: "window" | "session" | "none"
+  sessionId: string
+  memoryWindowSize: number
+  maxIterations: number
+  timeoutSeconds: number
+  requireHumanApprovalForSensitive: boolean
+  approvalChannel?: "email" | "slack" | "in_app"
+  fallbackResponse: string
+}
+
 export interface WorkflowStep {
   id: string
   type: "trigger" | "action" | "filter" | "delay" | "router"
@@ -45,6 +84,7 @@ export interface WorkflowStep {
   routes?: RouteBranch[]
   isNewStep?: boolean
   customParameters?: { id: string; key: string; value: string }[]
+  aiAgentConfig?: AIAgentConfig
 }
 
 export interface Workflow {
@@ -459,7 +499,29 @@ export const MVP_APPS: AppConnection[] = [
     ]
   },
 
-  // --- FLOW CONTROL CORE APPS ---
+  // --- FLOW CONTROL & AI AGENT CORE APPS ---
+  {
+    id: "ai-agent",
+    name: "AI Agent",
+    icon: "Bot",
+    category: "Flow Control",
+    authType: "None",
+    syncMode: "Instant",
+    notes: "Autonomous AI Agent with LLM reasoning, multi-app tool orchestration, conversational memory, and human approval safety guardrails.",
+    triggers: [],
+    actions: [
+      {
+        id: "autonomous_goal_solver",
+        name: "Autonomous Goal Solver",
+        description: "Executes multi-step objectives dynamically by picking tools, executing actions, and reasoning with ReAct loops"
+      },
+      {
+        id: "conversational_support_agent",
+        name: "Conversational Agent with Memory",
+        description: "Maintains session memory across user messages, using tools and safety guardrails"
+      }
+    ]
+  },
   {
     id: "filter",
     name: "Filter",

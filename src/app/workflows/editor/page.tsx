@@ -47,10 +47,13 @@ import {
   Mail,
   Send,
   Eye,
+  Info,
   Sun,
   Moon,
   Sparkles,
-  Crosshair
+  Crosshair,
+  Wrench,
+  Bot
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -61,7 +64,7 @@ import { Switch } from "@/components/ui/switch"
 import { Drawer } from "@/components/ui/drawer"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
-import { AppIcon } from "@/components/ui/app-icon"
+import { AppIcon, OpenAIIcon, ClaudeIcon, GeminiIcon } from "@/components/ui/app-icon"
 import { ConfirmModal } from "@/components/ui/confirm-modal"
 import { MVP_APPS, INITIAL_USER_CONNECTIONS, INITIAL_WORKFLOWS, SEED_TEMPLATES, WorkflowStep, UserConnection } from "@/lib/data"
 import { getAppActionSchema, ActionField, AppActionSchema, APP_SCHEMAS_MAP } from "@/lib/action-schemas"
@@ -78,6 +81,8 @@ import { AIWorkflowAssistant } from "@/components/workflow/AIWorkflowAssistant"
 import { GeneratedWorkflowPlan, ChatMessage } from "@/lib/ai-workflow-generator"
 import { CustomActionItem } from "@/lib/custom-action-types"
 import { getCustomActions } from "@/lib/custom-action-storage"
+import { AIAgentSetupDrawer } from "@/components/workflow/AIAgentSetupDrawer"
+import { AIAgentInfoModal } from "@/components/workflow/AIAgentInfoModal"
 
 function WorkflowEditorContent() {
   const { theme } = useTheme()
@@ -822,6 +827,7 @@ function WorkflowEditorContent() {
   })
   const [activeRouteId, setActiveRouteId] = useState<string | null>(null)
   const [stepDrawerOpen, setStepDrawerOpen] = useState(false)
+  const [isAIAgentInfoOpen, setIsAIAgentInfoOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<"setup" | "connections">("setup")
   const [copiedWebhook, setCopiedWebhook] = useState(false)
 
@@ -907,7 +913,7 @@ function WorkflowEditorContent() {
     "scheduler", "filter", "router", "delay", "iterator",
     "text-formatter", "datetime-formatter", "number-formatter",
     "api-webhook", "api", "code-runner", "lookup-table", "human-approval",
-    "webhook-catch", "http-request", "webhook"
+    "webhook-catch", "http-request", "webhook", "ai-agent"
   ].includes(effectiveAppId || "") || isUIWebhookTrigger
 
   const isStepReadyForConfig = isStepConnected || isAuthOptionalApp
@@ -1327,6 +1333,65 @@ function WorkflowEditorContent() {
           return p
         })
       }))
+    } else if (selectedStep.appId === "ai-agent" || activeFieldForPicker.startsWith("modal_tool_")) {
+      if (activeFieldForPicker === "task_prompt") {
+        const curVal = selectedStep.aiAgentConfig?.taskPrompt || ""
+        const newVal = curVal ? `${curVal} ${token}` : token
+        updateSelectedStep((s) => ({
+          ...s,
+          aiAgentConfig: {
+            ...s.aiAgentConfig!,
+            taskPrompt: newVal
+          }
+        }))
+      } else if (activeFieldForPicker === "session_id") {
+        const curVal = selectedStep.aiAgentConfig?.sessionId || ""
+        const newVal = curVal ? `${curVal} ${token}` : token
+        updateSelectedStep((s) => ({
+          ...s,
+          aiAgentConfig: {
+            ...s.aiAgentConfig!,
+            sessionId: newVal
+          }
+        }))
+      } else if (activeFieldForPicker.startsWith("modal_tool_")) {
+        const match = activeFieldForPicker.match(/^modal_tool_(.+)_(approver_email|approval_notes)$/)
+        if (match) {
+          const [, toolId, subField] = match
+          updateSelectedStep((s) => {
+            const curTools = s.aiAgentConfig?.tools || []
+            const updatedTools = curTools.map((t) => {
+              if (t.id === toolId) {
+                const curSettings = t.approvalSettings || {
+                  approverEmail: "{{step_1.manager_email}}",
+                  approvalTitle: `Action Required: Approve ${t.name}`,
+                  approvalNotes: `The AI Agent requested approval to execute "${t.name}" to complete the workflow goal.`,
+                  approveButtonLabel: "Approve",
+                  rejectButtonLabel: "Reject",
+                  timeoutDuration: "24_hours" as const
+                }
+                if (subField === "approver_email") {
+                  const curVal = curSettings.approverEmail || ""
+                  const newVal = curVal ? `${curVal} ${token}` : token
+                  return { ...t, approvalSettings: { ...curSettings, approverEmail: newVal } }
+                } else if (subField === "approval_notes") {
+                  const curVal = curSettings.approvalNotes || ""
+                  const newVal = curVal ? `${curVal} ${token}` : token
+                  return { ...t, approvalSettings: { ...curSettings, approvalNotes: newVal } }
+                }
+              }
+              return t
+            })
+            return {
+              ...s,
+              aiAgentConfig: {
+                ...s.aiAgentConfig!,
+                tools: updatedTools
+              }
+            }
+          })
+        }
+      }
     } else {
       const currentVal = selectedStep.fieldMappings?.[activeFieldForPicker] || ""
       const newVal = currentVal ? `${currentVal} ${token}` : token
@@ -1605,6 +1670,22 @@ function WorkflowEditorContent() {
 
   const renderActionFieldsBlock = () => {
     if (!selectedStep) return null
+
+    if (selectedStep.appId === "ai-agent") {
+      return (
+        <AIAgentSetupDrawer
+          step={selectedStep}
+          onUpdateStep={(updates) => updateSelectedStep((s) => ({ ...s, ...updates }))}
+          priorVariables={priorVariablesList}
+          allApps={ALL_AVAILABLE_APPS}
+          customActions={customActionsList}
+          onOpenVariablePicker={(fId) => openVariablePickerForField(fId)}
+          showToast={showToast}
+          onOpenInfoModal={() => setIsAIAgentInfoOpen(true)}
+        />
+      )
+    }
+
     const currentSchema = getAppActionSchema(effectiveAppId || selectedStep.appId, selectedStep.eventId, selectedStep.eventName, selectedStep.fieldMappings)
     const isRouter = selectedStep.appId === "router"
     const isFilter = selectedStep.appId === "filter"
@@ -3493,9 +3574,10 @@ function WorkflowEditorContent() {
       app.category.toLowerCase().includes(appSearchQuery.toLowerCase())
 
     if (appCategoryFilter === "All") return matchesSearch
-    if (appCategoryFilter === "Flow Control") return matchesSearch && app.category === "Flow Control"
+    if (appCategoryFilter === "AI & Agents") return matchesSearch && (app.id === "ai-agent" || app.category === "AI & Agents")
+    if (appCategoryFilter === "Flow Control") return matchesSearch && (app.category === "Flow Control" || app.id === "ai-agent")
     if (appCategoryFilter === "Utilities") return matchesSearch && app.category === "Utilities"
-    if (appCategoryFilter === "SaaS Apps") return matchesSearch && app.category !== "Flow Control" && app.category !== "Utilities" && !(app as any).isDeveloperApp
+    if (appCategoryFilter === "SaaS Apps") return matchesSearch && app.category !== "Flow Control" && app.category !== "Utilities" && app.id !== "ai-agent" && !(app as any).isDeveloperApp
     if (appCategoryFilter === "My Custom Apps (Dev)") return matchesSearch && (app as any).isDeveloperApp
     if (appCategoryFilter === "Private Actions") return false
 
@@ -3568,6 +3650,23 @@ function WorkflowEditorContent() {
           <div className="text-sm font-bold pb-3.5 -mb-px text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-500 flex items-center space-x-2">
             <AppIcon appId="filter" appName="Filter" size={18} />
             <span>{currentTargetedBranch.name} • Filter Setup</span>
+          </div>
+        ) : selectedStep.appId === "ai-agent" ? (
+          <div className="text-sm font-bold pb-3.5 -mb-px text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-500 flex items-center space-x-2">
+            <AppIcon appId="ai-agent" appName="AI Agent" size={18} />
+            <span>AI Agent Setup</span>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsAIAgentInfoOpen(true)
+              }}
+              className="ml-1 p-1 rounded-md text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/60 transition-all cursor-pointer inline-flex items-center justify-center group"
+              title="How does the AI Agent node work? (Click to view guide)"
+              aria-label="How does the AI Agent node work?"
+            >
+              <Info className="h-4 w-4 transition-transform group-hover:scale-110" />
+            </button>
           </div>
         ) : (
           <>
@@ -4273,6 +4372,13 @@ function WorkflowEditorContent() {
               return (
                 <React.Fragment key={step.id}>
                   {/* CANVAS STEP CARD WITH HOVER ACTIONS */}
+                  {(() => {
+                    const isAIAgent = step.appId === "ai-agent"
+                    const aiModel = step.aiAgentConfig?.model || "gpt-4o"
+                    const aiModelName = aiModel === "claude-3-5-sonnet" ? "Claude 3.5 Sonnet" : aiModel === "gemini-1-5-pro" ? "Gemini 1.5 Pro" : aiModel === "gpt-4o-mini" ? "GPT-4o Mini" : "GPT-4o"
+                    const equippedTools = (step.aiAgentConfig?.tools || []).filter((t) => t.enabled)
+
+                    return (
                   <div
                     onMouseEnter={() => setHoveredNodeId(step.id)}
                     onMouseLeave={() => setHoveredNodeId(null)}
@@ -4281,7 +4387,7 @@ function WorkflowEditorContent() {
                         handleOpenConfig(step.id)
                       }
                     }}
-                    className={`w-80 md:w-96 rounded-2xl border-2 shadow-xs transition-all px-5 py-4 flex items-center justify-between relative select-none group/card ${
+                    className={`w-80 md:w-96 rounded-2xl border-2 shadow-xs transition-all px-5 py-4 flex flex-col justify-between relative select-none group/card ${
                       step.appId === "router" ? "cursor-default" : "cursor-pointer"
                     } ${
                       isSelected && step.appId !== "router"
@@ -4295,107 +4401,190 @@ function WorkflowEditorContent() {
                         : ""
                     }`}
                   >
-                    {/* Left: BRAND ICON + APP NAME */}
-                    <div className="flex items-center space-x-4 flex-1">
-                      {isUnconfigured ? (
-                        <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-800 shrink-0">
-                          <Plus className="h-5 w-5" />
-                        </div>
-                      ) : isStepPrivateAction(step) ? (
-                        <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200/80 dark:border-blue-900/60 shrink-0 shadow-2xs">
-                          <Zap className="h-5 w-5 text-blue-600 dark:text-blue-400 fill-blue-500/20" />
-                        </div>
-                      ) : (
-                        <AppIcon appId={step.appId} appName={step.appName} size={40} />
-                      )}
-                      <div className="space-y-0.5">
-                        <span className="text-[10px] font-medium text-slate-400 block">
-                          {idx + 1}. {step.type === "trigger" ? "Trigger" : "Action"}
-                        </span>
-                        <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-tight flex items-center space-x-2">
-                          <span>{isUnconfigured ? (step.type === "trigger" ? "Select Trigger App" : "Select Action App") : isStepPrivateAction(step) ? (step.eventName || step.appName) : step.appName}</span>
-                          {isStepPrivateAction(step) && (
-                            <span className="inline-flex items-center space-x-1 text-[8px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/90 dark:border-emerald-800 px-1 py-0.2 rounded">
-                              <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
-                              <span>Live</span>
+                    {/* Top Row: BRAND ICON + APP NAME + HOVER ACTIONS */}
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center space-x-3.5 flex-1 min-w-0">
+                        {isUnconfigured ? (
+                          <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-800 shrink-0">
+                            <Plus className="h-5 w-5" />
+                          </div>
+                        ) : isStepPrivateAction(step) ? (
+                          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200/80 dark:border-blue-900/60 shrink-0 shadow-2xs">
+                            <Zap className="h-5 w-5 text-blue-600 dark:text-blue-400 fill-blue-500/20" />
+                          </div>
+                        ) : (
+                          <AppIcon appId={step.appId} appName={step.appName} size={40} />
+                        )}
+                        <div className="space-y-0.5 min-w-0 flex-1">
+                          <span className="text-[10px] font-medium text-slate-400 block">
+                            {idx + 1}. {step.type === "trigger" ? "Trigger" : isAIAgent ? "AI Agent" : "Action"}
+                          </span>
+                          <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-tight flex items-center space-x-2 truncate">
+                            <span className="truncate">
+                              {isUnconfigured
+                                ? (step.type === "trigger" ? "Select Trigger App" : "Select Action App")
+                                : isAIAgent
+                                ? (step.aiAgentConfig?.role || "AI Agent")
+                                : isStepPrivateAction(step)
+                                ? (step.eventName || step.appName)
+                                : step.appName}
                             </span>
-                          )}
+                            {isAIAgent && (
+                              <span className="inline-flex items-center space-x-1.5 text-[9px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shrink-0">
+                                {aiModel === "claude-3-5-sonnet" ? (
+                                  <ClaudeIcon size={12} bare />
+                                ) : aiModel === "gemini-1-5-pro" ? (
+                                  <GeminiIcon size={12} bare />
+                                ) : (
+                                  <OpenAIIcon size={12} bare />
+                                )}
+                                <span>{aiModelName}</span>
+                              </span>
+                            )}
+                            {isStepPrivateAction(step) && (
+                              <span className="inline-flex items-center space-x-1 text-[8px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/90 dark:border-emerald-800 px-1 py-0.2 rounded shrink-0">
+                                <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+                                <span>Live</span>
+                              </span>
+                            )}
+                            {step.appId === "router" && (
+                              <Badge variant="blue" className="text-[9px] font-bold px-1.5 py-0 shrink-0">Router</Badge>
+                            )}
+                            {activeAiGeneratingStepId === step.id && (
+                              <Badge variant="blue" className="text-[9px] font-bold px-1.5 py-0 bg-blue-600 text-white animate-pulse flex items-center gap-1 shrink-0">
+                                <Sparkles className="h-2.5 w-2.5" />
+                                <span>AI Adding...</span>
+                              </Badge>
+                            )}
+                          </h4>
+                          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate max-w-[200px]">
+                            {isUnconfigured
+                              ? "Click to choose app from catalog"
+                              : isAIAgent
+                              ? "Autonomous AI Assistant"
+                              : isStepPrivateAction(step)
+                              ? "Private Action"
+                              : step.eventName}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Right: ACTION BUTTONS */}
+                      <div className="flex items-center space-x-1 shrink-0 ml-2">
+                        <div
+                          className={`flex items-center space-x-1 transition-all duration-200 ${
+                            isHovered || isUnconfigured ? "opacity-100 translate-x-0 pointer-events-auto" : "opacity-0 translate-x-2 pointer-events-none"
+                          }`}
+                        >
                           {step.appId === "router" && (
-                            <Badge variant="blue" className="text-[9px] font-bold px-1.5 py-0">Router</Badge>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleAddBranchToRouter(step.id)
+                              }}
+                              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                              title="Add Route Branch"
+                            >
+                              <Plus className="h-4 w-4 stroke-[2.5]" />
+                            </button>
                           )}
-                          {activeAiGeneratingStepId === step.id && (
-                            <Badge variant="blue" className="text-[9px] font-bold px-1.5 py-0 bg-blue-600 text-white animate-pulse flex items-center gap-1">
-                              <Sparkles className="h-2.5 w-2.5" />
-                              <span>AI Adding...</span>
-                            </Badge>
+
+                          {!isUnconfigured && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleCopyNode(step)
+                              }}
+                              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                              title="Copy Step"
+                            >
+                              <Copy className="h-4 w-4" />
+                            </button>
                           )}
-                        </h4>
-                        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate max-w-[150px]">
-                          {isUnconfigured ? "Click to choose app from catalog" : isStepPrivateAction(step) ? "Private Action" : step.eventName}
-                        </p>
+
+                          {!isUnconfigured && step.appId !== "router" && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleOpenConfig(step.id)
+                              }}
+                              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                              title="Edit Step Setup"
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </button>
+                          )}
+
+                          {step.type !== "trigger" && idx !== 0 && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                requestDeleteStep(step.id, isUnconfigured ? "Unconfigured Step" : `${step.appName} - ${step.eventName}`)
+                              }}
+                              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                              title="Delete Step"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Right: ACTION BUTTONS */}
-                    <div className="flex items-center space-x-1 shrink-0">
-                      <div
-                        className={`flex items-center space-x-1 transition-all duration-200 ${
-                          isHovered || isUnconfigured ? "opacity-100 translate-x-0 pointer-events-auto" : "opacity-0 translate-x-2 pointer-events-none"
-                        }`}
-                      >
-                        {step.appId === "router" && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleAddBranchToRouter(step.id)
-                            }}
-                            className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                            title="Add Route Branch"
-                          >
-                            <Plus className="h-4 w-4 stroke-[2.5]" />
-                          </button>
-                        )}
+                    {/* AI AGENT SNAP-IN VISUAL TOOL SLOTS (Canvas Ports) */}
+                    {isAIAgent && (
+                      <div className="w-full mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex flex-col space-y-1.5">
+                        <div className="flex items-center justify-between text-[10px]">
+                          <span className="font-semibold flex items-center gap-1 text-slate-600 dark:text-slate-400">
+                            <Wrench className="h-3 w-3 text-slate-400" />
+                            <span>Equipped Tools ({equippedTools.length})</span>
+                          </span>
+                          <span className="text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 font-medium">
+                            Max {step.aiAgentConfig?.maxIterations || 5} steps
+                          </span>
+                        </div>
 
-                        {!isUnconfigured && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleCopyNode(step)
-                            }}
-                            className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                            title="Copy Step"
-                          >
-                            <Copy className="h-4 w-4" />
-                          </button>
-                        )}
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {equippedTools.length === 0 ? (
+                            <span className="text-[10px] text-slate-400 italic">No tools equipped</span>
+                          ) : (
+                            equippedTools.slice(0, 4).map((tool) => (
+                              <span
+                                key={tool.id}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200"
+                                title={tool.description}
+                              >
+                                {tool.type === "private_action" ? (
+                                  <Zap className="h-3 w-3 text-blue-600 dark:text-blue-400 shrink-0" />
+                                ) : (
+                                  <AppIcon appId={tool.appId} appName={tool.appName} size={13} />
+                                )}
+                                <span className="truncate max-w-[80px]">{tool.actionName || tool.appName}</span>
+                              </span>
+                            ))
+                          )}
 
-                        {!isUnconfigured && step.appId !== "router" && (
+                          {equippedTools.length > 4 && (
+                            <span className="text-[9px] font-medium text-slate-400">
+                              +{equippedTools.length - 4} more
+                            </span>
+                          )}
+
                           <button
+                            type="button"
                             onClick={(e) => {
                               e.stopPropagation()
                               handleOpenConfig(step.id)
                             }}
-                            className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                            title="Edit Step Setup"
+                            className="h-5 px-1.5 rounded text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900 border border-blue-200 dark:border-blue-800 transition-colors flex items-center gap-0.5 cursor-pointer shadow-2xs ml-auto"
+                            title="Manage tools in drawer"
                           >
-                            <Edit2 className="h-4 w-4" />
+                            <Plus className="h-2.5 w-2.5" />
+                            <span>Slot</span>
                           </button>
-                        )}
-
-                        {step.type !== "trigger" && idx !== 0 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              requestDeleteStep(step.id, isUnconfigured ? "Unconfigured Step" : `${step.appName} - ${step.eventName}`)
-                            }}
-                            className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
-                            title="Delete Step"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        )}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     {copiedTooltipId === step.id && (
                       <div className="absolute -top-7 right-4 bg-slate-900 dark:bg-slate-800 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md z-30 animate-in fade-in">
@@ -4403,6 +4592,8 @@ function WorkflowEditorContent() {
                       </div>
                     )}
                   </div>
+                    )
+                  })()}
 
                   {/* ROUTER MULTI-BRANCH CANVAS PARALLEL FILTER NODES TREE */}
                   {step.appId === "router" && (
@@ -4786,6 +4977,9 @@ function WorkflowEditorContent() {
                 const isRouter = step.appId === "router"
                 const isUnconfigured = !step.appId
 
+                const isAIAgent = step.appId === "ai-agent"
+                const aiModelName = step.aiAgentConfig?.model === "claude-3-5-sonnet" ? "Claude 3.5" : "GPT-4o"
+
                 return (
                   <React.Fragment key={`h_${step.id}`}>
                     {/* Compact Step Node (Big App Icon on Top + Title & Subtitle Below in White Card) */}
@@ -4832,13 +5026,30 @@ function WorkflowEditorContent() {
                       {/* Title & Subtitle Downside below the icon */}
                       <div className="mt-2.5 space-y-0.5 w-full">
                         <span className="text-[10px] font-medium text-slate-400 dark:text-slate-400 block leading-tight">
-                          {idx + 1}. {step.type === "trigger" ? "Trigger" : "Action"}
+                          {idx + 1}. {step.type === "trigger" ? "Trigger" : isAIAgent ? "AI Agent" : "Action"}
                         </span>
                         <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 tracking-tight leading-snug truncate">
-                          {isUnconfigured ? (step.type === "trigger" ? "Select Trigger" : "Select Action") : isStepPrivateAction(step) ? (step.eventName || step.appName) : step.appName}
+                          {isUnconfigured ? (step.type === "trigger" ? "Select Trigger" : "Select Action") : isAIAgent ? (step.aiAgentConfig?.role || "AI Agent") : isStepPrivateAction(step) ? (step.eventName || step.appName) : step.appName}
                         </h4>
-                        <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate w-full">
-                          {isUnconfigured ? "Click to choose" : isStepPrivateAction(step) ? "Private Action" : step.eventName}
+                        <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate w-full flex items-center justify-center space-x-1">
+                          {isUnconfigured ? (
+                            <span>Click to choose</span>
+                          ) : isAIAgent ? (
+                            <>
+                              {step.aiAgentConfig?.model === "claude-3-5-sonnet" ? (
+                                <ClaudeIcon size={11} bare />
+                              ) : step.aiAgentConfig?.model === "gemini-1-5-pro" ? (
+                                <GeminiIcon size={11} bare />
+                              ) : (
+                                <OpenAIIcon size={11} bare />
+                              )}
+                              <span>{aiModelName}</span>
+                            </>
+                          ) : isStepPrivateAction(step) ? (
+                            <span>Private Action</span>
+                          ) : (
+                            <span>{step.eventName}</span>
+                          )}
                         </p>
                       </div>
 
@@ -5485,7 +5696,7 @@ function WorkflowEditorContent() {
 
                 {/* Category Pills Bar */}
                 <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 no-scrollbar">
-                  {["All", "Flow Control", "Utilities", "SaaS Apps", "My Custom Apps (Dev)", "Private Actions"].map((cat) => (
+                  {["All", "AI & Agents", "Flow Control", "Utilities", "SaaS Apps", "My Custom Apps (Dev)", "Private Actions"].map((cat) => (
                     <button
                       key={cat}
                       type="button"
@@ -5754,7 +5965,26 @@ function WorkflowEditorContent() {
                                 connectionId: existingConn ? existingConn.id : (app.authType === "Internal SSO" ? `conn_${app.id}` : undefined),
                                 routes: defaultRoutes,
                                 isNewStep: false,
-                                status: "configured"
+                                status: "configured",
+                                aiAgentConfig: app.id === "ai-agent" ? (s.aiAgentConfig || {
+                                  model: "gpt-4o",
+                                  role: "Customer Support & Lead Triager",
+                                  instructions: "You are an autonomous AI Agent in Automate Workflows.\n1. Analyze the customer inquiry or trigger payload carefully.\n2. Select appropriate tools to fetch data, log details, or notify teams.\n3. If processing refunds over $100 or deleting records, pause for human approval.\n4. Output a clear, concise summary of all actions performed.",
+                                  taskPrompt: "Evaluate inquiry from {{step_1.sender_email}} and execute required resolution steps.",
+                                  tools: [
+                                    { id: "tool_slack", name: "Slack: Send Message", type: "app_action", appId: "slack", appName: "Slack", actionId: "send_channel_msg", actionName: "Send Channel Message", description: "Post real-time updates and alerts to the team Slack channel.", enabled: true, requireApproval: false },
+                                    { id: "tool_sheets", name: "Google Sheets: Add Row", type: "app_action", appId: "google-sheets", appName: "Google Sheets", actionId: "add_row", actionName: "Add Row", description: "Log audit events and tickets in Google Sheets.", enabled: true, requireApproval: false },
+                                    { id: "tool_gmail", name: "Gmail: Send Email", type: "app_action", appId: "gmail", appName: "Gmail", actionId: "send_email", actionName: "Send Email", description: "Send customer notification.", enabled: true, requireApproval: false }
+                                  ],
+                                  memoryType: "window",
+                                  sessionId: "{{step_1.sender_id}}",
+                                  memoryWindowSize: 10,
+                                  maxIterations: 5,
+                                  timeoutSeconds: 60,
+                                  requireHumanApprovalForSensitive: true,
+                                  approvalChannel: "slack",
+                                  fallbackResponse: "I was unable to complete the task within the allowed execution steps. A human specialist has been notified."
+                                }) : s.aiAgentConfig
                               }))
                               setDrawerStep("setup_details")
                               setIsDrawerMaximized(false)
@@ -5823,12 +6053,44 @@ function WorkflowEditorContent() {
                     <div>
                       <div className="flex items-center space-x-2">
                         <h4 className="text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight">
-                          {isSelectedStepPrivateAction
+                          {selectedStep.appId === "ai-agent"
+                            ? (selectedStep.aiAgentConfig?.role || "AI Agent Node")
+                            : isSelectedStepPrivateAction
                             ? (selectedStep.eventName || selectedStep.eventId)
                             : activeRoute
                             ? `${activeRoute.appName} (${activeRoute.name})`
                             : selectedStep.appName}
                         </h4>
+                        {selectedStep.appId === "ai-agent" && (
+                          <div className="flex items-center space-x-1.5 flex-wrap">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                              AI Decision Engine
+                            </span>
+                            <span className="inline-flex items-center space-x-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                              {selectedStep.aiAgentConfig?.model === "claude-3-5-sonnet" ? (
+                                <>
+                                  <ClaudeIcon size={13} bare />
+                                  <span>Claude 3.5 Sonnet</span>
+                                </>
+                              ) : selectedStep.aiAgentConfig?.model === "gemini-1-5-pro" ? (
+                                <>
+                                  <GeminiIcon size={13} bare />
+                                  <span>Gemini 1.5 Pro</span>
+                                </>
+                              ) : selectedStep.aiAgentConfig?.model === "gpt-4o-mini" ? (
+                                <>
+                                  <OpenAIIcon size={13} bare />
+                                  <span>GPT-4o Mini</span>
+                                </>
+                              ) : (
+                                <>
+                                  <OpenAIIcon size={13} bare />
+                                  <span>GPT-4o</span>
+                                </>
+                              )}
+                            </span>
+                          </div>
+                        )}
                         {isSelectedStepPrivateAction && (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 flex items-center space-x-1">
                             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -5837,7 +6099,9 @@ function WorkflowEditorContent() {
                         )}
                       </div>
                       <span className="text-[10px] text-blue-600 dark:text-blue-400 font-medium">
-                        {isSelectedStepPrivateAction
+                        {selectedStep.appId === "ai-agent"
+                          ? `Autonomous AI Agent • ${selectedStep.aiAgentConfig?.tools?.filter((t) => t.enabled)?.length || 0} Tools Equipped`
+                          : isSelectedStepPrivateAction
                           ? "Private Action"
                           : activeRoute
                           ? "Route Filter Setup"
@@ -5854,13 +6118,26 @@ function WorkflowEditorContent() {
                         setAppCategoryFilter("Private Actions")
                       }
                     }}
-                    className="text-xs font-bold text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-950/40 space-x-1 cursor-pointer"
+                    className="text-xs font-semibold text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 space-x-1 cursor-pointer"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" />
-                    <span>{isSelectedStepPrivateAction ? "Change Action" : "Change App"}</span>
+                    <span>{selectedStep.appId === "ai-agent" ? "Change App" : isSelectedStepPrivateAction ? "Change Action" : "Change App"}</span>
                   </Button>
                 </div>
 
+                {selectedStep.appId === "ai-agent" ? (
+                  <AIAgentSetupDrawer
+                    step={selectedStep}
+                    onUpdateStep={(updates) => updateSelectedStep((s) => ({ ...s, ...updates }))}
+                    priorVariables={priorVariablesList}
+                    allApps={ALL_AVAILABLE_APPS}
+                    customActions={customActionsList}
+                    onOpenVariablePicker={(fId) => openVariablePickerForField(fId)}
+                    showToast={showToast}
+                    onOpenInfoModal={() => setIsAIAgentInfoOpen(true)}
+                  />
+                ) : (
+                  <>
                 {/* App Event Selection (Only for standard apps, Private Action is already set) */}
                 {!isSelectedStepPrivateAction && selectedApp && (selectedApp.actions.length > 0 || selectedApp.triggers.length > 0) && (
                   <div className="space-y-1.5 p-3.5 bg-blue-50/50 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/60 rounded-xl">
@@ -6064,6 +6341,8 @@ function WorkflowEditorContent() {
                     </div>
                   )}
                 </div>
+                  </>
+                )}
           </div>
         )}
       </>
@@ -6275,6 +6554,12 @@ function WorkflowEditorContent() {
           onSendPreview={(targetEmail: string) => handleSendPreviewMessage(targetEmail)}
         />
       )}
+
+      {/* AI AGENT INFO & GUIDE MODAL */}
+      <AIAgentInfoModal
+        open={isAIAgentInfoOpen}
+        onOpenChange={setIsAIAgentInfoOpen}
+      />
     </div>
   )
 }
