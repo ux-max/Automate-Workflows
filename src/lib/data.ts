@@ -658,9 +658,7 @@ export const MVP_APPS: AppConnection[] = [
       { id: "catch_raw_webhook", name: "Catch Webhook (Instant)", description: "Listens for raw JSON payload at unique endpoint URL", type: "instant" },
       { id: "catch_webhook_headers", name: "Catch Webhook with Headers", description: "Captures full request body along with HTTP headers", type: "instant" }
     ],
-    actions: [
-      { id: "custom_webhook_response", name: "Custom Webhook Response", description: "Returns custom HTTP status code & JSON response to the webhook caller" }
-    ]
+    actions: []
   },
   {
     id: "code-runner",

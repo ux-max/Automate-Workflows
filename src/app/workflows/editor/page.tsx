@@ -409,6 +409,57 @@ function WorkflowEditorContent() {
     branchIndex?: number
   } | null>(null)
 
+  // Ensure Webhook can NEVER be an action step anywhere in the workflow
+  useEffect(() => {
+    const sanitizeActionStep = (s: WorkflowStep): WorkflowStep => {
+      if ((s.appId === "webhook" || s.appId === "webhook-catch") && s.type === "action") {
+        return {
+          ...s,
+          appId: "",
+          appName: "Select Action App",
+          eventId: "",
+          eventName: "Choose Action Event",
+          status: "unmapped",
+          fieldMappings: {},
+          isNewStep: true
+        }
+      }
+      return s
+    }
+
+    const hasInvalidAction = steps.some((s, idx) => idx > 0 && (s.appId === "webhook" || s.appId === "webhook-catch"))
+    if (hasInvalidAction) {
+      setSteps((prev) => prev.map((s, idx) => (idx > 0 ? sanitizeActionStep(s) : s)))
+    }
+
+    const hasInvalidRouteA = routeASteps.some((s) => s.appId === "webhook" || s.appId === "webhook-catch")
+    if (hasInvalidRouteA) {
+      setRouteASteps((prev) => prev.map(sanitizeActionStep))
+    }
+
+    const hasInvalidRouteB = routeBSteps.some((s) => s.appId === "webhook" || s.appId === "webhook-catch")
+    if (hasInvalidRouteB) {
+      setRouteBSteps((prev) => prev.map(sanitizeActionStep))
+    }
+
+    let hasInvalidBranch = false
+    for (const list of Object.values(branchSteps)) {
+      if (list.some((s) => s.appId === "webhook" || s.appId === "webhook-catch")) {
+        hasInvalidBranch = true
+        break
+      }
+    }
+    if (hasInvalidBranch) {
+      setBranchSteps((prev) => {
+        const next: Record<string, WorkflowStep[]> = {}
+        for (const [k, v] of Object.entries(prev)) {
+          next[k] = v.map(sanitizeActionStep)
+        }
+        return next
+      })
+    }
+  }, [steps, routeASteps, routeBSteps, branchSteps])
+
   const getOpSymbol = (op: string) => {
     switch (op) {
       case "gt": return ">"
@@ -1087,24 +1138,113 @@ function WorkflowEditorContent() {
     setTimeout(() => setCopiedWebhook(false), 2000)
   }
 
-  const handleCopyNode = (step: WorkflowStep) => {
+  const handleCopyNode = (step: WorkflowStep, branchKey?: string) => {
     if (step.appId === "router") {
-      showToast("Router Node can only be added at the end of the workflow.", "warning")
+      showToast("Router Node cannot be duplicated directly.", "warning")
       return
     }
-    if (steps.some((s) => s.appId === "router")) {
+    if (step.type === "trigger") {
+      showToast("Triggers cannot be duplicated. A workflow can only have one trigger.", "warning")
+      return
+    }
+
+    setCopiedTooltipId(step.id)
+    setTimeout(() => setCopiedTooltipId(null), 1500)
+
+    const clonedStep: WorkflowStep = {
+      ...step,
+      id: `step_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+      eventName: `${step.eventName} (Copy)`,
+      isNewStep: false,
+      aiAgentConfig: step.aiAgentConfig
+        ? {
+            ...step.aiAgentConfig,
+            role: step.aiAgentConfig.role ? `${step.aiAgentConfig.role} (Copy)` : "AI Agent (Copy)",
+            tools: step.aiAgentConfig.tools ? [...step.aiAgentConfig.tools] : []
+          }
+        : undefined
+    }
+
+    // 1. Check if step is in Route A
+    if (branchKey === "routeA" || branchKey === "Route A" || routeASteps.some((s) => s.id === step.id)) {
+      setRouteASteps((prev) => {
+        const idx = prev.findIndex((s) => s.id === step.id)
+        const next = [...prev]
+        if (idx !== -1) {
+          next.splice(idx + 1, 0, clonedStep)
+        } else {
+          next.push(clonedStep)
+        }
+        return next
+      })
+      showToast(`Duplicated ${step.appName} in Route A!`)
+      return
+    }
+
+    // 2. Check if step is in Route B
+    if (branchKey === "routeB" || branchKey === "Route B" || routeBSteps.some((s) => s.id === step.id)) {
+      setRouteBSteps((prev) => {
+        const idx = prev.findIndex((s) => s.id === step.id)
+        const next = [...prev]
+        if (idx !== -1) {
+          next.splice(idx + 1, 0, clonedStep)
+        } else {
+          next.push(clonedStep)
+        }
+        return next
+      })
+      showToast(`Duplicated ${step.appName} in Route B!`)
+      return
+    }
+
+    // 3. Check if step is in any custom branchSteps
+    let foundBranchKey = branchKey
+    if (!foundBranchKey) {
+      for (const [k, list] of Object.entries(branchSteps)) {
+        if (list.some((s) => s.id === step.id)) {
+          foundBranchKey = k
+          break
+        }
+      }
+    }
+    if (foundBranchKey && branchSteps[foundBranchKey]) {
+      setBranchSteps((prev) => {
+        const list = prev[foundBranchKey!] || []
+        const idx = list.findIndex((s) => s.id === step.id)
+        const next = [...list]
+        if (idx !== -1) {
+          next.splice(idx + 1, 0, clonedStep)
+        } else {
+          next.push(clonedStep)
+        }
+        return {
+          ...prev,
+          [foundBranchKey!]: next
+        }
+      })
+      showToast(`Duplicated ${step.appName} in branch!`)
+      return
+    }
+
+    // 4. Otherwise, step is in main workflow (steps)
+    const stepIdx = steps.findIndex((s) => s.id === step.id)
+    const routerIndex = steps.findIndex((s) => s.appId === "router")
+    if (routerIndex !== -1 && stepIdx >= routerIndex) {
       showToast("Cannot add steps after Router node in the main workflow.", "warning")
       return
     }
-    setCopiedTooltipId(step.id)
-    const clonedStep: WorkflowStep = {
-      ...step,
-      id: `step_${Date.now()}`,
-      eventName: `${step.eventName} (Copy)`,
-      isNewStep: false
-    }
-    setSteps([...steps, clonedStep])
-    setTimeout(() => setCopiedTooltipId(null), 1500)
+
+    setSteps((prev) => {
+      const idx = prev.findIndex((s) => s.id === step.id)
+      const next = [...prev]
+      if (idx !== -1) {
+        next.splice(idx + 1, 0, clonedStep)
+      } else {
+        next.push(clonedStep)
+      }
+      return next
+    })
+    showToast(`Duplicated ${step.appName}!`)
   }
 
   const handleStartAddTrigger = () => {
@@ -1134,8 +1274,9 @@ function WorkflowEditorContent() {
 
 
   const handleInsertStepAfter = (index: number, isNewEndStep = false) => {
-    // Prevent adding any step after a Router node in the main workflow
-    if (steps.some((s) => s.appId === "router")) {
+    // Only prevent adding if attempting to insert at or after a Router node in the main workflow
+    const routerIndex = steps.findIndex((s) => s.appId === "router")
+    if (routerIndex !== -1 && index >= routerIndex) {
       showToast("Router Node is already at the end of the main workflow. Add action steps inside Route branches.", "warning")
       return
     }
@@ -2877,6 +3018,53 @@ function WorkflowEditorContent() {
     setStepDrawerOpen(true)
   }
 
+  const handleInsertStepIntoBranch = (branchKey: string, routeName: string, insertIndex: number) => {
+    const newStepId = `step_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`
+
+    const newStep: WorkflowStep = {
+      id: newStepId,
+      type: "action",
+      appId: "",
+      appName: "Select Action App",
+      eventId: "",
+      eventName: "Choose Action Event",
+      status: "unmapped",
+      fieldMappings: {},
+      isNewStep: true
+    }
+
+    if (branchKey === "routeA" || branchKey === "Route A") {
+      setRouteASteps((prev) => {
+        const next = [...prev]
+        next.splice(insertIndex, 0, newStep)
+        return next
+      })
+    } else if (branchKey === "routeB" || branchKey === "Route B") {
+      setRouteBSteps((prev) => {
+        const next = [...prev]
+        next.splice(insertIndex, 0, newStep)
+        return next
+      })
+    } else {
+      setBranchSteps((prev) => {
+        const currentList = prev[branchKey] || []
+        const next = [...currentList]
+        next.splice(insertIndex, 0, newStep)
+        return {
+          ...prev,
+          [branchKey]: next
+        }
+      })
+    }
+    showToast(`Added action step to ${routeName}! Select an app from the catalog.`)
+    setSelectedStepId(newStepId)
+    setActiveRouteId(null)
+    setActiveTab("setup")
+    setDrawerStep("app_select")
+    setIsDrawerMaximized(false)
+    setStepDrawerOpen(true)
+  }
+
   const handleDeleteBranchStep = (branchKey: string, stepId: string) => {
     if (branchKey === "routeA") {
       setRouteASteps((prev) => prev.filter((s) => s.id !== stepId))
@@ -3135,9 +3323,27 @@ function WorkflowEditorContent() {
                     const isSelected = selectedStepId === bStep.id && stepDrawerOpen
                     const isHovered = hoveredNodeId === bStep.id
 
+                    const isAIAgent = bStep.appId === "ai-agent"
+                    const aiModel = bStep.aiAgentConfig?.model || "gpt-4o"
+                    const aiModelName = aiModel === "claude-3-5-sonnet" ? "Claude 3.5 Sonnet" : aiModel === "gemini-1-5-pro" ? "Gemini 1.5 Pro" : aiModel === "gpt-4o-mini" ? "GPT-4o Mini" : "GPT-4o"
+                    const equippedTools = (bStep.aiAgentConfig?.tools || []).filter((t) => t.enabled)
+
                     return (
-                    <div key={bStep.id} className="flex flex-col items-center my-2 animate-in fade-in w-full">
-                      <div className="h-4 w-0.5 bg-slate-300 dark:bg-slate-700" />
+                      <div key={bStep.id} className="flex flex-col items-center my-2 animate-in fade-in w-full">
+                        <div className="flex flex-col items-center my-1 relative group/bline">
+                        <div className="h-2.5 w-0.5 bg-slate-300 dark:bg-slate-700 group-hover/bline:bg-blue-500 transition-colors" />
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleInsertStepIntoBranch(branch.key, branch.name, sIdx)
+                          }}
+                          className="h-5 w-5 rounded-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 group-hover/bline:border-blue-600 dark:group-hover/bline:border-blue-400 group-hover/bline:text-blue-600 dark:group-hover/bline:text-blue-400 group-hover/bline:bg-blue-50 dark:group-hover/bline:bg-slate-800 hover:scale-110 shadow-2xs transition-all flex items-center justify-center cursor-pointer z-10 my-0.5"
+                          title="Insert step here"
+                        >
+                          <Plus className="h-3 w-3 stroke-[2.5]" />
+                        </button>
+                        <div className="h-2.5 w-0.5 bg-slate-300 dark:bg-slate-700 group-hover/bline:bg-blue-500 transition-colors" />
+                      </div>
                       <div
                         onMouseEnter={() => setHoveredNodeId(bStep.id)}
                         onMouseLeave={() => setHoveredNodeId(null)}
@@ -3146,7 +3352,7 @@ function WorkflowEditorContent() {
                             handleOpenConfig(bStep.id)
                           }
                         }}
-                        className={`${cardClass} rounded-2xl border-2 shadow-xs transition-all flex items-center justify-between relative select-none group/bcard ${
+                        className={`${cardClass} rounded-2xl border-2 shadow-xs transition-all flex flex-col justify-between relative select-none group/bcard ${
                           bStep.appId === "router" ? "cursor-default" : "cursor-pointer"
                         } ${
                           isSelected && bStep.appId !== "router"
@@ -3156,83 +3362,183 @@ function WorkflowEditorContent() {
                             : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md bg-white dark:bg-slate-900"
                         }`}
                       >
-                        <div className="flex items-center space-x-2.5 flex-1 min-w-0">
-                          {isUnconfigured ? (
-                            <div className="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-800 shrink-0">
-                              <Plus className="h-4 w-4" />
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center space-x-2.5 flex-1 min-w-0">
+                            {isUnconfigured ? (
+                              <div className="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-800 shrink-0">
+                                <Plus className="h-4 w-4" />
+                              </div>
+                            ) : isStepPrivateAction(bStep) ? (
+                              <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200/80 dark:border-blue-900/60 shrink-0 shadow-2xs">
+                                <Zap className="h-4 w-4 text-blue-600 dark:text-blue-400 fill-blue-500/20" />
+                              </div>
+                            ) : (
+                              <AppIcon appId={bStep.appId} appName={bStep.appName} size={iconSize} />
+                            )}
+                            <div className="space-y-0.5 min-w-0 flex-1">
+                              <span className="text-[8px] font-medium text-slate-400 block truncate">
+                                {branch.name} • {isAIAgent ? "AI Agent" : `Action ${sIdx + 1}`}
+                              </span>
+                              <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-100 leading-tight flex items-center space-x-1.5 truncate">
+                                <span className="truncate">
+                                  {isUnconfigured
+                                    ? "Select Action App"
+                                    : isAIAgent
+                                    ? (bStep.aiAgentConfig?.role || "AI Agent")
+                                    : isStepPrivateAction(bStep)
+                                    ? (bStep.eventName || bStep.appName)
+                                    : bStep.appName}
+                                </span>
+                                {isAIAgent && (
+                                  <span className="inline-flex items-center space-x-1 text-[8px] font-semibold px-1.5 py-0.2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shrink-0">
+                                    {aiModel === "claude-3-5-sonnet" ? (
+                                      <ClaudeIcon size={10} bare />
+                                    ) : aiModel === "gemini-1-5-pro" ? (
+                                      <GeminiIcon size={10} bare />
+                                    ) : (
+                                      <OpenAIIcon size={10} bare />
+                                    )}
+                                    <span>{aiModelName}</span>
+                                  </span>
+                                )}
+                                {isStepPrivateAction(bStep) && (
+                                  <span className="inline-flex items-center space-x-1 text-[7px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/90 dark:border-emerald-800 px-1 py-0.2 rounded shrink-0">
+                                    <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+                                    <span>Live</span>
+                                  </span>
+                                )}
+                                {bStep.appId === "router" && (
+                                  <Badge variant="blue" className="text-[8px] font-bold px-1 py-0 shrink-0">Router</Badge>
+                                )}
+                                {activeAiGeneratingStepId === bStep.id && (
+                                  <Badge variant="blue" className="text-[8px] font-bold px-1 py-0 bg-blue-600 text-white animate-pulse flex items-center gap-1 shrink-0">
+                                    <Sparkles className="h-2 w-2" />
+                                    <span>AI...</span>
+                                  </Badge>
+                                )}
+                              </h4>
+                              <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 truncate max-w-[140px]">
+                                {isUnconfigured
+                                  ? "Click to choose app"
+                                  : isAIAgent
+                                  ? "Autonomous AI Assistant"
+                                  : isStepPrivateAction(bStep)
+                                  ? "Private Action"
+                                  : bStep.eventName}
+                              </p>
                             </div>
-                          ) : (
-                            <AppIcon appId={bStep.appId} appName={bStep.appName} size={iconSize} />
-                          )}
-                          <div className="space-y-0.5 min-w-0 flex-1">
-                            <span className="text-[8px] font-medium text-blue-600 dark:text-blue-400 block truncate">
-                              {branch.name} • Action {sIdx + 1}
-                            </span>
-                            <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-100 leading-tight flex items-center space-x-1.5 truncate">
-                              <span>{isUnconfigured ? "Select Action App" : bStep.appName}</span>
+                          </div>
+                          <div className="flex items-center space-x-0.5 shrink-0 ml-1">
+                            <div
+                              className={`flex items-center space-x-0.5 transition-all duration-200 ${
+                                isHovered || isUnconfigured ? "opacity-100 translate-x-0 pointer-events-auto" : "opacity-0 translate-x-2 pointer-events-none"
+                              }`}
+                            >
                               {bStep.appId === "router" && (
-                                <Badge variant="blue" className="text-[8px] font-bold px-1 py-0">Router</Badge>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleAddBranchToRouter(bStep.id)
+                                  }}
+                                  className="p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/60 transition-colors cursor-pointer"
+                                  title="Add Route Branch"
+                                >
+                                  <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
+                                </button>
                               )}
-                            </h4>
-                            <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 truncate max-w-[140px]">
-                              {isUnconfigured ? "Click to choose app" : bStep.eventName}
-                            </p>
+                              {!isUnconfigured && bStep.appId !== "router" && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleCopyNode(bStep)
+                                  }}
+                                  className="p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                                  title="Copy Step"
+                                >
+                                  <Copy className="h-3.5 w-3.5" />
+                                </button>
+                              )}
+                              {!isUnconfigured && bStep.appId !== "router" && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleOpenConfig(bStep.id)
+                                  }}
+                                  className="p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/60 transition-colors cursor-pointer"
+                                  title="Edit Step Setup"
+                                >
+                                  <Edit2 className="h-3.5 w-3.5" />
+                                </button>
+                              )}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  requestDeleteBranchStep(branch.key, bStep.id, isUnconfigured ? "Unconfigured Step" : `${bStep.appName} - ${bStep.eventName}`)
+                                }}
+                                className="p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/60 transition-colors cursor-pointer"
+                                title="Delete Step"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-0.5 shrink-0">
-                          <div
-                            className={`flex items-center space-x-0.5 transition-all duration-200 ${
-                              isHovered || isUnconfigured ? "opacity-100 translate-x-0 pointer-events-auto" : "opacity-0 translate-x-2 pointer-events-none"
-                            }`}
-                          >
-                            {bStep.appId === "router" && (
+
+                        {/* AI AGENT SNAP-IN VISUAL TOOL SLOTS */}
+                        {isAIAgent && (
+                          <div className="w-full mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 flex flex-col space-y-1">
+                            <div className="flex items-center justify-between text-[9px]">
+                              <span className="font-semibold flex items-center gap-1 text-slate-600 dark:text-slate-400">
+                                <Wrench className="h-2.5 w-2.5 text-slate-400" />
+                                <span>Equipped Tools ({equippedTools.length})</span>
+                              </span>
+                              <span className="text-[8px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-1 py-0.2 rounded border border-slate-200 dark:border-slate-700 font-medium">
+                                Max {bStep.aiAgentConfig?.maxIterations || 5} steps
+                              </span>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-1">
+                              {equippedTools.length === 0 ? (
+                                <span className="text-[9px] text-slate-400 italic">No tools equipped</span>
+                              ) : (
+                                equippedTools.slice(0, 3).map((tool) => (
+                                  <span
+                                    key={tool.id}
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200"
+                                    title={tool.description}
+                                  >
+                                    {tool.type === "private_action" ? (
+                                      <Zap className="h-2.5 w-2.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                                    ) : (
+                                      <AppIcon appId={tool.appId} appName={tool.appName} size={11} />
+                                    )}
+                                    <span className="truncate max-w-[60px]">{tool.actionName || tool.appName}</span>
+                                  </span>
+                                ))
+                              )}
+
+                              {equippedTools.length > 3 && (
+                                <span className="text-[8px] font-medium text-slate-400">
+                                  +{equippedTools.length - 3}
+                                </span>
+                              )}
+
                               <button
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleAddBranchToRouter(bStep.id)
-                                }}
-                                className="p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/60 transition-colors cursor-pointer"
-                                title="Add Route Branch"
-                              >
-                                <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
-                              </button>
-                            )}
-                            {!isUnconfigured && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleCopyNode(bStep)
-                                }}
-                                className="p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                                title="Copy Step"
-                              >
-                                <Copy className="h-3.5 w-3.5" />
-                              </button>
-                            )}
-                            {!isUnconfigured && bStep.appId !== "router" && (
-                              <button
+                                type="button"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   handleOpenConfig(bStep.id)
                                 }}
-                                className="p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/60 transition-colors cursor-pointer"
-                                title="Edit Step Setup"
+                                className="h-4.5 px-1 rounded text-[9px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900 border border-blue-200 dark:border-blue-800 transition-colors flex items-center gap-0.5 cursor-pointer ml-auto"
+                                title="Manage tools in drawer"
                               >
-                                <Edit2 className="h-3.5 w-3.5" />
+                                <Plus className="h-2 w-2" />
+                                <span>Slot</span>
                               </button>
-                            )}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                requestDeleteBranchStep(branch.key, bStep.id, isUnconfigured ? "Unconfigured Step" : `${bStep.appName} - ${bStep.eventName}`)
-                              }}
-                              className="p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/60 transition-colors cursor-pointer"
-                              title="Delete Step"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
+                            </div>
                           </div>
-                        </div>
+                        )}
+
                         {copiedTooltipId === bStep.id && (
                           <div className="absolute -top-7 right-4 bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md z-30 animate-in fade-in">
                             Copied!
@@ -3441,10 +3747,25 @@ function WorkflowEditorContent() {
                   {visibleSteps.map((bStep, sIdx) => {
                     const isUnconfigured = !bStep.appId
                     const isSelected = selectedStepId === bStep.id && stepDrawerOpen
+                    const isAIAgent = bStep.appId === "ai-agent"
+                    const aiModelName = bStep.aiAgentConfig?.model === "claude-3-5-sonnet" ? "Claude 3.5" : bStep.aiAgentConfig?.model === "gemini-1-5-pro" ? "Gemini 1.5" : bStep.aiAgentConfig?.model === "gpt-4o-mini" ? "GPT-4o Mini" : "GPT-4o"
 
                     return (
                     <React.Fragment key={bStep.id}>
-                      <div className="w-8 h-0.5 bg-slate-300 dark:bg-slate-700 shrink-0" />
+                      <div className="flex items-center shrink-0">
+                        <div className="w-12 h-0.5 bg-slate-300 dark:bg-slate-700 relative flex items-center justify-center group/bwire">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleInsertStepIntoBranch(branch.key, branch.name, sIdx)
+                            }}
+                            className="h-5 w-5 rounded-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-blue-600 dark:hover:border-blue-400 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center justify-center shadow-2xs hover:scale-110 transition-all cursor-pointer z-10"
+                            title="Insert step here"
+                          >
+                            <Plus className="h-3 w-3 stroke-[2.5]" />
+                          </button>
+                        </div>
+                      </div>
                       <div
                         onClick={() => {
                           if (bStep.appId !== "router") {
@@ -3469,14 +3790,29 @@ function WorkflowEditorContent() {
                           <HorizontalAppSquircle appId={bStep.appId} appName={bStep.appName} size={52} />
                         )}
                         <div className="mt-2 space-y-0.5 w-full">
-                          <span className="text-[9px] font-medium text-blue-600 dark:text-blue-400 block truncate">
-                            {branch.name} • Action {sIdx + 1}
+                          <span className="text-[9px] font-medium text-slate-400 dark:text-slate-400 block truncate">
+                            {branch.name} • {isAIAgent ? "AI Agent" : `Action ${sIdx + 1}`}
                           </span>
                           <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-100 leading-snug truncate">
-                            {isUnconfigured ? "Select App" : bStep.appName}
+                            {isUnconfigured ? "Select App" : isAIAgent ? (bStep.aiAgentConfig?.role || "AI Agent") : bStep.appName}
                           </h4>
-                          <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate w-full">
-                            {isUnconfigured ? "Click to choose" : bStep.eventName}
+                          <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate w-full flex items-center justify-center space-x-1">
+                            {isUnconfigured ? (
+                              <span>Click to choose</span>
+                            ) : isAIAgent ? (
+                              <>
+                                {bStep.aiAgentConfig?.model === "claude-3-5-sonnet" ? (
+                                  <ClaudeIcon size={11} bare />
+                                ) : bStep.aiAgentConfig?.model === "gemini-1-5-pro" ? (
+                                  <GeminiIcon size={11} bare />
+                                ) : (
+                                  <OpenAIIcon size={11} bare />
+                                )}
+                                <span>{aiModelName}</span>
+                              </>
+                            ) : (
+                              bStep.eventName
+                            )}
                           </p>
                         </div>
 
@@ -3505,6 +3841,18 @@ function WorkflowEditorContent() {
                               <Edit2 className="h-3 w-3" />
                             </button>
                           )}
+                          {!isUnconfigured && bStep.appId !== "router" && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleCopyNode(bStep, branch.key)
+                              }}
+                              className="p-1 text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
+                              title="Copy Step"
+                            >
+                              <Copy className="h-3 w-3" />
+                            </button>
+                          )}
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
@@ -3516,6 +3864,11 @@ function WorkflowEditorContent() {
                             <Trash2 className="h-3 w-3" />
                           </button>
                         </div>
+                        {copiedTooltipId === bStep.id && (
+                          <div className="absolute -top-7 right-2 bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md z-30 animate-in fade-in">
+                            Copied!
+                          </div>
+                        )}
                       </div>
 
                       {/* Nested router branch rendering in horizontal view */}
@@ -3567,7 +3920,7 @@ function WorkflowEditorContent() {
     // If configuring Step 1 (Trigger), only show apps that support Triggers
     if (isTriggerStep && app.triggers.length === 0) return false
     // If configuring Step 2+ or branch steps (Actions), only show apps with Actions (excludes Webhook)
-    if (!isTriggerStep && app.actions.length === 0) return false
+    if (!isTriggerStep && (app.id === "webhook" || app.id === "webhook-catch" || app.actions.length === 0)) return false
 
     const matchesSearch =
       app.name.toLowerCase().includes(appSearchQuery.toLowerCase()) ||
@@ -4489,7 +4842,7 @@ function WorkflowEditorContent() {
                             </button>
                           )}
 
-                          {!isUnconfigured && (
+                          {!isUnconfigured && step.appId !== "router" && step.type !== "trigger" && idx !== 0 && (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -4743,9 +5096,34 @@ function WorkflowEditorContent() {
                                       const isUnconfigured = !rStep.appId
                                       const isHovered = hoveredNodeId === rStep.id
 
+                                      const isAIAgent = rStep.appId === "ai-agent"
+                                      const aiModel = rStep.aiAgentConfig?.model || "gpt-4o"
+                                      const aiModelName =
+                                        aiModel === "claude-3-5-sonnet"
+                                          ? "Claude 3.5 Sonnet"
+                                          : aiModel === "gemini-1-5-pro"
+                                          ? "Gemini 1.5 Pro"
+                                          : aiModel === "gpt-4o-mini"
+                                          ? "GPT-4o Mini"
+                                          : "GPT-4o"
+                                      const equippedTools = (rStep.aiAgentConfig?.tools || []).filter((t) => t.enabled)
+
                                       return (
                                         <div key={rStep.id} className="flex flex-col items-center my-2 animate-in fade-in">
-                                          <div className="h-4 w-0.5 bg-slate-300 dark:bg-slate-700" />
+                                          <div className="flex flex-col items-center my-1 relative group/bline">
+                                            <div className="h-2.5 w-0.5 bg-slate-300 dark:bg-slate-700 group-hover/bline:bg-blue-500 transition-colors" />
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation()
+                                                handleInsertStepIntoBranch(route.key, route.name, sIdx)
+                                              }}
+                                              className="h-5 w-5 rounded-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 group-hover/bline:border-blue-600 dark:group-hover/bline:border-blue-400 group-hover/bline:text-blue-600 dark:group-hover/bline:text-blue-400 group-hover/bline:bg-blue-50 dark:group-hover/bline:bg-slate-800 hover:scale-110 shadow-2xs transition-all flex items-center justify-center cursor-pointer z-10 my-0.5"
+                                              title="Insert step here"
+                                            >
+                                              <Plus className="h-3 w-3 stroke-[2.5]" />
+                                            </button>
+                                            <div className="h-2.5 w-0.5 bg-slate-300 dark:bg-slate-700 group-hover/bline:bg-blue-500 transition-colors" />
+                                          </div>
                                           <div
                                             onMouseEnter={() => setHoveredNodeId(rStep.id)}
                                             onMouseLeave={() => setHoveredNodeId(null)}
@@ -4754,7 +5132,7 @@ function WorkflowEditorContent() {
                                                 handleOpenConfig(rStep.id)
                                               }
                                             }}
-                                            className={`w-80 md:w-96 rounded-2xl border-2 shadow-xs transition-all px-5 py-4 flex items-center justify-between relative select-none group/rcard ${
+                                            className={`w-80 md:w-96 rounded-2xl border-2 shadow-xs transition-all px-5 py-4 flex flex-col justify-between relative select-none group/rcard ${
                                               rStep.appId === "router" ? "cursor-default" : "cursor-pointer"
                                             } ${
                                               isSelected && rStep.appId !== "router"
@@ -4762,86 +5140,190 @@ function WorkflowEditorContent() {
                                                 : isUnconfigured
                                                 ? "border-dashed border-blue-300 dark:border-blue-700 hover:border-blue-500 dark:hover:border-blue-400 bg-blue-50/30 dark:bg-blue-950/20 hover:bg-blue-50/60 dark:hover:bg-blue-950/40"
                                                 : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md bg-white dark:bg-slate-900"
+                                            } ${
+                                              activeAiGeneratingStepId === rStep.id
+                                                ? "border-blue-500 ring-4 ring-blue-400/40 shadow-xl animate-pulse scale-102"
+                                                : ""
                                             }`}
                                           >
-                                            <div className="flex items-center space-x-4 flex-1">
-                                              {isUnconfigured ? (
-                                                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-800 shrink-0">
-                                                  <Plus className="h-5 w-5" />
+                                            <div className="flex items-center justify-between w-full">
+                                              <div className="flex items-center space-x-3.5 flex-1 min-w-0">
+                                                {isUnconfigured ? (
+                                                  <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-800 shrink-0">
+                                                    <Plus className="h-5 w-5" />
+                                                  </div>
+                                                ) : isStepPrivateAction(rStep) ? (
+                                                  <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200/80 dark:border-blue-900/60 shrink-0 shadow-2xs">
+                                                    <Zap className="h-5 w-5 text-blue-600 dark:text-blue-400 fill-blue-500/20" />
+                                                  </div>
+                                                ) : (
+                                                  <AppIcon appId={rStep.appId} appName={rStep.appName} size={40} />
+                                                )}
+                                                <div className="space-y-0.5 min-w-0 flex-1">
+                                                  <span className="text-[10px] font-medium text-slate-400 block">
+                                                    {route.name} • {isAIAgent ? "AI Agent" : `Action ${sIdx + 1}`}
+                                                  </span>
+                                                  <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-tight flex items-center space-x-2 truncate">
+                                                    <span className="truncate">
+                                                      {isUnconfigured
+                                                        ? "Select Action App"
+                                                        : isAIAgent
+                                                        ? (rStep.aiAgentConfig?.role || "AI Agent")
+                                                        : isStepPrivateAction(rStep)
+                                                        ? (rStep.eventName || rStep.appName)
+                                                        : rStep.appName}
+                                                    </span>
+                                                    {isAIAgent && (
+                                                      <span className="inline-flex items-center space-x-1.5 text-[9px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shrink-0">
+                                                        {aiModel === "claude-3-5-sonnet" ? (
+                                                          <ClaudeIcon size={12} bare />
+                                                        ) : aiModel === "gemini-1-5-pro" ? (
+                                                          <GeminiIcon size={12} bare />
+                                                        ) : (
+                                                          <OpenAIIcon size={12} bare />
+                                                        )}
+                                                        <span>{aiModelName}</span>
+                                                      </span>
+                                                    )}
+                                                    {isStepPrivateAction(rStep) && (
+                                                      <span className="inline-flex items-center space-x-1 text-[8px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/90 dark:border-emerald-800 px-1 py-0.2 rounded shrink-0">
+                                                        <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+                                                        <span>Live</span>
+                                                      </span>
+                                                    )}
+                                                    {rStep.appId === "router" && (
+                                                      <Badge variant="blue" className="text-[9px] font-bold px-1.5 py-0 shrink-0">Router</Badge>
+                                                    )}
+                                                    {activeAiGeneratingStepId === rStep.id && (
+                                                      <Badge variant="blue" className="text-[9px] font-bold px-1.5 py-0 bg-blue-600 text-white animate-pulse flex items-center gap-1 shrink-0">
+                                                        <Sparkles className="h-2.5 w-2.5" />
+                                                        <span>AI Adding...</span>
+                                                      </Badge>
+                                                    )}
+                                                  </h4>
+                                                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate max-w-[200px]">
+                                                    {isUnconfigured
+                                                      ? "Click to choose app from catalog"
+                                                      : isAIAgent
+                                                      ? "Autonomous AI Assistant"
+                                                      : isStepPrivateAction(rStep)
+                                                      ? "Private Action"
+                                                      : rStep.eventName}
+                                                  </p>
                                                 </div>
-                                              ) : (
-                                                <AppIcon appId={rStep.appId} appName={rStep.appName} size={40} />
-                                              )}
-                                              <div className="space-y-0.5">
-                                                <span className="text-[10px] font-medium text-blue-600 dark:text-blue-400 block">
-                                                  {route.name} • Action {sIdx + 1}
-                                                </span>
-                                                <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-tight flex items-center space-x-2">
-                                                  <span>{isUnconfigured ? "Select Action App" : rStep.appName}</span>
+                                              </div>
+                                              <div className="flex items-center space-x-1 shrink-0 ml-2">
+                                                <div
+                                                  className={`flex items-center space-x-1 transition-all duration-200 ${
+                                                    isHovered || isUnconfigured ? "opacity-100 translate-x-0 pointer-events-auto" : "opacity-0 translate-x-2 pointer-events-none"
+                                                  }`}
+                                                >
                                                   {rStep.appId === "router" && (
-                                                    <Badge variant="blue" className="text-[9px] font-bold px-1.5 py-0">Router</Badge>
+                                                    <button
+                                                      onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        handleAddBranchToRouter(rStep.id)
+                                                      }}
+                                                      className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                                                      title="Add Route Branch"
+                                                    >
+                                                      <Plus className="h-4 w-4 stroke-[2.5]" />
+                                                    </button>
                                                   )}
-                                                </h4>
-                                                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate max-w-[180px]">
-                                                  {isUnconfigured ? "Click to choose app from catalog" : rStep.eventName}
-                                                </p>
+                                                  {!isUnconfigured && rStep.appId !== "router" && (
+                                                    <button
+                                                      onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        handleCopyNode(rStep)
+                                                      }}
+                                                      className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                                                      title="Copy Step"
+                                                    >
+                                                      <Copy className="h-4 w-4" />
+                                                    </button>
+                                                  )}
+                                                  {!isUnconfigured && rStep.appId !== "router" && (
+                                                    <button
+                                                      onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        handleOpenConfig(rStep.id)
+                                                      }}
+                                                      className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                                                      title="Edit Step Setup"
+                                                    >
+                                                      <Edit2 className="h-4 w-4" />
+                                                    </button>
+                                                  )}
+                                                  <button
+                                                    onClick={(e) => {
+                                                      e.stopPropagation()
+                                                      const rKey = route.key === "routeA" ? "Route A" : route.key === "routeB" ? "Route B" : route.key
+                                                      requestDeleteBranchStep(rKey, rStep.id, isUnconfigured ? "Unconfigured Step" : `${rStep.appName} - ${rStep.eventName}`)
+                                                    }}
+                                                    className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                                                    title="Delete Step from Route"
+                                                  >
+                                                    <Trash2 className="h-4 w-4" />
+                                                  </button>
+                                                </div>
                                               </div>
                                             </div>
-                                            <div className="flex items-center space-x-1 shrink-0">
-                                              <div
-                                                className={`flex items-center space-x-1 transition-all duration-200 ${
-                                                  isHovered || isUnconfigured ? "opacity-100 translate-x-0 pointer-events-auto" : "opacity-0 translate-x-2 pointer-events-none"
-                                                }`}
-                                              >
-                                                {rStep.appId === "router" && (
+
+                                            {/* AI AGENT SNAP-IN VISUAL TOOL SLOTS (Canvas Ports) */}
+                                            {isAIAgent && (
+                                              <div className="w-full mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex flex-col space-y-1.5">
+                                                <div className="flex items-center justify-between text-[10px]">
+                                                  <span className="font-semibold flex items-center gap-1 text-slate-600 dark:text-slate-400">
+                                                    <Wrench className="h-3 w-3 text-slate-400" />
+                                                    <span>Equipped Tools ({equippedTools.length})</span>
+                                                  </span>
+                                                  <span className="text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 font-medium">
+                                                    Max {rStep.aiAgentConfig?.maxIterations || 5} steps
+                                                  </span>
+                                                </div>
+
+                                                <div className="flex flex-wrap items-center gap-1.5">
+                                                  {equippedTools.length === 0 ? (
+                                                    <span className="text-[10px] text-slate-400 italic">No tools equipped</span>
+                                                  ) : (
+                                                    equippedTools.slice(0, 4).map((tool) => (
+                                                      <span
+                                                        key={tool.id}
+                                                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200"
+                                                        title={tool.description}
+                                                      >
+                                                        {tool.type === "private_action" ? (
+                                                          <Zap className="h-3 w-3 text-blue-600 dark:text-blue-400 shrink-0" />
+                                                        ) : (
+                                                          <AppIcon appId={tool.appId} appName={tool.appName} size={13} />
+                                                        )}
+                                                        <span className="truncate max-w-[80px]">{tool.actionName || tool.appName}</span>
+                                                      </span>
+                                                    ))
+                                                  )}
+
+                                                  {equippedTools.length > 4 && (
+                                                    <span className="text-[9px] font-medium text-slate-400">
+                                                      +{equippedTools.length - 4} more
+                                                    </span>
+                                                  )}
+
                                                   <button
-                                                    onClick={(e) => {
-                                                      e.stopPropagation()
-                                                      handleAddBranchToRouter(rStep.id)
-                                                    }}
-                                                    className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                                                    title="Add Route Branch"
-                                                  >
-                                                    <Plus className="h-4 w-4 stroke-[2.5]" />
-                                                  </button>
-                                                )}
-                                                {!isUnconfigured && (
-                                                  <button
-                                                    onClick={(e) => {
-                                                      e.stopPropagation()
-                                                      handleCopyNode(rStep)
-                                                    }}
-                                                    className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                                                    title="Copy Step"
-                                                  >
-                                                    <Copy className="h-4 w-4" />
-                                                  </button>
-                                                )}
-                                                {!isUnconfigured && rStep.appId !== "router" && (
-                                                  <button
+                                                    type="button"
                                                     onClick={(e) => {
                                                       e.stopPropagation()
                                                       handleOpenConfig(rStep.id)
                                                     }}
-                                                    className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                                                    title="Edit Step Setup"
+                                                    className="h-5 px-1.5 rounded text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900 border border-blue-200 dark:border-blue-800 transition-colors flex items-center gap-0.5 cursor-pointer shadow-2xs ml-auto"
+                                                    title="Manage tools in drawer"
                                                   >
-                                                    <Edit2 className="h-4 w-4" />
+                                                    <Plus className="h-2.5 w-2.5" />
+                                                    <span>Slot</span>
                                                   </button>
-                                                )}
-                                                <button
-                                                  onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    const rKey = route.key === "routeA" ? "Route A" : route.key === "routeB" ? "Route B" : route.key
-                                                    requestDeleteBranchStep(rKey, rStep.id, isUnconfigured ? "Unconfigured Step" : `${rStep.appName} - ${rStep.eventName}`)
-                                                  }}
-                                                  className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
-                                                  title="Delete Step from Route"
-                                                >
-                                                  <Trash2 className="h-4 w-4" />
-                                                </button>
+                                                </div>
                                               </div>
-                                            </div>
+                                            )}
+
                                             {copiedTooltipId === rStep.id && (
                                               <div className="absolute -top-7 right-4 bg-slate-900 dark:bg-slate-800 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md z-30 animate-in fade-in">
                                                 Copied!
@@ -5083,7 +5565,7 @@ function WorkflowEditorContent() {
                             <Edit2 className="h-3 w-3" />
                           </button>
                         )}
-                        {!isUnconfigured && (
+                        {!isUnconfigured && !isRouter && step.type !== "trigger" && idx !== 0 && (
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
@@ -5108,6 +5590,11 @@ function WorkflowEditorContent() {
                           </button>
                         )}
                       </div>
+                      {copiedTooltipId === step.id && (
+                        <div className="absolute -top-7 right-2 bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md z-30 animate-in fade-in">
+                          Copied!
+                        </div>
+                      )}
                     </div>
 
                     {/* If step is a Router, render its horizontal tree */}
@@ -5926,6 +6413,10 @@ function WorkflowEditorContent() {
                               }
 
                               const isTrigger = selectedStep.type === "trigger" || selectedStepId === steps[0]?.id
+                              if (!isTrigger && (app.id === "webhook" || app.id === "webhook-catch")) {
+                                showToast("Webhook can only be used as a Trigger, not an Action.", "warning")
+                                return
+                              }
                               const firstEvent = isTrigger ? (app.triggers[0] || app.actions[0]) : (app.actions[0] || app.triggers[0])
                               const defaultRoutes = app.id === "router" ? [
                                 { id: `rt_1_${Date.now()}`, name: "Route A", appId: "filter", appName: "Filter", eventId: "apply_filter_rules", eventName: "Filter Values (Route A)" },
